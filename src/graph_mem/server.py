@@ -4,7 +4,11 @@ from mcp.server.fastmcp import FastMCP
 
 from graph_mem.client import GraphitiClient
 from graph_mem.config import get_settings
+from graph_mem.project_id import get_project_id
+from graph_mem.tools import memory as memory_tools
 from graph_mem.tools import passthrough
+from graph_mem.tools import profile as profile_tools
+from graph_mem.tools import reminders as reminder_tools
 
 mcp = FastMCP("graph-mem")
 
@@ -81,6 +85,56 @@ async def reset_memory(group_ids: list[str]) -> str:
         group_ids: List of group IDs to delete (e.g. ['user_profile', 'project_myapp']).
     """
     return await passthrough.reset_memory(_client, group_ids=group_ids)
+
+
+@mcp.tool()
+async def save_memory(content: str, group_id: str) -> str:
+    """Store a specific piece of information. Use 'user_profile' for personal info, 'project_{id}' for project-specific.
+
+    Args:
+        content: The information to store.
+        group_id: Target group ('user_profile' or 'project_{id}').
+    """
+    return await memory_tools.save_memory(_client, content=content, group_id=group_id)
+
+
+@mcp.tool()
+async def save_session(summary: str, project_path: str | None = None) -> str:
+    """Send a session summary to the knowledge graph for entity extraction.
+
+    Args:
+        summary: Session summary text.
+        project_path: Path to project root. Defaults to cwd.
+    """
+    project_id = get_project_id(project_path)
+    return await memory_tools.save_session(_client, summary=summary, project_id=project_id)
+
+
+@mcp.tool()
+async def get_profile() -> str:
+    """Retrieve the complete developer profile (preferences, expertise, active projects, principles)."""
+    return await profile_tools.get_profile(_client)
+
+
+@mcp.tool()
+async def add_reminder(content: str, group_id: str) -> str:
+    """Create a reminder. Use 'user_profile' for personal, 'project_{id}' for project-specific.
+
+    Args:
+        content: What to remember.
+        group_id: Target group.
+    """
+    return await reminder_tools.add_reminder(_client, content=content, group_id=group_id)
+
+
+@mcp.tool()
+async def get_reminders(group_ids: list[str] | None = None) -> str:
+    """List active reminders.
+
+    Args:
+        group_ids: Filter by groups. If omitted, returns all reminders.
+    """
+    return await reminder_tools.get_reminders(_client, group_ids=group_ids)
 
 
 def main():
