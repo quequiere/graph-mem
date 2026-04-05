@@ -22,7 +22,7 @@ class GraphitiClient:
     async def _get_client(self) -> httpx.AsyncClient:
         if self._http is None or self._http.is_closed:
             self._http = httpx.AsyncClient(
-                base_url=self.base_url, headers=self._headers, timeout=30.0
+                base_url=self.base_url, headers=self._headers, timeout=60.0
             )
         return self._http
 
