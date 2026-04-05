@@ -54,7 +54,7 @@ Passthrough (5): `add_raw_memory`, `search_entities`, `search_facts`, `reset_mem
 - [x] Implement Claude Code hooks
 - [x] Write skill (SKILL.md)
 - [x] Tests (36 unit tests)
-- [ ] Choose license
+- [x] Choose license (Apache-2.0)
 - [ ] Set up build pipeline
 - [ ] Integration tests with live Graphiti
 - [ ] `save_session` cross-project info detection (spec section 5 — deferred, needs LLM analysis)

@@ -7,6 +7,7 @@ name = "graph-mem"
 version = "0.1.0"
 description = "Persistent intelligent memory for AI coding assistants using knowledge graphs"
 readme = "README.md"
+license = {text = "Apache-2.0"}
 requires-python = ">=3.11"
 dependencies = [
     "mcp>=1.0.0",

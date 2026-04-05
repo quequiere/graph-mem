@@ -93,4 +93,4 @@ Contributions are welcome! Please see the open issues for areas where help is ne
 
 ## License
 
-TBD
+Apache-2.0 - see [LICENSE](LICENSE)
