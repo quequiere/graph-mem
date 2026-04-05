@@ -1,11 +1,15 @@
 """graph-mem MCP server."""
 
+import os
+
 from mcp.server.fastmcp import FastMCP
 
 from graph_mem.client import GraphitiClient
 from graph_mem.config import get_settings
 from graph_mem.project_id import get_project_id
+from graph_mem.tools import context as context_tools
 from graph_mem.tools import memory as memory_tools
+from graph_mem.tools import onboard as onboard_tools
 from graph_mem.tools import passthrough
 from graph_mem.tools import profile as profile_tools
 from graph_mem.tools import reminders as reminder_tools
@@ -135,6 +139,52 @@ async def get_reminders(group_ids: list[str] | None = None) -> str:
         group_ids: Filter by groups. If omitted, returns all reminders.
     """
     return await reminder_tools.get_reminders(_client, group_ids=group_ids)
+
+
+@mcp.tool()
+async def check_project(project_path: str | None = None) -> str:
+    """Check if the current project is known in the knowledge graph.
+
+    Args:
+        project_path: Path to project root. Defaults to cwd.
+    """
+    project_id = get_project_id(project_path)
+    result = await onboard_tools.check_project(_client, project_id=project_id)
+    if result["known"]:
+        facts = "\n".join(f"- {f['fact']}" for f in result["facts"])
+        return f"Project is known.\n{facts}"
+    return "Project is not known. Use onboard_project to set it up."
+
+
+@mcp.tool()
+async def onboard_project(project_path: str | None = None, description: str | None = None) -> str:
+    """Analyze a project and store its essence in the knowledge graph.
+
+    Reads README, manifests, and directory structure. Stores results in both
+    the project group and the developer profile.
+
+    Args:
+        project_path: Path to project root. Defaults to cwd.
+        description: Developer's own description (supplements auto-analysis).
+    """
+    path = project_path or os.getcwd()
+    project_id = get_project_id(path)
+    return await onboard_tools.onboard_project(
+        _client, project_id=project_id, project_path=path, description=description
+    )
+
+
+@mcp.tool()
+async def get_context(project_path: str | None = None) -> str:
+    """Retrieve the full context for the current session.
+
+    Merges developer profile + project context + active reminders.
+
+    Args:
+        project_path: Path to project root. Defaults to cwd.
+    """
+    project_id = get_project_id(project_path)
+    return await context_tools.get_context(_client, project_id=project_id)
 
 
 def main():
