@@ -47,15 +47,17 @@ Passthrough (5): `add_raw_memory`, `search_entities`, `search_facts`, `reset_mem
 ## TODO
 
 - [x] Design spec (`.doc/specs/2026-04-05-graph-mem-design.md`)
-- [ ] Implementation plan
-- [ ] Set up Python project structure (pyproject.toml, src layout)
-- [ ] Implement MCP server with passthrough tools
-- [ ] Implement custom tools
-- [ ] Implement Claude Code hooks
-- [ ] Write skill (SKILL.md)
+- [x] Implementation plan (`.doc/plans/2026-04-05-graph-mem-implementation.md`)
+- [x] Set up Python project structure (pyproject.toml, src layout)
+- [x] Implement MCP server with passthrough tools
+- [x] Implement custom tools
+- [x] Implement Claude Code hooks
+- [x] Write skill (SKILL.md)
+- [x] Tests (36 unit tests)
 - [ ] Choose license
 - [ ] Set up build pipeline
-- [ ] Tests
+- [ ] Integration tests with live Graphiti
+- [ ] `save_session` cross-project info detection (spec section 5 — deferred, needs LLM analysis)
 
 ## Git Convention
 
