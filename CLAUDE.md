@@ -86,18 +86,109 @@ Stock Graphiti only configures the LLM client from env vars, leaving the embedde
 
 ## Reference: claude-mem architecture (inspiration)
 
-claude-mem (by thedotmack) is our reference for how memory plugins work in Claude Code:
+claude-mem (by thedotmack) is our reference for how memory plugins work in Claude Code.
+Source: https://github.com/thedotmack/claude-mem / https://docs.claude-mem.ai/hooks-architecture
 
-- **No LLM in hooks** except Stop (session summary). All hooks are fire-and-forget HTTP to a background Worker.
-- **PostToolUse** captures every tool call → Worker compresses with Haiku → stored as "observations"
-- **SessionStart** injects compact index of past sessions (progressive disclosure pattern)
-- **UserPromptSubmit** just stores raw prompt in SQLite (timeline marker, no LLM)
-- **The model decides** when to use MCP search tools — claude-mem doesn't force it
-- **Key insight**: claude-mem doesn't auto-save user info. It captures tool activity. The model must explicitly call save tools.
+### Full lifecycle diagram
 
-Our current gap: we depend on the model calling `save_memory` explicitly. The model often doesn't think to do it (e.g., "Je démarre un projet C# avec Sylvie" → model treats it as action request, not info to save).
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        SESSION LIFECYCLE                            │
+└─────────────────────────────────────────────────────────────────────┘
 
-**Key: claude-mem uses Claude Agent SDK with CLI auth (not API key)**. The SDK authenticates via the local Claude Code session (Max subscription), so compression costs nothing extra. This means we could use the same approach for PostToolUse observation compression without needing a separate API key or OpenRouter.
+ ① SessionStart (au lancement + /clear + compact)
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  Smart Install → vérifie deps, démarre le Worker (Bun :37777)   │
+ │  Context Hook  → query SQLite (10 derniers résumés + 50 obs)    │
+ │               → formate en "index progressif" compact            │
+ │               → injecte via additionalContext (invisible user)   │
+ │                                                                  │
+ │  Claude voit: "# [claude-mem] recent context                    │
+ │                Session 1: investigated auth bug...               │
+ │                Session 2: implemented API endpoint..."           │
+ └──────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+ ② UserPromptSubmit (à chaque message utilisateur)
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  Pas de LLM ! Juste un HTTP POST au Worker (~20ms)              │
+ │  → Stocke le prompt brut dans SQLite (user_prompts)             │
+ │  → Sert de marqueur chronologique dans la timeline              │
+ └──────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+ ③ Claude travaille (utilise Read, Edit, Bash, etc.)
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  Le modèle peut aussi appeler les MCP tools claude-mem :        │
+ │  • search → index compact (~50-100 tokens/résultat)             │
+ │  • timeline → contexte chronologique                            │
+ │  • get_observations → détails complets (si besoin)              │
+ │  Pattern "progressive disclosure" = ~10x économie de tokens     │
+ └──────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+ ④ PostToolUse (après CHAQUE appel d'outil)
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  Pas de LLM ! Fire-and-forget HTTP POST au Worker (~8ms)        │
+ │  Données capturées :                                            │
+ │  • session_id, tool_name, tool_input, tool_output, timestamp    │
+ │  → Enqueue dans observation_queue (SQLite)                      │
+ │                                                                  │
+ │  Le Worker (background, Bun) :                                  │
+ │  • Poll la queue toutes les 1s                                  │
+ │  • Compresse avec Claude Agent SDK (Haiku, CLI auth) → "obs"    │
+ │  • Stocke dans SQLite pour future injection                     │
+ └──────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+ ⑤ Stop (quand Claude finit de répondre)
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  Seul moment où un LLM est appelé directement dans un hook :    │
+ │  → Rassemble les observations de la session depuis SQLite       │
+ │  → Claude Agent SDK génère un résumé structuré                  │
+ │  → Tags: "investigated", "learned", "completed", "decided"      │
+ │  → Stocké dans SQLite comme session summary                     │
+ └──────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+ ⑥ SessionEnd (fermeture)
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  Marque la session comme terminée dans SQLite                   │
+ │  Le Worker finit les opérations en cours                        │
+ └──────────────────────────────────────────────────────────────────┘
+```
+
+### Architecture technique
+
+```
+Hooks (rapides, <1s)              Worker (background, Bun :37777)
+┌─────────────┐                   ┌──────────────────────┐
+│ SessionStart│──context─────────▶│ SQLite               │
+│ UserPrompt  │──prompt──────────▶│  ├─ sessions          │
+│ PostToolUse │──observation─────▶│  ├─ user_prompts      │
+│ Stop        │──summarize──────▶│  ├─ observation_queue  │
+└─────────────┘                   │  └─ observations      │
+                                  │                        │
+                                  │ Claude Agent SDK       │
+                                  │ (Haiku, CLI auth)      │
+                                  │                        │
+                                  │ HTTP :37777            │
+                                  │ + UI viewer (React)    │
+                                  └──────────────────────┘
+```
+
+### Key design principles
+
+- **No LLM in hooks** except Stop. All hooks are fire-and-forget HTTP to the Worker.
+- **The model decides** when to use MCP search tools — claude-mem doesn't force it.
+- **claude-mem doesn't auto-save user info**. It captures tool activity (observations). The model must explicitly decide to save.
+- **Agent SDK uses CLI auth** (Max subscription), NOT a separate API key. Compression costs nothing extra.
+- **Progressive disclosure**: SessionStart injects a compact index, not a full dump. Model fetches details on demand via MCP tools.
+- **Graceful degradation**: if the Worker crashes, hooks log warnings but never block Claude Code.
+
+### Our current gap vs claude-mem
+
+We depend on the model calling `save_memory` explicitly. The model often doesn't think to do it (e.g., "Je démarre un projet C# avec Sylvie" → model treats it as action request, not info to save). claude-mem sidesteps this by capturing all tool activity automatically via PostToolUse, then compressing it — the model never needs to "decide" to save.
 
 ## TODO
 
