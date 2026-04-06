@@ -97,6 +97,8 @@ claude-mem (by thedotmack) is our reference for how memory plugins work in Claud
 
 Our current gap: we depend on the model calling `save_memory` explicitly. The model often doesn't think to do it (e.g., "Je démarre un projet C# avec Sylvie" → model treats it as action request, not info to save).
 
+**Key: claude-mem uses Claude Agent SDK with CLI auth (not API key)**. The SDK authenticates via the local Claude Code session (Max subscription), so compression costs nothing extra. This means we could use the same approach for PostToolUse observation compression without needing a separate API key or OpenRouter.
+
 ## TODO
 
 - [x] Design spec
