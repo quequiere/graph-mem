@@ -33,7 +33,9 @@ def get_project_id(project_path: str | None = None) -> str:
         )
         if result.returncode == 0 and result.stdout.strip():
             normalized = normalize_git_url(result.stdout.strip())
-            return f"project_{normalized}"
+            # Graphiti requires alphanumeric, dashes, or underscores only
+            sanitized = re.sub(r"[^a-zA-Z0-9_-]", "_", normalized)
+            return f"project_{sanitized}"
     except (subprocess.TimeoutExpired, FileNotFoundError):
         pass
     return f"project_{os.path.basename(os.path.abspath(path))}"

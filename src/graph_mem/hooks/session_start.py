@@ -10,10 +10,9 @@ from graph_mem.tools.context import get_context
 
 
 INSTRUCTIONS = """[graph-mem] Persistent knowledge graph memory is active.
-- To SAVE info (preferences, decisions, personal facts): use `save_memory` tool
+- User messages are AUTO-CAPTURED by a background hook — no need to call `save_memory`
 - To RECALL info (what you know about user/project): use `search_memory` tool
-- ALWAYS search graph-mem when the user asks what you remember about them
-- group_id: "user_profile" for personal info, "project_{id}" for project-specific"""
+- ALWAYS search graph-mem when the user asks what you remember about them"""
 
 
 async def run() -> str:
