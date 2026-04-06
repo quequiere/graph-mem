@@ -11,12 +11,19 @@ from graph_mem.tools.onboard import check_project
 from graph_mem.tools.reminders import get_reminders
 
 
+INSTRUCTIONS = """[graph-mem] You have a persistent knowledge graph memory via MCP tools (graph-mem server).
+- Use `save_memory` to store developer preferences, project decisions, personal info
+- Use `get_context` or `search_facts` to recall information about the developer or project
+- When the user asks what you remember, ALWAYS use graph-mem tools to search, not just built-in memory
+- group_id: "user_profile" for personal info, "project_{id}" for project-specific info"""
+
+
 async def run() -> str:
     settings = get_settings()
     client = GraphitiClient(base_url=settings.graphiti_url, api_key=settings.graphiti_api_key)
 
     project_id = get_project_id()
-    parts = []
+    parts = [INSTRUCTIONS]
 
     project_status = await check_project(client, project_id=project_id)
     if not project_status["known"]:
@@ -27,9 +34,6 @@ async def run() -> str:
     context = await get_context(client, project_id=project_id)
     if context and "no context available" not in context.lower():
         parts.append(context)
-
-    if not parts:
-        parts.append("graph-mem: No context available yet. Start by onboarding this project.")
 
     return "\n\n".join(parts)
 
