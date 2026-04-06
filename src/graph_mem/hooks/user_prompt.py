@@ -1,17 +1,14 @@
 """UserPromptSubmit hook: auto-capture valuable info from user messages.
 
-Classifies user messages with Haiku and sends relevant ones to Graphiti.
+Spawns a detached worker that classifies (Haiku) then ingests (Graphiti).
+Classification is done in the worker to avoid hook timeout (~20s) since
+the Claude CLI cold-starts in ~30-40s.
 """
 
 import json
 import os
 import subprocess
 import sys
-
-from graph_mem.hooks._classifier import classify_message
-from graph_mem.project_id import get_project_id
-
-USER_PROFILE_GROUP = "user_profile"
 
 
 def main():
@@ -22,21 +19,11 @@ def main():
 
         hook_input = json.loads(raw)
 
-        # The prompt field contains the user message directly
         message = hook_input.get("prompt", "")
         if not message or len(message.strip()) < 10:
             sys.exit(0)
 
-        classification = classify_message(message)
-        if classification is None or classification == "SKIP":
-            sys.exit(0)
-
-        if classification == "USER":
-            group_id = USER_PROFILE_GROUP
-        else:
-            cwd = hook_input.get("cwd")
-            group_id = get_project_id(project_path=cwd)
-
+        cwd = hook_input.get("cwd", "")
         # Truncate for argv safety (Windows ~32KB limit)
         message_truncated = message[:8000]
 
@@ -53,7 +40,7 @@ def main():
             popen_kwargs["start_new_session"] = True
 
         subprocess.Popen(
-            [sys.executable, "-m", "graph_mem.hooks._ingest_worker", group_id, message_truncated],
+            [sys.executable, "-m", "graph_mem.hooks._ingest_worker", cwd, message_truncated],
             **popen_kwargs,
         )
 

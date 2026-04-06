@@ -9,11 +9,13 @@ def normalize_git_url(url: str) -> str:
     """Normalize a git remote URL to 'host/owner/repo' form."""
     ssh_match = re.match(r"git@([^:]+):(.+?)(?:\.git)?$", url)
     if ssh_match:
-        return f"{ssh_match.group(1)}/{ssh_match.group(2)}"
-    https_match = re.match(r"https?://([^/]+)/(.+?)(?:\.git)?$", url)
-    if https_match:
-        return f"{https_match.group(1)}/{https_match.group(2)}"
-    return url
+        raw = f"{ssh_match.group(1)}/{ssh_match.group(2)}"
+    elif https_match := re.match(r"https?://([^/]+)/(.+?)(?:\.git)?$", url):
+        raw = f"{https_match.group(1)}/{https_match.group(2)}"
+    else:
+        raw = url
+    # Graphiti requires alphanumeric, dashes, or underscores only
+    return re.sub(r"[^a-zA-Z0-9_-]", "_", raw)
 
 
 def get_project_id(project_path: str | None = None) -> str:
