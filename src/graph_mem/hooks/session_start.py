@@ -7,15 +7,13 @@ from graph_mem.client import GraphitiClient
 from graph_mem.config import get_settings
 from graph_mem.project_id import get_project_id
 from graph_mem.tools.context import get_context
-from graph_mem.tools.onboard import check_project
-from graph_mem.tools.reminders import get_reminders
 
 
-INSTRUCTIONS = """[graph-mem] You have a persistent knowledge graph memory via MCP tools (graph-mem server).
-- Use `save_memory` to store developer preferences, project decisions, personal info
-- Use `get_context` or `search_facts` to recall information about the developer or project
-- When the user asks what you remember, ALWAYS use graph-mem tools to search, not just built-in memory
-- group_id: "user_profile" for personal info, "project_{id}" for project-specific info"""
+INSTRUCTIONS = """[graph-mem] Persistent knowledge graph memory is active.
+- To SAVE info (preferences, decisions, personal facts): use `save_memory` tool
+- To RECALL info (what you know about user/project): use `search_memory` tool
+- ALWAYS search graph-mem when the user asks what you remember about them
+- group_id: "user_profile" for personal info, "project_{id}" for project-specific"""
 
 
 async def run() -> str:
@@ -25,15 +23,13 @@ async def run() -> str:
     project_id = get_project_id()
     parts = [INSTRUCTIONS]
 
-    project_status = await check_project(client, project_id=project_id)
-    if not project_status["known"]:
-        parts.append(
-            "New project detected. Use `onboard_project` to set it up in the knowledge graph."
-        )
-
-    context = await get_context(client, project_id=project_id)
-    if context and "no context available" not in context.lower():
-        parts.append(context)
+    # Inject any existing context (profile + project + reminders)
+    try:
+        context = await get_context(client, project_id=project_id)
+        if context and "no context available" not in context.lower():
+            parts.append(f"--- Recalled context ---\n{context}")
+    except Exception:
+        pass  # Graphiti may be down; don't block session start
 
     return "\n\n".join(parts)
 

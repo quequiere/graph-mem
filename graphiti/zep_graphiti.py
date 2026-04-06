@@ -1,12 +1,14 @@
 """Patched zep_graphiti.py for OpenRouter / custom OpenAI-compatible backends.
 
-The stock Graphiti server only configures the LLM client from env vars but leaves
-the embedder using defaults (OpenAI text-embedding-3-small, api.openai.com).
-This patch wires OPENAI_BASE_URL, MODEL_NAME, and EMBEDDING_MODEL_NAME through
-to the embedder and cross-encoder as well.
+Fixes two issues in the stock Graphiti server:
+1. Embedder and cross-encoder are not configured from env vars (only LLM client is)
+2. Many models (Gemma, Qwen, Llama, etc.) echo JSON Schema instead of returning values —
+   ExampleLLMClient replaces schema instructions with concrete examples.
 """
 
+import json
 import logging
+import typing
 from typing import Annotated
 
 from fastapi import Depends, HTTPException
@@ -19,14 +21,111 @@ from graphiti_core.llm_client import LLMClient
 from graphiti_core.llm_client.config import LLMConfig
 from graphiti_core.llm_client.openai_generic_client import OpenAIGenericClient
 from graphiti_core.nodes import EntityNode, EpisodicNode
+from graphiti_core.prompts.models import Message
+from pydantic import BaseModel
 
 from graph_service.config import ZepEnvDep
 from graph_service.dto import FactResult
 
 logger = logging.getLogger(__name__)
 
-# Default embedding dimension for graphiti_core (matches Neo4j vector index)
+# Embedding dimension for Neo4j vector index. graphiti_core truncates client-side
+# via [:embedding_dim], so this can be smaller than the model's native output.
 EMBEDDING_DIM = 1024
+
+
+def _schema_to_example(schema: dict, defs: dict | None = None) -> object:
+    """Convert a JSON Schema to an example object with placeholder values."""
+    if defs is None:
+        defs = schema.get("$defs", {})
+
+    if "$ref" in schema:
+        ref_name = schema["$ref"].split("/")[-1]
+        if ref_name in defs:
+            return _schema_to_example(defs[ref_name], defs)
+        return {}
+
+    t = schema.get("type")
+    if t == "string":
+        words = (schema.get("description", "") or "text").split()[:3]
+        return " ".join(words) + "..."
+    elif t == "integer":
+        return 0
+    elif t == "number":
+        return 0.0
+    elif t == "boolean":
+        return True
+    elif t == "array":
+        return [_schema_to_example(schema.get("items", {}), defs)]
+    elif t == "object" or "properties" in schema:
+        return {k: _schema_to_example(v, defs) for k, v in schema.get("properties", {}).items()}
+    elif "anyOf" in schema or "oneOf" in schema:
+        for opt in schema.get("anyOf", schema.get("oneOf", [{}])):
+            if opt.get("type") != "null":
+                return _schema_to_example(opt, defs)
+        return None
+    return "..."
+
+
+class ExampleLLMClient(OpenAIGenericClient):
+    """LLM client that converts JSON Schema prompts to example-based prompts.
+
+    Many models (Gemma, Qwen, Llama, etc.) echo the JSON Schema structure as
+    their output instead of returning actual values. This client appends a
+    concrete example to the prompt, making the expected output unambiguous.
+    """
+
+    async def generate_response(
+        self,
+        messages: list[Message],
+        response_model: type[BaseModel] | None = None,
+        max_tokens: int | None = None,
+        model_size=None,
+    ) -> dict[str, typing.Any]:
+        from graphiti_core.llm_client.client import MULTILINGUAL_EXTRACTION_RESPONSES
+        from graphiti_core.llm_client.config import ModelSize
+        from graphiti_core.llm_client.errors import RateLimitError, RefusalError
+        import openai
+
+        if max_tokens is None:
+            max_tokens = self.max_tokens
+
+        if response_model is not None:
+            schema = response_model.model_json_schema()
+            example = _schema_to_example(schema)
+            example_str = json.dumps(example, indent=2)
+            messages[-1].content += (
+                f"\n\nIMPORTANT: Respond with a JSON object containing ACTUAL VALUES "
+                f"(not the schema). Example format:\n\n{example_str}"
+            )
+
+        messages[0].content += MULTILINGUAL_EXTRACTION_RESPONSES
+
+        retry_count = 0
+        last_error = None
+
+        while retry_count <= self.MAX_RETRIES:
+            try:
+                return await self._generate_response(
+                    messages, response_model, max_tokens=max_tokens,
+                    model_size=model_size or ModelSize.medium,
+                )
+            except (RateLimitError, RefusalError):
+                raise
+            except (openai.APITimeoutError, openai.APIConnectionError, openai.InternalServerError):
+                raise
+            except Exception as e:
+                last_error = e
+                if retry_count >= self.MAX_RETRIES:
+                    raise
+                retry_count += 1
+                messages.append(Message(
+                    role="user",
+                    content=f"Invalid response: {e.__class__.__name__}: {e}. Please provide valid JSON with ACTUAL VALUES.",
+                ))
+                logger.warning(f"Retrying ({retry_count}/{self.MAX_RETRIES}): {e}")
+
+        raise last_error or Exception("Max retries exceeded")
 
 
 class ZepGraphiti(Graphiti):
@@ -97,7 +196,7 @@ async def get_graphiti(settings: ZepEnvDep):
         small_model=model,
         base_url=base_url,
     )
-    llm_client = OpenAIGenericClient(config=llm_config)
+    llm_client = ExampleLLMClient(config=llm_config)
 
     embedder = OpenAIEmbedder(config=OpenAIEmbedderConfig(
         api_key=api_key,
