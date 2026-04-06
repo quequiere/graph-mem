@@ -4,70 +4,129 @@
 
 **graph-mem** is a Claude Code plugin that provides persistent, intelligent memory using Graphiti's knowledge graph. Unlike flat memory stores, it leverages entity relationships, temporal awareness, and semantic search to build a rich understanding of the developer over time.
 
-## Status: Design Complete - Ready for Implementation Planning
+## Current Status
+
+**Working end-to-end** on branch `feat/openrouter-graphiti-patch`. Stack: Neo4j 5.26 + patched Graphiti + OpenRouter (gemma-4-26b + qwen3-embedding-8b).
 
 ## Design Spec
 
 Full design document: `.doc/specs/2026-04-05-graph-mem-design.md`
 
-## Architecture Decisions (validated)
+## Architecture
 
-- **Language**: Python
-- **Architecture**: Local MCP server (stdio) calls Graphiti REST API (httpx over HTTP). No graphiti_core dependency, no MCP-to-MCP.
-- **Distribution**: `pip install graph-mem` / `uvx graph-mem` locally. Graphiti deployed via Docker (`zepai/graphiti:latest`).
-- **Multi-CLI compatible**: MCP tools usable by any CLI (Claude Code, Cursor, etc.), hooks specific to Claude Code
-- **Skills**: Distributable skill to guide CLI agents in using our memory system
-- **No code indexing**: Memory captures project essence, developer habits, and workflow patterns - not source code
-- **Embeddings**: Handled by Graphiti core internally - no client-side pre-computation needed
-- **Privacy**: Not managed for now (future consideration)
-- **Open source**: GitHub standards, license TBD
+```
+Claude Code (stdio) → graph-mem MCP server (Python, local)
+                          → Graphiti REST API (Docker, httpx over HTTP)
+                              → Neo4j 5.26 (Docker)
+                              → OpenRouter API (LLM + embeddings)
+```
 
-## Group ID Strategy (validated)
+- **Language**: Python, installed via `pip install -e .`
+- **No graphiti_core dependency**: pure REST/HTTP client
+- **LLM backend**: OpenRouter (configurable via `.env`)
+- **Embeddings**: qwen/qwen3-embedding-8b (4096 native, truncated to 1024 client-side)
 
-- `user_profile` : global developer profile (preferences, expertise, habits, active projects)
-- `project_{identifier}` : per-project detail (team, stack, decisions, sessions, blockers)
-- Project identifier: normalized git remote URL, fallback to directory name
-- At query time: merge results from both scopes
+## Docker Stack
 
-## MCP Tools (validated)
+```bash
+docker compose up -d --build   # from project root
+```
 
-Custom (8): `get_context`, `onboard_project`, `save_session`, `save_memory`, `get_profile`, `check_project`, `add_reminder`, `get_reminders`
+Requires `.env` with `OPENROUTER_API_KEY`. See `docker-compose.yml`.
 
-Passthrough (5): `add_raw_memory`, `search_entities`, `search_facts`, `reset_memory`, `status`
+**Patched files in `graphiti/`:**
+- `zep_graphiti.py` — ExampleLLMClient (fixes schema echoing for Gemma/Qwen/Llama), configures embedder + cross-encoder from env vars
+- `ingest.py` — AsyncWorker catches exceptions instead of dying silently (upstream bug)
+- `Dockerfile` — extends `zepai/graphiti:latest` with patches
 
-## Hooks (validated)
+## MCP Tools (current — minimal surface)
 
-- **SessionStart**: check_project + get_context + get_reminders -> inject into agent
-- **SessionEnd (Stop)**: LLM summary -> save_session
+Only 3 tools exposed to keep model attention focused:
 
-## Reference Projects (external, not included in this repo)
+| Tool | Purpose |
+|---|---|
+| `__IMPORTANT__graph_mem` | Workflow reminder — tells model how to use graph-mem |
+| `save_memory(content, scope)` | Save info. scope="user" or "project" |
+| `search_memory(query, scope)` | Search. scope="all", "user", or "project" |
 
-- [Graphiti](https://github.com/getzep/graphiti) - Knowledge graph framework + REST API server (our backend)
+`scope` replaces the old `group_id` parameter — the server computes the correct group_id automatically from cwd's git remote URL. This prevents the model from inventing group_ids.
+
+Other tools (onboard, context, reminders, profile, etc.) still exist in `src/graph_mem/tools/` but are only used internally by hooks.
+
+## Hooks
+
+Configured in `~/.claude/settings.json`:
+
+- **SessionStart** (matcher: `startup|clear|compact`): injects instructions + recalled context (profile + project + reminders). Must complete in <10s — uses `asyncio.gather` to parallelize 4 Graphiti searches (~1.5s).
+- **Stop**: saves session summary to knowledge graph via `graph-mem-session-end`
+
+### Key discovery: hooks output is injected as invisible system context
+Hook stdout goes "to Claude" (system context), NOT displayed to the user. This is normal Claude Code behavior. The model sees it but the user doesn't.
+
+### Key discovery: hook timeout causes silent cancellation
+If the hook takes too long, Claude Code cancels it silently (logged as "cancelled" in debug). Original sequential version took ~6s and was cancelled. Parallelized version takes ~1.5s and works reliably.
+
+**Debug hooks**: `claude --debug` then check `~/.claude/debug/<session-id>.txt`, search for "SessionStart.*success" or "SessionStart.*cancelled".
+
+## Graphiti Patches (important)
+
+### ExampleLLMClient (schema echoing fix)
+Many models via OpenRouter (Gemma, Qwen, Llama) return JSON Schema descriptors as field values instead of actual data. `ExampleLLMClient` in `graphiti/zep_graphiti.py` converts schema instructions to concrete examples via `_schema_to_example()`. This is required for entity extraction to work.
+
+### AsyncWorker (silent failure fix)
+The stock Graphiti `AsyncWorker` in `ingest.py` only catches `CancelledError`. Any other exception kills the worker silently — all subsequent jobs are lost. Our patch catches all exceptions and logs them.
+
+### Embedder configuration
+Stock Graphiti only configures the LLM client from env vars, leaving the embedder on OpenAI defaults. Our patch wires `OPENAI_BASE_URL`, `EMBEDDING_MODEL_NAME` through to the embedder and cross-encoder.
+
+## Windows-specific
+
+- **IPv6 bug**: `localhost` resolves to `::1` on Windows but Docker only listens on `0.0.0.0`. Config default is `http://127.0.0.1:8000`.
+- **Docker Desktop i/o timeout**: Docker commands sometimes fail with "i/o timeout" on Windows. Just retry.
+
+## Reference: claude-mem architecture (inspiration)
+
+claude-mem (by thedotmack) is our reference for how memory plugins work in Claude Code:
+
+- **No LLM in hooks** except Stop (session summary). All hooks are fire-and-forget HTTP to a background Worker.
+- **PostToolUse** captures every tool call → Worker compresses with Haiku → stored as "observations"
+- **SessionStart** injects compact index of past sessions (progressive disclosure pattern)
+- **UserPromptSubmit** just stores raw prompt in SQLite (timeline marker, no LLM)
+- **The model decides** when to use MCP search tools — claude-mem doesn't force it
+- **Key insight**: claude-mem doesn't auto-save user info. It captures tool activity. The model must explicitly call save tools.
+
+Our current gap: we depend on the model calling `save_memory` explicitly. The model often doesn't think to do it (e.g., "Je démarre un projet C# avec Sylvie" → model treats it as action request, not info to save).
 
 ## TODO
 
-- [x] Design spec (`.doc/specs/2026-04-05-graph-mem-design.md`)
-- [x] Implementation plan (`.doc/plans/2026-04-05-graph-mem-implementation.md`)
-- [x] Set up Python project structure (pyproject.toml, src layout)
-- [x] Implement MCP server with passthrough tools
-- [x] Implement custom tools
-- [x] Implement Claude Code hooks
-- [x] Write skill (SKILL.md)
-- [x] Tests (36 unit tests)
-- [x] Choose license (Apache-2.0)
-- [ ] Set up build pipeline
-- [ ] Integration tests with live Graphiti
-- [ ] `save_session` cross-project info detection (spec section 5 — deferred, needs LLM analysis)
+- [x] Design spec
+- [x] Implementation (MCP server, tools, hooks, skill)
+- [x] Unit tests (36)
+- [x] Integration tests (9, Docker + Ollama)
+- [x] License (Apache-2.0)
+- [x] OpenRouter support (patched Graphiti)
+- [x] Minimal MCP tool surface (3 tools)
+- [x] Scope-based group_id (no more model-invented group_ids)
+- [x] Parallelized SessionStart hook (~1.5s)
+- [ ] Improve model compliance: make Claude reliably call save_memory when user shares info
+- [ ] PostToolUse hook for automatic observation capture (like claude-mem)
+- [ ] Build pipeline / CI
+- [ ] Publish to PyPI
 
 ## Git Convention
 
-- Commits authored by the developer (not Claude)
-- Commit regularly, small increments
 - Conventional commits style
+- Current branch: `feat/openrouter-graphiti-patch` (6 commits ahead of main)
 
-## Documentation
+## Key Files
 
-- `README.md` - Public project description
-- `CLAUDE.md` - This file, project tracking for Claude sessions
-- `.doc/` - Supplementary documentation
-- `.doc/specs/` - Design specifications
+- `src/graph_mem/server.py` — MCP server (3 tools)
+- `src/graph_mem/hooks/session_start.py` — SessionStart hook
+- `src/graph_mem/hooks/session_end.py` — Stop hook
+- `src/graph_mem/tools/context.py` — get_context (parallelized searches)
+- `src/graph_mem/project_id.py` — git remote → project_id
+- `src/graph_mem/config.py` — GRAPHITI_URL default 127.0.0.1:8000
+- `graphiti/zep_graphiti.py` — ExampleLLMClient + embedder patch
+- `graphiti/ingest.py` — AsyncWorker error handling patch
+- `docker-compose.yml` — Neo4j 5.26 + patched Graphiti
+- `tests/integration/` — e2e tests with Docker
