@@ -82,6 +82,13 @@ async def reset_memory(
     group_ids: list[str],
 ) -> str:
     """Purge all data for the given group IDs. DANGEROUS - use with caution."""
+    import httpx as _httpx
     for gid in group_ids:
-        await client.delete_group(gid)
+        try:
+            await client.delete_group(gid)
+        except _httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                pass  # group doesn't exist, nothing to delete
+            else:
+                raise
     return f"Deleted data for groups: {', '.join(group_ids)}"
