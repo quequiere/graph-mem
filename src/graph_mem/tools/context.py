@@ -8,12 +8,11 @@ from graph_mem.tools.passthrough import _format_facts
 USER_PROFILE = "user_profile"
 
 
-async def get_context(
+async def _fetch_sections(
     client: GraphitiClient,
     project_id: str,
-) -> str:
-    """Retrieve merged context for the current session."""
-    # Run all searches in parallel for speed (critical for hook timeout)
+) -> tuple[list[dict], list[dict], list[dict]]:
+    """Fetch raw fact lists from Graphiti in parallel. Returns (profile, project, reminders)."""
     profile_task = client.search(
         query="developer profile preferences expertise habits principles active projects",
         group_ids=[USER_PROFILE],
@@ -40,26 +39,54 @@ async def get_context(
         return_exceptions=True,
     )
 
-    sections = []
-
-    if not isinstance(profile_result, Exception):
-        profile_facts = profile_result.get("facts", [])
-        if profile_facts:
-            sections.append(f"## Developer Profile\n{_format_facts(profile_facts)}")
-
-    if not isinstance(project_result, Exception):
-        project_facts = project_result.get("facts", [])
-        if project_facts:
-            sections.append(f"## Project Context\n{_format_facts(project_facts)}")
-
+    profile_facts = (
+        profile_result.get("facts", [])
+        if not isinstance(profile_result, Exception) else []
+    )
+    project_facts = (
+        project_result.get("facts", [])
+        if not isinstance(project_result, Exception) else []
+    )
     reminder_facts = []
     for r in [reminder_user, reminder_project]:
         if not isinstance(r, Exception):
             reminder_facts.extend(r.get("facts", []))
+
+    return profile_facts, project_facts, reminder_facts
+
+
+async def get_context_sections(
+    client: GraphitiClient,
+    project_id: str,
+) -> dict:
+    """Retrieve context sections with both raw facts and formatted text.
+
+    Returns a dict with keys: profile, project, reminders, formatted.
+    """
+    profile_facts, project_facts, reminder_facts = await _fetch_sections(client, project_id)
+
+    sections = []
+    if profile_facts:
+        sections.append(f"## Developer Profile\n{_format_facts(profile_facts)}")
+    if project_facts:
+        sections.append(f"## Project Context\n{_format_facts(project_facts)}")
     if reminder_facts:
         sections.append(f"## Reminders\n{_format_facts(reminder_facts)}")
 
-    if not sections:
-        return "No context available yet for this session."
+    formatted = "\n\n".join(sections) if sections else "No context available yet for this session."
 
-    return "\n\n".join(sections)
+    return {
+        "profile": profile_facts,
+        "project": project_facts,
+        "reminders": reminder_facts,
+        "formatted": formatted,
+    }
+
+
+async def get_context(
+    client: GraphitiClient,
+    project_id: str,
+) -> str:
+    """Retrieve merged context for the current session."""
+    result = await get_context_sections(client, project_id)
+    return result["formatted"]
