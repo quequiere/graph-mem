@@ -13,3 +13,4 @@ venv/
 
 # Environment
 .env
+.playwright-mcp
