@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>graph-mem viewer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0c0f1d; overflow: hidden; font-family: system-ui, -apple-system, sans-serif; }
+canvas { display: block; }
+
+#tooltip {
+  display: none;
+  position: absolute;
+  background: rgba(13, 17, 23, 0.95);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #c9d1d9;
+  font-size: 13px;
+  max-width: 320px;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+#tooltip .tt-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+#tooltip .tt-type { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
+#tooltip .tt-summary { margin-top: 6px; font-size: 12px; opacity: 0.8; line-height: 1.4; }
+#tooltip .tt-scope { margin-top: 4px; font-size: 10px; opacity: 0.4; font-family: monospace; }
+
+#legend {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  background: rgba(13, 17, 23, 0.7);
+  border-radius: 12px;
+  padding: 8px 20px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #8b949e;
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+#status {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 11px;
+  color: #8b949e;
+  opacity: 0.6;
+}
+
+#title {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #58a6ff;
+  opacity: 0.8;
+}
+
+#scope-labels {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+.scope-label {
+  position: absolute;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.15;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<canvas id="graph"></canvas>
+<div id="tooltip">
+  <div class="tt-name"></div>
+  <div class="tt-type"></div>
+  <div class="tt-summary"></div>
+  <div class="tt-scope"></div>
+</div>
+<div id="scope-labels"></div>
+<div id="title">graph-mem</div>
+<div id="status">loading...</div>
+<div id="legend"></div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+// --- Config injected by server ---
+const NEO4J_URL = "__NEO4J_HTTP_URL__";
+const NEO4J_USER = "__NEO4J_USER__";
+const NEO4J_PASSWORD = "__NEO4J_PASSWORD__";
+
+// Category colors matching the SVG legend
+const CATEGORY_COLORS = {
+  tech:       "#3fb950",
+  project:    "#bc8cff",
+  person:     "#f0883e",
+  preference: "#79c0ff",
+  principle:  "#d2a8ff",
+  blocker:    "#f85149",
+  learning:   "#e3b341",
+  reminder:   "#d29922",
+  developer:  "#58a6ff",
+  default:    "#8b949e",
+};
+
+const CATEGORY_KEYWORDS = {
+  tech:       ["python","typescript","javascript","rust","go","java","docker","neo4j","fastapi","react","vue","angular","node","django","flask","git","kubernetes","aws","gcp","azure","linux","redis","postgres","mongodb","graphql","rest","http","css","html","sql","mcp","graphiti","llm","ai","ml","embedding"],
+  person:     ["julie","marc","team lead","tech lead","colleague","manager","cto","ceo","developer","engineer"],
+  blocker:    ["blocker","bug","issue","error","fail","oom","crash","broken","stuck","blocked"],
+  reminder:   ["remind","bump","todo","renew","update","check","review","deadline"],
+  learning:   ["learn","beginner","studying","tutorial","course","new to","started learning"],
+  preference: ["prefer","pnpm","npm","yarn","vscode","vim","emacs","style","convention","choice"],
+  principle:  ["always","never","no mock","tdd","test","principle","rule","convention","standard"],
+  project:    ["project","repo","repository","codebase","app","application","service","api"],
+};
+
+function categorizeNode(node) {
+  const text = ((node.name || "") + " " + (node.summary || "")).toLowerCase();
+  for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    for (const kw of keywords) {
+      if (text.includes(kw)) return cat;
+    }
+  }
+  return "default";
+}
+
+// --- Starfield background (like the SVG hero) ---
+const starsCanvas = document.getElementById("stars");
+const starsCtx = starsCanvas.getContext("2d");
+starsCanvas.style.position = "fixed";
+starsCanvas.style.top = "0";
+starsCanvas.style.left = "0";
+starsCanvas.style.zIndex = "0";
+starsCanvas.style.pointerEvents = "none";
+document.getElementById("graph").style.position = "relative";
+document.getElementById("graph").style.zIndex = "1";
+
+let starfield = [];
+function initStars() {
+  const dpr = window.devicePixelRatio || 1;
+  starsCanvas.width = window.innerWidth * dpr;
+  starsCanvas.height = window.innerHeight * dpr;
+  starsCanvas.style.width = window.innerWidth + "px";
+  starsCanvas.style.height = window.innerHeight + "px";
+  starsCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  starfield = [];
+  const count = Math.floor((window.innerWidth * window.innerHeight) / 3000);
+  for (let i = 0; i < count; i++) {
+    starfield.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 0.8 + 0.2,
+      o: Math.random() * 0.4 + 0.05,
+      twinkleSpeed: Math.random() * 0.02 + 0.005,
+      twinkleOffset: Math.random() * Math.PI * 2,
+    });
+  }
+}
+initStars();
+
+function drawStars(time) {
+  starsCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  for (const s of starfield) {
+    const twinkle = Math.sin(time * s.twinkleSpeed + s.twinkleOffset) * 0.15 + 0.85;
+    starsCtx.beginPath();
+    starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    starsCtx.fillStyle = `rgba(255,255,255,${s.o * twinkle})`;
+    starsCtx.fill();
+  }
+}
+
+// --- Neo4j HTTP API ---
+async function queryNeo4j(cypher) {
+  const resp = await fetch(NEO4J_URL + "/db/neo4j/tx/commit", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Basic " + btoa(NEO4J_USER + ":" + NEO4J_PASSWORD),
+    },
+    body: JSON.stringify({
+      statements: [{ statement: cypher, resultDataContents: ["row"] }],
+    }),
+  });
+  if (!resp.ok) throw new Error(`Neo4j HTTP ${resp.status}`);
+  return resp.json();
+}
+
+async function loadGraph() {
+  const data = await queryNeo4j(
+    `MATCH (n) WHERE NOT n:Episodic
+     OPTIONAL MATCH (n)-[r]->(m) WHERE NOT m:Episodic
+     RETURN
+       id(n) AS nid, labels(n) AS nlabels, n.name AS nname, n.summary AS nsummary, n.group_id AS ngroup,
+       id(m) AS mid, labels(m) AS mlabels, m.name AS mname, m.summary AS msummary, m.group_id AS mgroup,
+       type(r) AS rtype, r.fact AS rfact, r.name AS rname
+     LIMIT 1000`
+  );
+
+  const nodesMap = new Map();
+  const edges = [];
+
+  for (const result of data.results) {
+    const cols = result.columns;
+    for (const row of result.data) {
+      const d = {};
+      cols.forEach((c, i) => d[c] = row.row[i]);
+
+      if (d.nid != null && !nodesMap.has(d.nid)) {
+        nodesMap.set(d.nid, {
+          id: String(d.nid),
+          labels: d.nlabels || [],
+          name: d.nname || d.nsummary || String(d.nid),
+          summary: d.nsummary || "",
+          group_id: d.ngroup || "",
+        });
+      }
+      if (d.mid != null && !nodesMap.has(d.mid)) {
+        nodesMap.set(d.mid, {
+          id: String(d.mid),
+          labels: d.mlabels || [],
+          name: d.mname || d.msummary || String(d.mid),
+          summary: d.msummary || "",
+          group_id: d.mgroup || "",
+        });
+      }
+      if (d.rtype && d.nid != null && d.mid != null) {
+        edges.push({
+          source: String(d.nid),
+          target: String(d.mid),
+          type: d.rtype,
+          fact: d.rfact || d.rname || d.rtype,
+        });
+      }
+    }
+  }
+
+  return { nodes: Array.from(nodesMap.values()), edges };
+}
+
+// --- Canvas rendering ---
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+const tooltip = document.getElementById("tooltip");
+const statusEl = document.getElementById("status");
+const legendEl = document.getElementById("legend");
+
+let width, height, dpr;
+function resize() {
+  dpr = window.devicePixelRatio || 1;
+  width = window.innerWidth;
+  height = window.innerHeight;
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  initStars();
+}
+resize();
+window.addEventListener("resize", resize);
+
+// --- State ---
+let nodes = [];
+let edges = [];
+let simulation = null;
+let transform = d3.zoomIdentity;
+let hoveredNode = null;
+let selectedNode = null;
+let selectedNeighbors = new Set();
+let draggedNode = null;
+
+// Smooth transition state
+let selectionAlpha = 0; // 0 = no selection visible, 1 = full selection
+let targetSelectionAlpha = 0;
+const TRANSITION_SPEED = 0.06; // per frame (~60fps → ~1s transition)
+
+function getNodeColor(node) {
+  return CATEGORY_COLORS[node._category] || CATEGORY_COLORS.default;
+}
+
+function getNodeRadius(node) {
+  // Base radius scales with connection count
+  const connections = node._connectionCount || 0;
+  const base = 3;
+  const scaled = base + Math.sqrt(connections) * 2.5;
+  return Math.min(scaled, 14); // cap at 14
+}
+
+function isHighConnected(node) {
+  return (node._connectionCount || 0) >= 4;
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function draw(time) {
+  // Animate selection transition
+  if (selectionAlpha !== targetSelectionAlpha) {
+    if (Math.abs(selectionAlpha - targetSelectionAlpha) < 0.01) {
+      selectionAlpha = targetSelectionAlpha;
+    } else {
+      selectionAlpha += (targetSelectionAlpha - selectionAlpha) * TRANSITION_SPEED;
+    }
+  }
+
+  // Draw starfield
+  drawStars(time);
+
+  ctx.save();
+  ctx.clearRect(0, 0, width, height);
+  ctx.translate(transform.x, transform.y);
+  ctx.scale(transform.k, transform.k);
+
+  const hasSelection = selectedNode !== null;
+  const sa = selectionAlpha; // shorthand
+
+  // Draw edges
+  for (const edge of edges) {
+    const s = typeof edge.source === "object" ? edge.source : nodes.find(n => n.id === edge.source);
+    const t = typeof edge.target === "object" ? edge.target : nodes.find(n => n.id === edge.target);
+    if (!s || !t || s.x == null || t.x == null) continue;
+
+    let edgeOpacity, edgeWidth;
+
+    if (hasSelection && sa > 0.01) {
+      const sid = s.id;
+      const tid = t.id;
+      const isConnected = sid === selectedNode.id || tid === selectedNode.id;
+      if (isConnected) {
+        edgeOpacity = lerp(0.15, 0.55, sa);
+        edgeWidth = lerp(0.8, 1.8, sa);
+      } else {
+        edgeOpacity = lerp(0.15, 0.06, sa);
+        edgeWidth = 0.8;
+      }
+    } else {
+      edgeOpacity = 0.15;
+      edgeWidth = 0.8;
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(s.x, s.y);
+    ctx.lineTo(t.x, t.y);
+    ctx.strokeStyle = `rgba(139, 148, 158, ${edgeOpacity})`;
+    ctx.lineWidth = edgeWidth;
+    ctx.stroke();
+
+    // Edge labels for selected connections
+    if (hasSelection && sa > 0.5) {
+      const sid = s.id;
+      const tid = t.id;
+      const isConnected = sid === selectedNode.id || tid === selectedNode.id;
+      if (isConnected && transform.k > 0.5) {
+        const mx = (s.x + t.x) / 2;
+        const my = (s.y + t.y) / 2;
+        ctx.font = `${8 / Math.max(transform.k, 0.5)}px system-ui`;
+        ctx.fillStyle = `rgba(139, 148, 158, ${0.5 * sa})`;
+        ctx.textAlign = "center";
+        ctx.fillText(edge.fact || edge.type || "", mx, my - 4);
+      }
+    }
+  }
+
+  // Draw nodes
+  for (const node of nodes) {
+    if (node.x == null) continue;
+
+    const color = getNodeColor(node);
+    const r = getNodeRadius(node);
+    const highConn = isHighConnected(node);
+
+    // Compute alpha based on selection state with smooth transition
+    let alpha, glowAlpha;
+    if (hasSelection && sa > 0.01) {
+      if (node.id === selectedNode.id) {
+        alpha = 1;
+        glowAlpha = lerp(highConn ? 0.15 : 0, 0.45, sa);
+      } else if (selectedNeighbors.has(node.id)) {
+        alpha = lerp(1, 0.85, sa);
+        glowAlpha = lerp(highConn ? 0.15 : 0, 0.2, sa);
+      } else {
+        alpha = lerp(1, 0.18, sa);
+        glowAlpha = lerp(highConn ? 0.15 : 0, 0.03, sa);
+      }
+    } else {
+      alpha = 1;
+      glowAlpha = highConn ? 0.15 : 0;
+    }
+
+    // Halo/glow — only for high-connection nodes or selected
+    if (glowAlpha > 0.01) {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, r * 3, 0, Math.PI * 2);
+      ctx.fillStyle = hexToRgba(color, glowAlpha);
+      ctx.fill();
+    }
+
+    // Node circle
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = hexToRgba(color, 0.55 * alpha);
+    ctx.fill();
+
+    // Bright core
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, r * 0.4, 0, Math.PI * 2);
+    ctx.fillStyle = hexToRgba("#ffffff", 0.9 * alpha);
+    ctx.fill();
+
+    // Label
+    if (transform.k > 0.4 && alpha > 0.15) {
+      const label = (node.name || "").substring(0, 30);
+      const fontSize = Math.max(8, Math.min(11, 10 / Math.max(transform.k, 0.5)));
+      ctx.font = `${fontSize}px system-ui`;
+      ctx.fillStyle = hexToRgba(color, 0.85 * alpha);
+      ctx.textAlign = "center";
+      ctx.fillText(label, node.x, node.y + r + 13);
+    }
+  }
+
+  ctx.restore();
+  requestAnimationFrame(draw);
+}
+
+// --- Interaction ---
+function screenToGraph(sx, sy) {
+  return [(sx - transform.x) / transform.k, (sy - transform.y) / transform.k];
+}
+
+function findNodeAt(sx, sy) {
+  const [gx, gy] = screenToGraph(sx, sy);
+  const hitRadius = 14 / transform.k;
+  let closest = null;
+  let closestDist = Infinity;
+  for (const node of nodes) {
+    if (node.x == null) continue;
+    const dx = node.x - gx;
+    const dy = node.y - gy;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < hitRadius && dist < closestDist) {
+      closest = node;
+      closestDist = dist;
+    }
+  }
+  return closest;
+}
+
+function updateSelectedNeighbors() {
+  selectedNeighbors.clear();
+  if (!selectedNode) return;
+  for (const edge of edges) {
+    const sid = typeof edge.source === "object" ? edge.source.id : edge.source;
+    const tid = typeof edge.target === "object" ? edge.target.id : edge.target;
+    if (sid === selectedNode.id) selectedNeighbors.add(tid);
+    if (tid === selectedNode.id) selectedNeighbors.add(sid);
+  }
+}
+
+canvas.addEventListener("mousemove", (e) => {
+  const node = findNodeAt(e.clientX, e.clientY);
+  hoveredNode = node;
+  canvas.style.cursor = node ? "pointer" : "grab";
+
+  if (node) {
+    tooltip.style.display = "block";
+    tooltip.querySelector(".tt-name").textContent = node.name || "unnamed";
+    tooltip.querySelector(".tt-type").textContent =
+      (node.labels || []).join(", ") + (node._category !== "default" ? ` \u00B7 ${node._category}` : "");
+    tooltip.querySelector(".tt-summary").textContent = node.summary || "";
+    tooltip.querySelector(".tt-scope").textContent = node.group_id ? `scope: ${node.group_id}` : "";
+    tooltip.style.left = Math.min(e.clientX + 14, width - 340) + "px";
+    tooltip.style.top = (e.clientY - 10) + "px";
+  } else {
+    tooltip.style.display = "none";
+  }
+});
+
+canvas.addEventListener("click", (e) => {
+  if (draggedNode) return;
+  const node = findNodeAt(e.clientX, e.clientY);
+  if (node && node.id === selectedNode?.id) {
+    selectedNode = null;
+    targetSelectionAlpha = 0;
+  } else {
+    selectedNode = node;
+    targetSelectionAlpha = node ? 1 : 0;
+  }
+  updateSelectedNeighbors();
+});
+
+// --- Zoom ---
+const zoom = d3.zoom()
+  .scaleExtent([0.1, 8])
+  .on("zoom", (event) => { transform = event.transform; });
+
+d3.select(canvas).call(zoom);
+
+// --- Drag ---
+d3.select(canvas).call(
+  d3.drag()
+    .subject((event) => {
+      const node = findNodeAt(event.x, event.y);
+      if (node) return { x: node.x, y: node.y, node };
+      return null;
+    })
+    .on("start", (event) => {
+      if (!event.subject) return;
+      draggedNode = event.subject.node;
+      if (simulation) simulation.alphaTarget(0.3).restart();
+      draggedNode.fx = draggedNode.x;
+      draggedNode.fy = draggedNode.y;
+    })
+    .on("drag", (event) => {
+      if (!draggedNode) return;
+      const [gx, gy] = screenToGraph(event.sourceEvent.clientX, event.sourceEvent.clientY);
+      draggedNode.fx = gx;
+      draggedNode.fy = gy;
+    })
+    .on("end", (event) => {
+      if (!draggedNode) return;
+      if (simulation) simulation.alphaTarget(0);
+      draggedNode.fx = null;
+      draggedNode.fy = null;
+      setTimeout(() => { draggedNode = null; }, 100);
+    })
+);
+
+// --- Legend ---
+function buildLegend(usedCategories) {
+  legendEl.innerHTML = "";
+  const ordered = ["tech","project","person","preference","principle","blocker","learning","reminder","developer","default"];
+  for (const cat of ordered) {
+    if (!usedCategories.has(cat) && cat !== "default") continue;
+    const item = document.createElement("div");
+    item.className = "legend-item";
+    const dot = document.createElement("div");
+    dot.className = "legend-dot";
+    dot.style.background = CATEGORY_COLORS[cat];
+    item.appendChild(dot);
+    const label = document.createElement("span");
+    label.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+    item.appendChild(label);
+    legendEl.appendChild(item);
+  }
+}
+
+// --- Init ---
+async function init() {
+  try {
+    const graph = await loadGraph();
+    nodes = graph.nodes;
+    edges = graph.edges;
+
+    // Count connections per node
+    for (const node of nodes) node._connectionCount = 0;
+    const nodeMap = new Map(nodes.map(n => [n.id, n]));
+    for (const edge of edges) {
+      const sid = typeof edge.source === "object" ? edge.source.id : edge.source;
+      const tid = typeof edge.target === "object" ? edge.target.id : edge.target;
+      if (nodeMap.has(sid)) nodeMap.get(sid)._connectionCount++;
+      if (nodeMap.has(tid)) nodeMap.get(tid)._connectionCount++;
+    }
+
+    // Categorize nodes
+    const usedCategories = new Set();
+    for (const node of nodes) {
+      node._category = categorizeNode(node);
+      usedCategories.add(node._category);
+    }
+
+    // Determine scope groups for clustering
+    const scopes = new Set(nodes.map(n => n.group_id).filter(Boolean));
+    const scopeList = Array.from(scopes);
+
+    buildLegend(usedCategories);
+    statusEl.textContent = `${nodes.length} nodes \u00B7 ${edges.length} edges`;
+
+    // Cluster centers: user_profile on left, projects on right
+    const userCenterX = width * 0.35;
+    const projectCenterX = width * 0.65;
+    const centerY = height / 2;
+
+    function scopeCenter(groupId) {
+      if (!groupId || groupId === "user_profile") return { x: userCenterX, y: centerY };
+      return { x: projectCenterX, y: centerY };
+    }
+
+    // d3 force simulation with scope clustering
+    simulation = d3.forceSimulation(nodes)
+      .force("link", d3.forceLink(edges).id(d => d.id).distance(70).strength(0.25))
+      .force("charge", d3.forceManyBody().strength(-100))
+      .force("center", d3.forceCenter(width / 2, height / 2).strength(0.05))
+      .force("collision", d3.forceCollide().radius(d => getNodeRadius(d) + 8))
+      .force("scopeX", d3.forceX(d => scopeCenter(d.group_id).x).strength(0.08))
+      .force("scopeY", d3.forceY(d => scopeCenter(d.group_id).y).strength(0.03))
+      .alphaDecay(0.015)
+      .velocityDecay(0.3);
+
+    simulation.on("tick", () => {});
+
+    requestAnimationFrame(draw);
+  } catch (err) {
+    statusEl.textContent = "Error: " + err.message;
+    console.error(err);
+  }
+}
+
+init();
+</script>
+</body>
+</html>

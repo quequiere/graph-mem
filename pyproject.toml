@@ -18,9 +18,12 @@ dependencies = [
 graph-mem = "graph_mem.server:main"
 graph-mem-session-start = "graph_mem.hooks.session_start:main"
 graph-mem-session-end = "graph_mem.hooks.session_end:main"
+graph-mem-user-prompt = "graph_mem.hooks.user_prompt:main"
+graph-mem-ingest = "graph_mem.hooks._ingest_worker:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/graph_mem"]
+artifacts = ["src/graph_mem/static/**"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

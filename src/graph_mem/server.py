@@ -13,6 +13,7 @@ from graph_mem.config import get_settings
 from graph_mem.project_id import get_project_id
 from graph_mem.tools import memory as memory_tools
 from graph_mem.tools import passthrough
+from graph_mem.viewer import start_viewer
 
 mcp = FastMCP("graph-mem")
 
@@ -29,6 +30,9 @@ _client = GraphitiClient(
     api_key=_settings.graphiti_api_key,
 )
 _project_id = get_project_id()
+
+# Start the graph viewer HTTP server in background
+start_viewer(_settings)
 
 
 # --- Workflow reminder (always visible in tool list) ---
