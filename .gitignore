@@ -1,6 +1,7 @@
 # IDE / Tools
 .serena
 .claude
+.mcp.json
 
 # Python
 __pycache__/
