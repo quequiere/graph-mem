@@ -6,8 +6,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - OPENAI_API_KEY=${OPENROUTER_API_KEY}
-      - OPENAI_BASE_URL=${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-sk-dummy}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://openrouter.ai/api/v1}
       - MODEL_NAME=${LLM_MODEL:-google/gemma-4-26b-a4b-it}
       - EMBEDDING_MODEL_NAME=${EMBEDDING_MODEL:-qwen/qwen3-embedding-8b}
       - NEO4J_URI=bolt://neo4j:7687
