@@ -19,7 +19,7 @@ services:
       context: ./graphiti
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "${GRAPHITI_PORT:-8000}:8000"
     environment:
       # LLM
       - OPENAI_API_KEY=${OPENAI_API_KEY}

@@ -47,10 +47,15 @@ By default, graph-mem runs **fully local** — no API keys required, no data lea
 ```bash
 git clone https://github.com/quequiere/graph-mem && cd graph-mem
 cp .env.example .env
+
+# Full local (default — Ollama + Graphiti + Neo4j)
 docker compose up -d
+
+# OR full remote (after editing .env to point at your LLM provider)
+docker compose up -d neo4j graphiti
 ```
 
-First launch downloads two Ollama models (~3.5 GB). Subsequent launches are instant thanks to the persistent volume. Neo4j needs ~2 GB RAM, Ollama needs ~4 GB.
+First local launch downloads two Ollama models (~3.5 GB). Subsequent launches are instant thanks to the persistent volume. Neo4j needs ~2 GB RAM; Ollama adds ~4 GB when enabled.
 
 ### 2. Connect your MCP client
 
