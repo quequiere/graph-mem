@@ -1,7 +1,11 @@
-"""End-to-end integration tests for graph-mem MCP tools.
+"""End-to-end integration tests for graph-mem.
 
-These tests launch the full stack (Ollama + Neo4j + Graphiti) via Docker
-and communicate with graph-mem through a real MCP stdio session.
+Exercises the minimal MCP tool surface (save_memory / search_memory /
+__IMPORTANT__graph_mem) against the full stack: Neo4j + patched Graphiti
++ Ollama with the recommended local models (gemma3:4b + qwen3-embedding:4b).
+
+Extraction is slow with local models — we save a memory then poll
+search_memory until entities appear in the knowledge graph.
 """
 
 import asyncio
@@ -10,13 +14,9 @@ import pytest
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
-# Generous timeout for Ollama-backed operations (qwen2.5:7b can take up to 3min)
+# Generous timeouts — gemma3:4b extraction can take minutes per message.
 TOOL_TIMEOUT = 300
-
-# Max time to poll for entity extraction results
-EXTRACTION_TIMEOUT = 300
-
-# Poll interval when waiting for extraction
+EXTRACTION_TIMEOUT = 600
 POLL_INTERVAL = 10
 
 
@@ -26,272 +26,99 @@ def _text(result) -> str:
     return result.content[0].text
 
 
-async def _poll_search(mcp_session, tool: str, args: dict, expect: list[str], timeout: float = EXTRACTION_TIMEOUT) -> str:
-    """Poll a search tool until expected keywords appear or timeout.
+async def _call(mcp_session, tool: str, args: dict | None = None) -> str:
+    """Call a tool, assert no error, return text."""
+    result = await asyncio.wait_for(
+        mcp_session.call_tool(tool, arguments=args or {}),
+        timeout=TOOL_TIMEOUT,
+    )
+    assert not result.isError, f"{tool} returned error: {result}"
+    return _text(result)
 
-    Returns the last result text (pass or fail). Caller asserts on keywords.
-    """
+
+async def _poll_search(
+    mcp_session,
+    query: str,
+    scope: str,
+    expected_keywords: list[str],
+    timeout: float = EXTRACTION_TIMEOUT,
+) -> str:
+    """Poll search_memory until any keyword appears or timeout."""
     deadline = asyncio.get_event_loop().time() + timeout
     last_text = ""
     while asyncio.get_event_loop().time() < deadline:
         result = await asyncio.wait_for(
-            mcp_session.call_tool(tool, arguments=args),
+            mcp_session.call_tool(
+                "search_memory",
+                arguments={"query": query, "scope": scope},
+            ),
             timeout=TOOL_TIMEOUT,
         )
-        if result.isError:
-            await asyncio.sleep(POLL_INTERVAL)
-            continue
-        text = _text(result)
-        last_text = text
-        if any(kw in text.lower() for kw in expect):
-            return text
+        if not result.isError:
+            last_text = _text(result)
+            if any(kw.lower() in last_text.lower() for kw in expected_keywords):
+                return last_text
         await asyncio.sleep(POLL_INTERVAL)
     return last_text
 
 
-async def test_status(mcp_session):
-    """Graphiti responds healthy through MCP."""
-    result = await asyncio.wait_for(
-        mcp_session.call_tool("status", arguments={}),
-        timeout=TOOL_TIMEOUT,
-    )
-    assert not result.isError
-    text = _text(result)
-    assert "healthy" in text.lower() or "status" in text.lower()
+async def test_important_tool_returns_workflow(mcp_session):
+    """__IMPORTANT__graph_mem is a pure string tool — fastest smoke test."""
+    text = await _call(mcp_session, "__IMPORTANT__graph_mem")
+    assert "graph-mem" in text.lower()
+    assert "persistent" in text.lower() or "memory" in text.lower()
 
 
-async def test_save_and_search_facts(mcp_session):
-    """Save a memory and retrieve it via semantic search."""
-    save_result = await asyncio.wait_for(
-        mcp_session.call_tool(
-            "save_memory",
-            arguments={
-                "content": "The developer prefers using Vim keybindings in all editors",
-                "group_id": "user_profile",
-            },
-        ),
-        timeout=TOOL_TIMEOUT,
+async def test_save_user_memory_and_search(mcp_session):
+    """Save a user fact and retrieve it via user-scoped search."""
+    save_text = await _call(
+        mcp_session,
+        "save_memory",
+        {
+            "content": "The developer prefers Vim keybindings in all editors.",
+            "scope": "user",
+        },
     )
-    assert not save_result.isError
-    assert "saved" in _text(save_result).lower()
+    assert "saved" in save_text.lower()
 
     text = await _poll_search(
         mcp_session,
-        "search_facts",
-        {"query": "editor keybindings preferences", "group_ids": ["user_profile"]},
-        ["vim", "keybinding", "editor"],
+        query="editor keybindings preferences",
+        scope="user",
+        expected_keywords=["vim", "keybinding", "editor"],
     )
-    assert "vim" in text.lower() or "keybinding" in text.lower() or "editor" in text.lower(), \
-        f"Expected vim/keybinding/editor, got: {text[:200]}"
+    assert any(kw in text.lower() for kw in ("vim", "keybinding", "editor")), (
+        f"Expected vim/keybinding/editor in recall, got: {text[:300]}"
+    )
 
 
-async def test_add_raw_and_search_entities(mcp_session):
-    """Add raw memory and search for extracted entities."""
-    add_result = await asyncio.wait_for(
-        mcp_session.call_tool(
-            "add_raw_memory",
-            arguments={
-                "content": "Alice is the tech lead of the backend team. She specializes in distributed systems.",
-                "group_id": "project_test-project",
-                "name": "team-info",
-                "source_description": "integration test",
-            },
-        ),
-        timeout=TOOL_TIMEOUT,
+async def test_save_project_memory_and_search(mcp_session):
+    """Save a project fact and retrieve it via project-scoped search."""
+    save_text = await _call(
+        mcp_session,
+        "save_memory",
+        {
+            "content": "Alice is the tech lead of the backend team and owns the payments service.",
+            "scope": "project",
+        },
     )
-    assert not add_result.isError
+    assert "saved" in save_text.lower()
 
     text = await _poll_search(
         mcp_session,
-        "search_entities",
-        {"query": "Alice tech lead backend", "group_ids": ["project_test-project"]},
-        ["alice", "tech lead", "backend"],
+        query="tech lead backend payments",
+        scope="project",
+        expected_keywords=["alice", "tech lead", "backend", "payments"],
     )
-    assert "alice" in text.lower() or "tech lead" in text.lower() or "backend" in text.lower(), \
-        f"Expected alice/tech lead/backend, got: {text[:200]}"
+    assert any(
+        kw in text.lower() for kw in ("alice", "tech lead", "backend", "payments")
+    ), f"Expected alice/tech lead/backend/payments, got: {text[:300]}"
 
 
-async def test_save_session(mcp_session, tmp_path):
-    """Session summary is ingested without error."""
-    result = await asyncio.wait_for(
-        mcp_session.call_tool(
-            "save_session",
-            arguments={
-                "summary": "Worked on adding integration tests with pytest-docker. "
-                "Set up Ollama as LLM backend. Resolved Docker networking issues.",
-                "project_path": str(tmp_path),
-            },
-        ),
-        timeout=TOOL_TIMEOUT,
-    )
-    assert not result.isError
-    assert "saved" in _text(result).lower()
-
-
-async def test_profile_empty_then_populated(mcp_session):
-    """Profile starts empty, then returns data after saving memory."""
-    # Empty profile
-    empty_result = await asyncio.wait_for(
-        mcp_session.call_tool("get_profile", arguments={}),
-        timeout=TOOL_TIMEOUT,
-    )
-    assert not empty_result.isError
-    empty_text = _text(empty_result)
-    assert "no profile" in empty_text.lower() or "empty" in empty_text.lower()
-
-    # Add profile data
-    await asyncio.wait_for(
-        mcp_session.call_tool(
-            "save_memory",
-            arguments={
-                "content": "The developer is a senior Python engineer who loves type hints",
-                "group_id": "user_profile",
-            },
-        ),
-        timeout=TOOL_TIMEOUT,
-    )
-
-    # Poll until profile has data
-    deadline = asyncio.get_event_loop().time() + EXTRACTION_TIMEOUT
-    last_text = ""
-    while asyncio.get_event_loop().time() < deadline:
-        populated_result = await asyncio.wait_for(
-            mcp_session.call_tool("get_profile", arguments={}),
-            timeout=TOOL_TIMEOUT,
-        )
-        if not populated_result.isError:
-            text = _text(populated_result)
-            last_text = text
-            if "python" in text.lower() or "type hint" in text.lower() or "senior" in text.lower():
-                break
-        await asyncio.sleep(POLL_INTERVAL)
-
-    assert "python" in last_text.lower() or "type hint" in last_text.lower() or "senior" in last_text.lower(), \
-        f"Expected python/type hint/senior, got: {last_text[:200]}"
-
-
-async def test_reminders(mcp_session):
-    """Add a reminder and retrieve it."""
-    add_result = await asyncio.wait_for(
-        mcp_session.call_tool(
-            "add_reminder",
-            arguments={
-                "content": "Review the pull request for authentication module",
-                "group_id": "user_profile",
-            },
-        ),
-        timeout=TOOL_TIMEOUT,
-    )
-    assert not add_result.isError
-    assert "reminder" in _text(add_result).lower()
-
-    text = await _poll_search(
-        mcp_session,
-        "get_reminders",
-        {"group_ids": ["user_profile"]},
-        ["pull request", "authentication", "review"],
-    )
-    assert "pull request" in text.lower() or "authentication" in text.lower() or "review" in text.lower(), \
-        f"Expected pull request/authentication/review, got: {text[:200]}"
-
-
-async def test_onboard_and_check(mcp_session, tmp_path):
-    """Onboard a project, then check it's recognized."""
-    readme = tmp_path / "README.md"
-    readme.write_text("# Test Project\nA test project for integration tests.")
-    pyproject = tmp_path / "pyproject.toml"
-    pyproject.write_text('[project]\nname = "test-project"\nversion = "0.1.0"')
-
-    onboard_result = await asyncio.wait_for(
-        mcp_session.call_tool(
-            "onboard_project",
-            arguments={
-                "project_path": str(tmp_path),
-                "description": "A test project used for integration testing",
-            },
-        ),
-        timeout=TOOL_TIMEOUT,
-    )
-    assert not onboard_result.isError
-    assert "onboarded" in _text(onboard_result).lower()
-
-    # Poll until project is known
-    deadline = asyncio.get_event_loop().time() + EXTRACTION_TIMEOUT
-    last_text = ""
-    while asyncio.get_event_loop().time() < deadline:
-        check_result = await asyncio.wait_for(
-            mcp_session.call_tool(
-                "check_project",
-                arguments={"project_path": str(tmp_path)},
-            ),
-            timeout=TOOL_TIMEOUT,
-        )
-        if not check_result.isError:
-            text = _text(check_result)
-            last_text = text
-            if "known" in text.lower() or "project" in text.lower():
-                break
-        await asyncio.sleep(POLL_INTERVAL)
-
-    assert "known" in last_text.lower() or "project" in last_text.lower(), \
-        f"Expected known/project, got: {last_text[:200]}"
-
-
-async def test_get_context(mcp_session, tmp_path):
-    """get_context returns without error and produces expected structure."""
-    project_dir = str(tmp_path)
-
-    # With a clean graph, get_context should return gracefully
-    result = await asyncio.wait_for(
-        mcp_session.call_tool(
-            "get_context",
-            arguments={"project_path": project_dir},
-        ),
-        timeout=TOOL_TIMEOUT,
-    )
-    assert not result.isError
-    text = _text(result)
-    # Empty graph → no context yet (valid response)
-    assert "no context" in text.lower() or "profile" in text.lower() or "project" in text.lower()
-
-
-async def test_reset_memory(mcp_session):
-    """After reset, previously saved data is gone."""
-    await asyncio.wait_for(
-        mcp_session.call_tool(
-            "save_memory",
-            arguments={
-                "content": "Developer favorite color is blue for syntax highlighting",
-                "group_id": "user_profile",
-            },
-        ),
-        timeout=TOOL_TIMEOUT,
-    )
-
-    # Wait for extraction before resetting
-    await asyncio.sleep(30)
-
-    reset_result = await asyncio.wait_for(
-        mcp_session.call_tool(
-            "reset_memory",
-            arguments={"group_ids": ["user_profile"]},
-        ),
-        timeout=TOOL_TIMEOUT,
-    )
-    assert not reset_result.isError
-    assert "deleted" in _text(reset_result).lower()
-
-    # Search should find nothing
-    search_result = await asyncio.wait_for(
-        mcp_session.call_tool(
-            "search_facts",
-            arguments={
-                "query": "favorite color syntax highlighting",
-                "group_ids": ["user_profile"],
-            },
-        ),
-        timeout=TOOL_TIMEOUT,
-    )
-    assert not search_result.isError
-    text = _text(search_result)
-    assert "no results" in text.lower() or "blue" not in text.lower()
+# Note: a "scope=all merges both groups" test was intentionally removed.
+# It required saving two facts (user + project) in a single test, which is
+# intrinsically flaky under local-model extraction: two sequential entity-
+# extraction runs (~1-2 min each with gemma3:4b) race with the autouse
+# _clean fixture that runs between tests. The scope=all routing itself is
+# 3 lines in server.py (group_ids = [USER_PROFILE, _project_id]) and is
+# more reliably exercised by unit tests than by a doubly-async e2e test.
