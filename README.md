@@ -30,7 +30,7 @@ This happens automatically via Claude Code hooks — no manual prompt engineerin
 
 `CLAUDE.md` is a static file you maintain by hand — it doesn't track relationships or evolve over time. mem0 is a flat vector store that retrieves similar text; it doesn't know that Julie is your tech lead on project_atlas, or that the OOM blocker is blocking *that specific project's* CI. graph-mem builds a **temporal knowledge graph**: entities connect to each other, facts carry timestamps, and the graph grows smarter as you work.
 
-> **Privacy:** Neo4j and Graphiti run locally in Docker — your graph data stays on your machine. Entity extraction requires an OpenAI API call: session summaries and saved facts are sent to OpenAI during that step. If this matters for your data classification policy, review what graph-mem stores before using it on sensitive work projects. Local/offline extraction via Ollama is on the roadmap.
+> **Privacy:** By default, everything runs on your machine — Ollama, Graphiti, and Neo4j all live in Docker, and no data leaves your host. If you configure a remote provider in `.env` (OpenRouter, OpenAI, etc.), session summaries and saved facts will be sent to that provider during entity extraction. Review what graph-mem stores before enabling a remote mode on sensitive work projects.
 
 ## MCP — what is it?
 
@@ -38,27 +38,28 @@ This happens automatically via Claude Code hooks — no manual prompt engineerin
 
 ## Quick start
 
-**Prerequisites:** Python 3.11+, Docker & Docker Compose (for Graphiti + Neo4j backend), OpenAI API key (required — used for entity extraction).
+**Prerequisites:** Python 3.11+, Docker & Docker Compose v2.20+.
 
-### Phase 1 — Start the backend (one-time setup)
+By default, graph-mem runs **fully local** — no API keys required, no data leaves your machine. Ollama, Graphiti and Neo4j all run in Docker.
+
+### 1. Start the backend
 
 ```bash
 git clone https://github.com/quequiere/graph-mem && cd graph-mem
+cp .env.example .env
 docker compose up -d
 ```
 
-This starts Graphiti and Neo4j locally. Neo4j requires ~2 GB of available RAM.
+First launch downloads two Ollama models (~3.5 GB). Subsequent launches are instant thanks to the persistent volume. Neo4j needs ~2 GB RAM, Ollama needs ~4 GB.
 
-### Phase 2 — Connect your client
-
-**Install graph-mem:**
+### 2. Connect your MCP client
 
 ```bash
 pip install graph-mem
 # or run without installing: uvx graph-mem
 ```
 
-**Add to Claude Code** (`~/.claude/claude_desktop_config.json` or via `claude mcp add`):
+Add to Claude Code (`~/.claude/claude_desktop_config.json` or via `claude mcp add`):
 
 ```json
 {
@@ -66,10 +67,7 @@ pip install graph-mem
     "graph-mem": {
       "command": "uvx",
       "args": ["graph-mem"],
-      "env": {
-        "GRAPHITI_URL": "http://localhost:8000",
-        "OPENAI_API_KEY": "sk-..."
-      }
+      "env": { "GRAPHITI_URL": "http://localhost:8000" }
     }
   }
 }
@@ -77,7 +75,7 @@ pip install graph-mem
 
 Same config block works for Cursor, Windsurf, and any other MCP-compatible client.
 
-**Enable automatic hooks (Claude Code only):**
+### 3. (Optional) Enable automatic hooks
 
 Add to `~/.claude/settings.json` for automatic context injection at session start and auto-save at stop:
 
@@ -91,6 +89,10 @@ Add to `~/.claude/settings.json` for automatic context injection at session star
 ```
 
 `graph-mem-session-start` and `graph-mem-session-end` are CLI commands installed with `pip install graph-mem`. The `Stop` hook has a 30-second timeout — if Graphiti is unreachable, it exits with a warning and your session ends normally (no data loss; re-save manually via `save_session` next time). Without hooks, call `get_context` and `save_session` manually from the chat.
+
+## Other modes
+
+Need a remote LLM, a local embedder, or a mix? Everything is configurable from [`.env`](.env.example). Each variable has an inline comment showing the remote alternative — just swap the values you want, set `COMPOSE_PROFILES=` to skip the bundled Ollama container, and run `docker compose up -d` again. **The command is always the same.**
 
 ## What gets stored?
 
@@ -138,18 +140,22 @@ Everything is **temporally aware** — graph-mem knows when you started learning
 ## Architecture
 
 ```
-Your machine                          Docker (local or remote)
-┌──────────────────────┐              ┌──────────────────────┐
-│ Claude Code / Cursor  │              │  Graphiti REST API   │
-│         │             │              │         │            │
-│    stdio │             │    HTTP      │    graphiti_core     │
-│         ▼             │ ──────────►  │         │            │
-│  graph-mem MCP server │              │       Neo4j          │
-└──────────────────────┘              └──────────────────────┘
+Your machine                          Docker (local by default)
+┌──────────────────────┐              ┌──────────────────────────┐
+│ Claude Code / Cursor │              │  Graphiti REST API       │
+│         │            │    HTTP      │         │                │
+│    stdio│            │ ──────────►  │    graphiti_core         │
+│         ▼            │              │      │         │         │
+│ graph-mem MCP server │              │    Neo4j     Ollama*     │
+└──────────────────────┘              └──────────────────────────┘
+                                       * Ollama is optional — disable
+                                         via COMPOSE_PROFILES= when
+                                         using a remote LLM provider.
 ```
 
 - **graph-mem** runs locally as an MCP server (stdio transport)
 - **Graphiti** runs in Docker, handles entity extraction, embeddings, and graph storage
+- **Ollama** runs in Docker by default and serves both the LLM and the embedder; swap to any OpenAI-compatible remote provider by editing `.env`
 - Communication is plain HTTP — no JSON-RPC, works behind corporate proxies
 - Memory is scoped by `user_profile` (global) and `project_{identifier}` (per-repo, derived from git remote URL); both scopes are merged at query time
 

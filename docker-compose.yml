@@ -1,22 +1,4 @@
 services:
-  graphiti:
-    build:
-      context: ./graphiti
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-sk-dummy}
-      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://openrouter.ai/api/v1}
-      - MODEL_NAME=${LLM_MODEL:-google/gemma-4-26b-a4b-it}
-      - EMBEDDING_MODEL_NAME=${EMBEDDING_MODEL:-qwen/qwen3-embedding-8b}
-      - NEO4J_URI=bolt://neo4j:7687
-      - NEO4J_USER=neo4j
-      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-graphiti}
-    depends_on:
-      neo4j:
-        condition: service_healthy
-
   neo4j:
     image: neo4j:5.26.0
     ports:
@@ -32,5 +14,62 @@ services:
       timeout: 5s
       retries: 5
 
+  graphiti:
+    build:
+      context: ./graphiti
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # LLM
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - MODEL_NAME=${MODEL_NAME}
+      # Embedder (decoupled)
+      - EMBEDDING_API_KEY=${EMBEDDING_API_KEY}
+      - EMBEDDING_BASE_URL=${EMBEDDING_BASE_URL}
+      - EMBEDDING_MODEL_NAME=${EMBEDDING_MODEL_NAME}
+      # Neo4j
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-graphiti}
+    depends_on:
+      neo4j:
+        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
+        required: false
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: [ollama]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ollama-init:
+    image: ollama/ollama:latest
+    profiles: [ollama]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      echo 'Pulling LLM model: ${MODEL_NAME}...' &&
+      OLLAMA_HOST=http://ollama:11434 ollama pull ${MODEL_NAME} &&
+      echo 'Pulling embedding model: ${EMBEDDING_MODEL_NAME}...' &&
+      OLLAMA_HOST=http://ollama:11434 ollama pull ${EMBEDDING_MODEL_NAME} &&
+      echo 'All models ready.'
+      "
+    restart: "no"
+
 volumes:
   neo4j_data:
+  ollama_data:
