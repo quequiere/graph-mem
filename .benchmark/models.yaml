@@ -1,0 +1,67 @@
+# Benchmark targets for entity/relation extraction comparison.
+#
+# Each model is called via an OpenAI-compatible /v1/chat/completions endpoint.
+# Toggle `enabled: false` to skip a model without removing it.
+# Add `--only name1,name2` on the CLI to run a subset.
+#
+# Local models assume Ollama at http://localhost:11434.
+# Pull them first: `ollama pull gemma4:e4b` etc.
+
+models:
+  # --- Local via Ollama -----------------------------------------------------
+  # Target machine: NVIDIA T1200 4GB VRAM, 32GB RAM, i7-11850H (8 cores)
+
+  - name: gemma3-4b-local
+    enabled: true
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: gemma3:4b
+    # Baseline: Gemma 3 4B, already pulled. Useful smoke test + comparison point
+    # to see how much Gemma 4 improves over Gemma 3 at the same size class.
+
+  - name: gemma4-e2b-local
+    enabled: true
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: gemma4:e2b
+    # ~3.2GB Q4 -> fully on GPU. Edge model, probable quality floor.
+
+  - name: gemma4-e4b-local
+    enabled: true
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: gemma4:e4b
+    # ~5GB Q4 -> partial CPU offload on 4GB VRAM. "Laptop grand public" target.
+
+  - name: gemma4-26b-local
+    enabled: true
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: gemma4:26b
+    # ~15.6GB Q4 -> CPU-only inference (32GB RAM). MoE with 3.8B active params,
+    # so speed is closer to a 4B model despite total size. Slow but high-quality.
+
+  - name: qwen3-8b-local
+    enabled: true
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: qwen3:8b
+    # ~5GB Q4. Strong JSON-schema compliance reputation, good dedup candidate.
+
+  # --- Hosted baselines via OpenRouter --------------------------------------
+
+  - name: claude-haiku-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: anthropic/claude-haiku-4.5
+    api_key_env: OPENROUTER_API_KEY
+    # Proprietary quality ceiling to compare against.
+
+  - name: gemma4-26b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: google/gemma-4-26b-a4b-it
+    api_key_env: OPENROUTER_API_KEY
+    # Current docker-compose default. Lets us see if local 26B matches hosted.
