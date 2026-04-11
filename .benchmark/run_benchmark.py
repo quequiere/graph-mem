@@ -406,12 +406,14 @@ def call_model(model_cfg: dict, prompt: str, timeout: float = 300.0) -> tuple[st
         "temperature": 0.0,
         "max_tokens": 1024,
     }
+    if model_cfg.get("no_think"):
+        payload["think"] = False
     headers = {"Content-Type": "application/json"}
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
 
     start = time.perf_counter()
-    with httpx.Client(timeout=timeout) as client:
+    with httpx.Client(timeout=timeout, verify=False) as client:
         resp = client.post(url, json=payload, headers=headers)
         resp.raise_for_status()
         data = resp.json()

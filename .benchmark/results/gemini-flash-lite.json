@@ -1,0 +1,1680 @@
+{
+  "run_at": "2026-04-11T11:35:29.782553+00:00",
+  "dataset_version": "1.0",
+  "dataset_size": 25,
+  "semantic_scoring": true,
+  "embed_threshold": 0.85,
+  "models": [
+    {
+      "name": "gemini-flash-lite-openrouter",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model_id": "google/gemini-2.5-flash-lite",
+      "total_cases": 25,
+      "success": 25,
+      "failed": 0,
+      "avg_latency_ms": 1608.1,
+      "avg_entity_precision": 0.85,
+      "avg_entity_recall": 0.94,
+      "avg_relation_precision": 0.731,
+      "avg_relation_recall": 0.871,
+      "entity_f1": 0.893,
+      "relation_f1": 0.795,
+      "type_accuracy": 0.327,
+      "type_name_matches_total": 49,
+      "avg_entity_precision_sem": 0.883,
+      "avg_entity_recall_sem": 0.98,
+      "avg_relation_precision_sem": 0.653,
+      "avg_relation_recall_sem": 0.773,
+      "entity_f1_sem": 0.929,
+      "relation_f1_sem": 0.708,
+      "cases": [
+        {
+          "id": "simple_entity_01",
+          "category": "simple_entity",
+          "input": "Bruno aime Python.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "Person"
+              },
+              {
+                "name": "Python",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "likes",
+                "target": "Python"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "people"
+              },
+              {
+                "name": "Python",
+                "type": "languages"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "likes",
+                "target": "Python"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Bruno\",\n      \"type\": \"people\"\n    },\n    {\n      \"name\": \"Python\",\n      \"type\": \"languages\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Bruno\",\n      \"predicate\": \"likes\",\n      \"target\": \"Python\"\n    }\n  ]\n}\n```",
+          "latency_ms": 879.1,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 2,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "simple_entity_02",
+          "category": "simple_entity",
+          "input": "Atlas is our main project.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Atlas",
+                "type": "Project"
+              }
+            ],
+            "relations": []
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Atlas",
+                "type": "projects"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "is",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Atlas\",\n      \"type\": \"projects\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"is\",\n      \"target\": \"Atlas\"\n    }\n  ]\n}\n```",
+          "latency_ms": 759.3,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 1,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 0.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "simple_entity_03",
+          "category": "simple_entity",
+          "input": "J'utilise VSCode tous les jours pour coder.",
+          "expected": {
+            "entities": [
+              {
+                "name": "VSCode",
+                "type": "Tool"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "VSCode"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "user",
+                "type": "person"
+              },
+              {
+                "name": "VSCode",
+                "type": "tool"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "VSCode"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"user\",\n      \"type\": \"person\"\n    },\n    {\n      \"name\": \"VSCode\",\n      \"type\": \"tool\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"uses\",\n      \"target\": \"VSCode\"\n    }\n  ]\n}\n```",
+          "latency_ms": 716.2,
+          "error": null,
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 1,
+          "type_correct": 1,
+          "entity_precision_sem": 0.5,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "simple_relation_01",
+          "category": "simple_relation",
+          "input": "Bruno travaille avec Julie sur le projet Atlas.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "Person"
+              },
+              {
+                "name": "Julie",
+                "type": "Person"
+              },
+              {
+                "name": "Atlas",
+                "type": "Project"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "works_with",
+                "target": "Julie"
+              },
+              {
+                "source": "Bruno",
+                "predicate": "works_on",
+                "target": "Atlas"
+              },
+              {
+                "source": "Julie",
+                "predicate": "works_on",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "people"
+              },
+              {
+                "name": "Julie",
+                "type": "people"
+              },
+              {
+                "name": "Atlas",
+                "type": "projects"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "works_with",
+                "target": "Julie"
+              },
+              {
+                "source": "Bruno",
+                "predicate": "works_on",
+                "target": "Atlas"
+              },
+              {
+                "source": "Julie",
+                "predicate": "works_on",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Bruno\",\n      \"type\": \"people\"\n    },\n    {\n      \"name\": \"Julie\",\n      \"type\": \"people\"\n    },\n    {\n      \"name\": \"Atlas\",\n      \"type\": \"projects\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Bruno\",\n      \"predicate\": \"works_with\",\n      \"target\": \"Julie\"\n    },\n    {\n      \"source\": \"Bruno\",\n      \"predicate\": \"works_on\",\n      \"target\": \"Atlas\"\n    },\n    {\n      \"source\": \"Julie\",\n      \"predicate\": \"works_on\",\n      \"target\": \"Atlas\"\n    }\n  ]\n}\n```",
+          "latency_ms": 865.2,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 3,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "simple_relation_02",
+          "category": "simple_relation",
+          "input": "Sylvie me coache sur C#.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Sylvie",
+                "type": "Person"
+              },
+              {
+                "name": "C#",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Sylvie",
+                "predicate": "coaches",
+                "target": "user"
+              },
+              {
+                "source": "user",
+                "predicate": "learns",
+                "target": "C#"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Sylvie",
+                "type": "person"
+              },
+              {
+                "name": "C#",
+                "type": "language"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Sylvie",
+                "predicate": "coaches",
+                "target": "user"
+              },
+              {
+                "source": "user",
+                "predicate": "learns",
+                "target": "C#"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Sylvie\",\n      \"type\": \"person\"\n    },\n    {\n      \"name\": \"C#\",\n      \"type\": \"language\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Sylvie\",\n      \"predicate\": \"coaches\",\n      \"target\": \"user\"\n    },\n    {\n      \"source\": \"user\",\n      \"predicate\": \"learns\",\n      \"target\": \"C#\"\n    }\n  ]\n}\n```",
+          "latency_ms": 650.2,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 2,
+          "type_correct": 1,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "simple_relation_03",
+          "category": "simple_relation",
+          "input": "Atlas uses Neo4j and Python.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Atlas",
+                "type": "Project"
+              },
+              {
+                "name": "Neo4j",
+                "type": "Technology"
+              },
+              {
+                "name": "Python",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Atlas",
+                "predicate": "uses",
+                "target": "Neo4j"
+              },
+              {
+                "source": "Atlas",
+                "predicate": "uses",
+                "target": "Python"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Atlas",
+                "type": "project"
+              },
+              {
+                "name": "Neo4j",
+                "type": "technology"
+              },
+              {
+                "name": "Python",
+                "type": "language"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Atlas",
+                "predicate": "uses",
+                "target": "Neo4j"
+              },
+              {
+                "source": "Atlas",
+                "predicate": "uses",
+                "target": "Python"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Atlas\",\n      \"type\": \"project\"\n    },\n    {\n      \"name\": \"Neo4j\",\n      \"type\": \"technology\"\n    },\n    {\n      \"name\": \"Python\",\n      \"type\": \"language\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Atlas\",\n      \"predicate\": \"uses\",\n      \"target\": \"Neo4j\"\n    },\n    {\n      \"source\": \"Atlas\",\n      \"predicate\": \"uses\",\n      \"target\": \"Python\"\n    }\n  ]\n}\n```",
+          "latency_ms": 853.5,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 3,
+          "type_correct": 2,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "dedup_01",
+          "category": "dedup",
+          "input": "Thomas, qu'on appelle Tom, est développeur Rust.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Thomas",
+                "type": "Person"
+              },
+              {
+                "name": "Rust",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Thomas",
+                "predicate": "uses",
+                "target": "Rust"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Thomas",
+                "type": "person"
+              },
+              {
+                "name": "Rust",
+                "type": "language"
+              },
+              {
+                "name": "développeur",
+                "type": "role"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Thomas",
+                "predicate": "is",
+                "target": "développeur"
+              },
+              {
+                "source": "Thomas",
+                "predicate": "codes_in",
+                "target": "Rust"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Thomas\",\n      \"type\": \"person\"\n    },\n    {\n      \"name\": \"Rust\",\n      \"type\": \"language\"\n    },\n    {\n      \"name\": \"développeur\",\n      \"type\": \"role\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Thomas\",\n      \"predicate\": \"is\",\n      \"target\": \"développeur\"\n    },\n    {\n      \"source\": \"Thomas\",\n      \"predicate\": \"codes_in\",\n      \"target\": \"Rust\"\n    }\n  ]\n}\n```",
+          "latency_ms": 700.9,
+          "error": null,
+          "entity_precision": 0.667,
+          "entity_recall": 1.0,
+          "relation_precision": 0.333,
+          "relation_recall": 0.667,
+          "type_name_matches": 2,
+          "type_correct": 1,
+          "entity_precision_sem": 0.667,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 0.0,
+          "relation_recall_sem": 0.0
+        },
+        {
+          "id": "dedup_02",
+          "category": "dedup",
+          "input": "PostgreSQL, ou Postgres, est notre base principale.",
+          "expected": {
+            "entities": [
+              {
+                "name": "PostgreSQL",
+                "type": "Technology"
+              }
+            ],
+            "relations": []
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "PostgreSQL",
+                "type": "technologies"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "is",
+                "target": "PostgreSQL"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"PostgreSQL\",\n      \"type\": \"technologies\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"is\",\n      \"target\": \"PostgreSQL\"\n    }\n  ]\n}\n```",
+          "latency_ms": 805.8,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 1,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 0.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "dedup_03",
+          "category": "dedup",
+          "input": "Michelin (la Manufacture Française des Pneumatiques Michelin) est basée à Clermont-Ferrand.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Michelin",
+                "type": "Organization"
+              },
+              {
+                "name": "Clermont-Ferrand",
+                "type": "Location"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Michelin",
+                "predicate": "located_in",
+                "target": "Clermont-Ferrand"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Michelin",
+                "type": "organization"
+              },
+              {
+                "name": "la Manufacture Française des Pneumatiques Michelin",
+                "type": "organization"
+              },
+              {
+                "name": "Clermont-Ferrand",
+                "type": "location"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Michelin",
+                "predicate": "is",
+                "target": "la Manufacture Française des Pneumatiques Michelin"
+              },
+              {
+                "source": "Michelin",
+                "predicate": "located_in",
+                "target": "Clermont-Ferrand"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Michelin\",\n      \"type\": \"organization\"\n    },\n    {\n      \"name\": \"la Manufacture Française des Pneumatiques Michelin\",\n      \"type\": \"organization\"\n    },\n    {\n      \"name\": \"Clermont-Ferrand\",\n      \"type\": \"location\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Michelin\",\n      \"predicate\": \"is\",\n      \"target\": \"la Manufacture Française des Pneumatiques Michelin\"\n    },\n    {\n      \"source\": \"Michelin\",\n      \"predicate\": \"located_in\",\n      \"target\": \"Clermont-Ferrand\"\n    }\n  ]\n}\n```",
+          "latency_ms": 1723.1,
+          "error": null,
+          "entity_precision": 0.667,
+          "entity_recall": 1.0,
+          "relation_precision": 0.5,
+          "relation_recall": 1.0,
+          "type_name_matches": 2,
+          "type_correct": 2,
+          "entity_precision_sem": 0.667,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 0.5,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "temporal_01",
+          "category": "temporal",
+          "input": "Avant on utilisait MongoDB, maintenant on est passés à PostgreSQL.",
+          "expected": {
+            "entities": [
+              {
+                "name": "MongoDB",
+                "type": "Technology"
+              },
+              {
+                "name": "PostgreSQL",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "past_uses",
+                "target": "MongoDB"
+              },
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "PostgreSQL"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "MongoDB",
+                "type": "technologies"
+              },
+              {
+                "name": "PostgreSQL",
+                "type": "technologies"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "past_uses",
+                "target": "MongoDB"
+              },
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "PostgreSQL"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"MongoDB\",\n      \"type\": \"technologies\"\n    },\n    {\n      \"name\": \"PostgreSQL\",\n      \"type\": \"technologies\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"past_uses\",\n      \"target\": \"MongoDB\"\n    },\n    {\n      \"source\": \"user\",\n      \"predicate\": \"uses\",\n      \"target\": \"PostgreSQL\"\n    }\n  ]\n}\n```",
+          "latency_ms": 1259.7,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 2,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "temporal_02",
+          "category": "temporal",
+          "input": "Julie était lead tech sur Atlas mais elle est partie en janvier.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Julie",
+                "type": "Person"
+              },
+              {
+                "name": "Atlas",
+                "type": "Project"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Julie",
+                "predicate": "past_leads",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Julie",
+                "type": "people"
+              },
+              {
+                "name": "Atlas",
+                "type": "projects"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Julie",
+                "predicate": "past_is",
+                "target": "lead tech"
+              },
+              {
+                "source": "Julie",
+                "predicate": "past_works_on",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Julie\",\n      \"type\": \"people\"\n    },\n    {\n      \"name\": \"Atlas\",\n      \"type\": \"projects\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Julie\",\n      \"predicate\": \"past_is\",\n      \"target\": \"lead tech\"\n    },\n    {\n      \"source\": \"Julie\",\n      \"predicate\": \"past_works_on\",\n      \"target\": \"Atlas\"\n    }\n  ]\n}\n```",
+          "latency_ms": 717.1,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 0.333,
+          "relation_recall": 0.667,
+          "type_name_matches": 2,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 0.0,
+          "relation_recall_sem": 0.0
+        },
+        {
+          "id": "user_pref_01",
+          "category": "user_preference",
+          "input": "Je préfère le TDD aux tests manuels.",
+          "expected": {
+            "entities": [
+              {
+                "name": "TDD",
+                "type": "Practice"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "prefers",
+                "target": "TDD"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "TDD",
+                "type": "practices"
+              },
+              {
+                "name": "tests manuels",
+                "type": "practices"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "prefers",
+                "target": "TDD"
+              },
+              {
+                "source": "user",
+                "predicate": "prefers",
+                "target": "tests manuels"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"TDD\",\n      \"type\": \"practices\"\n    },\n    {\n      \"name\": \"tests manuels\",\n      \"type\": \"practices\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"prefers\",\n      \"target\": \"TDD\"\n    },\n    {\n      \"source\": \"user\",\n      \"predicate\": \"prefers\",\n      \"target\": \"tests manuels\"\n    }\n  ]\n}\n```",
+          "latency_ms": 1361.9,
+          "error": null,
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "relation_precision": 0.833,
+          "relation_recall": 1.0,
+          "type_name_matches": 1,
+          "type_correct": 0,
+          "entity_precision_sem": 0.5,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 0.5,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "user_pref_02",
+          "category": "user_preference",
+          "input": "J'écris mon code en anglais mais je discute en français.",
+          "expected": {
+            "entities": [
+              {
+                "name": "English",
+                "type": "Language"
+              },
+              {
+                "name": "French",
+                "type": "Language"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "codes_in",
+                "target": "English"
+              },
+              {
+                "source": "user",
+                "predicate": "speaks",
+                "target": "French"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "user",
+                "type": "person"
+              },
+              {
+                "name": "anglais",
+                "type": "language"
+              },
+              {
+                "name": "français",
+                "type": "language"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "codes_in",
+                "target": "anglais"
+              },
+              {
+                "source": "user",
+                "predicate": "speaks",
+                "target": "français"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"user\",\n      \"type\": \"person\"\n    },\n    {\n      \"name\": \"anglais\",\n      \"type\": \"language\"\n    },\n    {\n      \"name\": \"français\",\n      \"type\": \"language\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"codes_in\",\n      \"target\": \"anglais\"\n    },\n    {\n      \"source\": \"user\",\n      \"predicate\": \"speaks\",\n      \"target\": \"français\"\n    }\n  ]\n}\n```",
+          "latency_ms": 946.9,
+          "error": null,
+          "entity_precision": 0.0,
+          "entity_recall": 0.0,
+          "relation_precision": 0.667,
+          "relation_recall": 0.667,
+          "type_name_matches": 0,
+          "type_correct": 0,
+          "entity_precision_sem": 0.333,
+          "entity_recall_sem": 0.5,
+          "relation_precision_sem": 0.5,
+          "relation_recall_sem": 0.5
+        },
+        {
+          "id": "user_pref_03",
+          "category": "user_preference",
+          "input": "I'm a senior developer with 10 years of experience in backend systems.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Senior Developer",
+                "type": "Role"
+              },
+              {
+                "name": "backend systems",
+                "type": "Domain"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "is",
+                "target": "Senior Developer"
+              },
+              {
+                "source": "user",
+                "predicate": "works_on",
+                "target": "backend systems"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "user",
+                "type": "person"
+              },
+              {
+                "name": "senior developer",
+                "type": "role"
+              },
+              {
+                "name": "backend systems",
+                "type": "concept"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "is",
+                "target": "senior developer"
+              },
+              {
+                "source": "user",
+                "predicate": "works_with",
+                "target": "backend systems"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"user\",\n      \"type\": \"person\"\n    },\n    {\n      \"name\": \"senior developer\",\n      \"type\": \"role\"\n    },\n    {\n      \"name\": \"backend systems\",\n      \"type\": \"concept\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"is\",\n      \"target\": \"senior developer\"\n    },\n    {\n      \"source\": \"user\",\n      \"predicate\": \"works_with\",\n      \"target\": \"backend systems\"\n    }\n  ]\n}\n```",
+          "latency_ms": 949.7,
+          "error": null,
+          "entity_precision": 0.667,
+          "entity_recall": 1.0,
+          "relation_precision": 0.833,
+          "relation_recall": 0.833,
+          "type_name_matches": 2,
+          "type_correct": 1,
+          "entity_precision_sem": 0.667,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "project_fact_01",
+          "category": "project_fact",
+          "input": "Graph-mem is a Claude Code plugin built in Python.",
+          "expected": {
+            "entities": [
+              {
+                "name": "graph-mem",
+                "type": "Project"
+              },
+              {
+                "name": "Claude Code",
+                "type": "Tool"
+              },
+              {
+                "name": "Python",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "graph-mem",
+                "predicate": "is_plugin_for",
+                "target": "Claude Code"
+              },
+              {
+                "source": "graph-mem",
+                "predicate": "uses",
+                "target": "Python"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "graph-mem",
+                "type": "project"
+              },
+              {
+                "name": "claude code",
+                "type": "tool"
+              },
+              {
+                "name": "python",
+                "type": "language"
+              }
+            ],
+            "relations": [
+              {
+                "source": "graph-mem",
+                "predicate": "is_plugin_for",
+                "target": "claude code"
+              },
+              {
+                "source": "graph-mem",
+                "predicate": "codes_in",
+                "target": "python"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"graph-mem\",\n      \"type\": \"project\"\n    },\n    {\n      \"name\": \"claude code\",\n      \"type\": \"tool\"\n    },\n    {\n      \"name\": \"python\",\n      \"type\": \"language\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"graph-mem\",\n      \"predicate\": \"is_plugin_for\",\n      \"target\": \"claude code\"\n    },\n    {\n      \"source\": \"graph-mem\",\n      \"predicate\": \"codes_in\",\n      \"target\": \"python\"\n    }\n  ]\n}\n```",
+          "latency_ms": 939.3,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 0.833,
+          "relation_recall": 0.833,
+          "type_name_matches": 3,
+          "type_correct": 2,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 0.5,
+          "relation_recall_sem": 0.5
+        },
+        {
+          "id": "project_fact_02",
+          "category": "project_fact",
+          "input": "Notre stack c'est Neo4j 5.26 et Graphiti avec OpenRouter comme backend LLM.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Neo4j",
+                "type": "Technology"
+              },
+              {
+                "name": "Graphiti",
+                "type": "Technology"
+              },
+              {
+                "name": "OpenRouter",
+                "type": "Service"
+              }
+            ],
+            "relations": [
+              {
+                "source": "project",
+                "predicate": "uses",
+                "target": "Neo4j"
+              },
+              {
+                "source": "project",
+                "predicate": "uses",
+                "target": "Graphiti"
+              },
+              {
+                "source": "project",
+                "predicate": "uses",
+                "target": "OpenRouter"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "neo4j",
+                "type": "technology"
+              },
+              {
+                "name": "graphiti",
+                "type": "technology"
+              },
+              {
+                "name": "openrouter",
+                "type": "technology"
+              },
+              {
+                "name": "llm",
+                "type": "concept"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "neo4j"
+              },
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "graphiti"
+              },
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "openrouter"
+              },
+              {
+                "source": "openrouter",
+                "predicate": "is",
+                "target": "llm"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"neo4j\",\n      \"type\": \"technology\"\n    },\n    {\n      \"name\": \"graphiti\",\n      \"type\": \"technology\"\n    },\n    {\n      \"name\": \"openrouter\",\n      \"type\": \"technology\"\n    },\n    {\n      \"name\": \"llm\",\n      \"type\": \"concept\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"uses\",\n      \"target\": \"neo4j\"\n    },\n    {\n      \"source\": \"user\",\n      \"predicate\": \"uses\",\n      \"target\": \"graphiti\"\n    },\n    {\n      \"source\": \"user\",\n      \"predicate\": \"uses\",\n      \"target\": \"openrouter\"\n    },\n    {\n      \"source\": \"ope",
+          "latency_ms": 1668.8,
+          "error": null,
+          "entity_precision": 0.75,
+          "entity_recall": 1.0,
+          "relation_precision": 0.5,
+          "relation_recall": 0.667,
+          "type_name_matches": 3,
+          "type_correct": 2,
+          "entity_precision_sem": 0.75,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 0.0,
+          "relation_recall_sem": 0.0
+        },
+        {
+          "id": "project_fact_03",
+          "category": "project_fact",
+          "input": "Deployment is via Docker Compose on a single VM.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Docker Compose",
+                "type": "Tool"
+              },
+              {
+                "name": "VM",
+                "type": "Infrastructure"
+              }
+            ],
+            "relations": [
+              {
+                "source": "project",
+                "predicate": "deployed_via",
+                "target": "Docker Compose"
+              },
+              {
+                "source": "project",
+                "predicate": "runs_on",
+                "target": "VM"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Docker Compose",
+                "type": "tool"
+              },
+              {
+                "name": "VM",
+                "type": "technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Deployment",
+                "predicate": "deployed_via",
+                "target": "Docker Compose"
+              },
+              {
+                "source": "Deployment",
+                "predicate": "runs_on",
+                "target": "VM"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Docker Compose\",\n      \"type\": \"tool\"\n    },\n    {\n      \"name\": \"VM\",\n      \"type\": \"technology\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Deployment\",\n      \"predicate\": \"deployed_via\",\n      \"target\": \"Docker Compose\"\n    },\n    {\n      \"source\": \"Deployment\",\n      \"predicate\": \"runs_on\",\n      \"target\": \"VM\"\n    }\n  ]\n}\n```",
+          "latency_ms": 823.0,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 0.667,
+          "relation_recall": 0.667,
+          "type_name_matches": 2,
+          "type_correct": 1,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "mixed_01",
+          "category": "mixed",
+          "input": "Bruno is fluent in Python and Go, but he's learning Rust now.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "Person"
+              },
+              {
+                "name": "Python",
+                "type": "Technology"
+              },
+              {
+                "name": "Go",
+                "type": "Technology"
+              },
+              {
+                "name": "Rust",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "knows",
+                "target": "Python"
+              },
+              {
+                "source": "Bruno",
+                "predicate": "knows",
+                "target": "Go"
+              },
+              {
+                "source": "Bruno",
+                "predicate": "learns",
+                "target": "Rust"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "person"
+              },
+              {
+                "name": "Python",
+                "type": "language"
+              },
+              {
+                "name": "Go",
+                "type": "language"
+              },
+              {
+                "name": "Rust",
+                "type": "language"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "speaks",
+                "target": "Python"
+              },
+              {
+                "source": "Bruno",
+                "predicate": "speaks",
+                "target": "Go"
+              },
+              {
+                "source": "Bruno",
+                "predicate": "learns",
+                "target": "Rust"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Bruno\",\n      \"type\": \"person\"\n    },\n    {\n      \"name\": \"Python\",\n      \"type\": \"language\"\n    },\n    {\n      \"name\": \"Go\",\n      \"type\": \"language\"\n    },\n    {\n      \"name\": \"Rust\",\n      \"type\": \"language\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Bruno\",\n      \"predicate\": \"speaks\",\n      \"target\": \"Python\"\n    },\n    {\n      \"source\": \"Bruno\",\n      \"predicate\": \"speaks\",\n      \"target\": \"Go\"\n    },\n    {\n      \"source\": \"Bruno\",\n      \"predicate\": \"learns\",\n      \"target\": \"Rust\"\n    }\n  ]\n}\n```",
+          "latency_ms": 1736.4,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 0.778,
+          "relation_recall": 0.778,
+          "type_name_matches": 4,
+          "type_correct": 1,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 0.333,
+          "relation_recall_sem": 0.333
+        },
+        {
+          "id": "pronoun_01",
+          "category": "pronoun",
+          "input": "Sylvie est ma collègue. Elle travaille sur le projet Atlas.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Sylvie",
+                "type": "Person"
+              },
+              {
+                "name": "Atlas",
+                "type": "Project"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Sylvie",
+                "predicate": "colleague_of",
+                "target": "user"
+              },
+              {
+                "source": "Sylvie",
+                "predicate": "works_on",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Sylvie",
+                "type": "people"
+              },
+              {
+                "name": "Atlas",
+                "type": "projects"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "colleague_of",
+                "target": "Sylvie"
+              },
+              {
+                "source": "Sylvie",
+                "predicate": "works_on",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Sylvie\",\n      \"type\": \"people\"\n    },\n    {\n      \"name\": \"Atlas\",\n      \"type\": \"projects\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"colleague_of\",\n      \"target\": \"Sylvie\"\n    },\n    {\n      \"source\": \"Sylvie\",\n      \"predicate\": \"works_on\",\n      \"target\": \"Atlas\"\n    }\n  ]\n}\n```",
+          "latency_ms": 707.4,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 0.5,
+          "relation_recall": 0.5,
+          "type_name_matches": 2,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "negation_01",
+          "category": "negation",
+          "input": "Julie ne travaille plus sur Atlas depuis février.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Julie",
+                "type": "Person"
+              },
+              {
+                "name": "Atlas",
+                "type": "Project"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Julie",
+                "predicate": "past_works_on",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Julie",
+                "type": "person"
+              },
+              {
+                "name": "Atlas",
+                "type": "project"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Julie",
+                "predicate": "past_works_on",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Julie\",\n      \"type\": \"person\"\n    },\n    {\n      \"name\": \"Atlas\",\n      \"type\": \"project\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Julie\",\n      \"predicate\": \"past_works_on\",\n      \"target\": \"Atlas\"\n    }\n  ]\n}\n```",
+          "latency_ms": 1317.6,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 2,
+          "type_correct": 2,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "nested_01",
+          "category": "nested",
+          "input": "L'équipe Atlas, dirigée par Bruno, utilise Python et Neo4j pour le backend.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Atlas",
+                "type": "Project"
+              },
+              {
+                "name": "Bruno",
+                "type": "Person"
+              },
+              {
+                "name": "Python",
+                "type": "Technology"
+              },
+              {
+                "name": "Neo4j",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Atlas",
+                "predicate": "led_by",
+                "target": "Bruno"
+              },
+              {
+                "source": "Atlas",
+                "predicate": "uses",
+                "target": "Python"
+              },
+              {
+                "source": "Atlas",
+                "predicate": "uses",
+                "target": "Neo4j"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Atlas",
+                "type": "projects"
+              },
+              {
+                "name": "Bruno",
+                "type": "people"
+              },
+              {
+                "name": "Python",
+                "type": "languages"
+              },
+              {
+                "name": "Neo4j",
+                "type": "technologies"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Atlas",
+                "predicate": "led_by",
+                "target": "Bruno"
+              },
+              {
+                "source": "Atlas",
+                "predicate": "uses",
+                "target": "Python"
+              },
+              {
+                "source": "Atlas",
+                "predicate": "uses",
+                "target": "Neo4j"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Atlas\",\n      \"type\": \"projects\"\n    },\n    {\n      \"name\": \"Bruno\",\n      \"type\": \"people\"\n    },\n    {\n      \"name\": \"Python\",\n      \"type\": \"languages\"\n    },\n    {\n      \"name\": \"Neo4j\",\n      \"type\": \"technologies\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"Atlas\",\n      \"predicate\": \"led_by\",\n      \"target\": \"Bruno\"\n    },\n    {\n      \"source\": \"Atlas\",\n      \"predicate\": \"uses\",\n      \"target\": \"Python\"\n    },\n    {\n      \"source\": \"Atlas\",\n      \"predicate\": \"uses\",\n      \"target\": \"Neo4j\"\n    }\n  ]\n}\n```",
+          "latency_ms": 1116.4,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 4,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "mixed_lang_01",
+          "category": "mixed",
+          "input": "The tech stack is Python, Go, et un peu de Rust pour les parties critiques.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Python",
+                "type": "Technology"
+              },
+              {
+                "name": "Go",
+                "type": "Technology"
+              },
+              {
+                "name": "Rust",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "project",
+                "predicate": "uses",
+                "target": "Python"
+              },
+              {
+                "source": "project",
+                "predicate": "uses",
+                "target": "Go"
+              },
+              {
+                "source": "project",
+                "predicate": "uses",
+                "target": "Rust"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Python",
+                "type": "languages"
+              },
+              {
+                "name": "Go",
+                "type": "languages"
+              },
+              {
+                "name": "Rust",
+                "type": "languages"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "Python"
+              },
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "Go"
+              },
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "Rust"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"Python\",\n      \"type\": \"languages\"\n    },\n    {\n      \"name\": \"Go\",\n      \"type\": \"languages\"\n    },\n    {\n      \"name\": \"Rust\",\n      \"type\": \"languages\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"uses\",\n      \"target\": \"Python\"\n    },\n    {\n      \"source\": \"user\",\n      \"predicate\": \"uses\",\n      \"target\": \"Go\"\n    },\n    {\n      \"source\": \"user\",\n      \"predicate\": \"uses\",\n      \"target\": \"Rust\"\n    }\n  ]\n}\n```",
+          "latency_ms": 16418.6,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 0.667,
+          "relation_recall": 0.667,
+          "type_name_matches": 3,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 0.0,
+          "relation_recall_sem": 0.0
+        },
+        {
+          "id": "abstract_01",
+          "category": "abstract",
+          "input": "Je crois fortement à la qualité du code et aux tests automatisés.",
+          "expected": {
+            "entities": [
+              {
+                "name": "code quality",
+                "type": "Value"
+              },
+              {
+                "name": "automated testing",
+                "type": "Practice"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "values",
+                "target": "code quality"
+              },
+              {
+                "source": "user",
+                "predicate": "values",
+                "target": "automated testing"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "code quality",
+                "type": "concepts"
+              },
+              {
+                "name": "automated tests",
+                "type": "concepts"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "values",
+                "target": "code quality"
+              },
+              {
+                "source": "user",
+                "predicate": "values",
+                "target": "automated tests"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\n      \"name\": \"code quality\",\n      \"type\": \"concepts\"\n    },\n    {\n      \"name\": \"automated tests\",\n      \"type\": \"concepts\"\n    }\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"values\",\n      \"target\": \"code quality\"\n    },\n    {\n      \"source\": \"user\",\n      \"predicate\": \"values\",\n      \"target\": \"automated tests\"\n    }\n  ]\n}\n```",
+          "latency_ms": 766.3,
+          "error": null,
+          "entity_precision": 0.5,
+          "entity_recall": 0.5,
+          "relation_precision": 0.833,
+          "relation_recall": 0.833,
+          "type_name_matches": 1,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "edge_empty_01",
+          "category": "edge",
+          "input": "On a un meeting demain à 14h pour discuter du budget.",
+          "expected": {
+            "entities": [],
+            "relations": []
+          },
+          "actual": {
+            "entities": [],
+            "relations": []
+          },
+          "raw_response": "{\"entities\": [], \"relations\": []}",
+          "latency_ms": 948.5,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 0,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        },
+        {
+          "id": "edge_short_01",
+          "category": "edge",
+          "input": "J'adore Rust.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Rust",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "likes",
+                "target": "Rust"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Rust",
+                "type": "languages"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "likes",
+                "target": "Rust"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\"entities\": [{\"name\": \"Rust\", \"type\": \"languages\"}], \"relations\": [{\"source\": \"user\", \"predicate\": \"likes\", \"target\": \"Rust\"}]}\n```",
+          "latency_ms": 572.8,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 1,
+          "type_correct": 0,
+          "entity_precision_sem": 1.0,
+          "entity_recall_sem": 1.0,
+          "relation_precision_sem": 1.0,
+          "relation_recall_sem": 1.0
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "name": "gemini-flash-lite-openrouter",
+      "model_id": "google/gemini-2.5-flash-lite",
+      "success_rate": 1.0,
+      "entity_f1": 0.893,
+      "relation_f1": 0.795,
+      "entity_f1_sem": 0.929,
+      "relation_f1_sem": 0.708,
+      "type_accuracy": 0.327,
+      "avg_latency_ms": 1608.1
+    }
+  ]
+}
