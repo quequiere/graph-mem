@@ -48,6 +48,45 @@ models:
     model: qwen3:8b
     # ~5GB Q4. Strong JSON-schema compliance reputation, good dedup candidate.
 
+  - name: granite3-3-8b-local
+    enabled: true
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: granite3.3:8b
+    # NEEDS PULL: `ollama pull granite3.3:8b` (~5GB Q4).
+    # IBM Granite 3.3 8B Instruct. Designed explicitly for text extraction,
+    # RAG, classification, function calling. 12 languages incl. French.
+    # Strong enterprise IE candidate, structured <think>/<response> mode.
+
+  - name: mistral-nemo-12b-local
+    enabled: true
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: mistral-nemo:12b
+    # NEEDS PULL: `ollama pull mistral-nemo:12b` (~7GB Q4).
+    # Mistral-Nemo 12B Instruct. Official Ollama library tag.
+    # Strong French support (same family as Ministral), 128k context,
+    # function calling. Will spill to CPU partially on 4GB VRAM.
+
+  - name: llama3-2-3b-local
+    enabled: true
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: llama3.2:3b
+    # NEEDS PULL: `ollama pull llama3.2:3b` (~2GB Q4).
+    # Small multilingual baseline (8 languages incl. French).
+    # Useful to measure 3B floor vs 4B/8B on our FR/EN dataset.
+
+  - name: phi4-mini-local
+    enabled: true
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: phi4-mini:latest
+    # NEEDS PULL: `ollama pull phi4-mini` (~2.5GB Q4).
+    # Microsoft Phi-4-mini 3.8B. Reputation for strong JSON / function calling.
+    # FR support is weaker than EN per Microsoft docs — worth measuring on our
+    # mixed dataset to see how it handles the French half.
+
   # --- Hosted baselines via OpenRouter --------------------------------------
 
   - name: claude-haiku-openrouter
