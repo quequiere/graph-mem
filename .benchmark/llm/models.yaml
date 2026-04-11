@@ -12,7 +12,7 @@ models:
   # Target machine: NVIDIA T1200 4GB VRAM, 32GB RAM, i7-11850H (8 cores)
 
   - name: gemma3-4b-local
-    enabled: true
+    enabled: false
     provider: ollama
     base_url: http://localhost:11434/v1
     model: gemma3:4b
@@ -20,21 +20,21 @@ models:
     # to see how much Gemma 4 improves over Gemma 3 at the same size class.
 
   - name: gemma4-e2b-local
-    enabled: true
+    enabled: false
     provider: ollama
     base_url: http://localhost:11434/v1
     model: gemma4:e2b
     # ~3.2GB Q4 -> fully on GPU. Edge model, probable quality floor.
 
   - name: gemma4-e4b-local
-    enabled: true
+    enabled: false
     provider: ollama
     base_url: http://localhost:11434/v1
     model: gemma4:e4b
     # ~5GB Q4 -> partial CPU offload on 4GB VRAM. "Laptop grand public" target.
 
   - name: gemma4-26b-local
-    enabled: true
+    enabled: false
     provider: ollama
     base_url: http://localhost:11434/v1
     model: gemma4:26b
@@ -51,7 +51,7 @@ models:
     # Thinking mode caused 64% JSON parse failures in initial run.
 
   - name: granite3-3-8b-local
-    enabled: true
+    enabled: false
     provider: ollama
     base_url: http://localhost:11434/v1
     model: granite3.3:8b
@@ -61,7 +61,7 @@ models:
     # Strong enterprise IE candidate, structured <think>/<response> mode.
 
   - name: mistral-nemo-12b-local
-    enabled: true
+    enabled: false
     provider: ollama
     base_url: http://localhost:11434/v1
     model: mistral-nemo:12b
@@ -71,7 +71,7 @@ models:
     # function calling. Will spill to CPU partially on 4GB VRAM.
 
   - name: llama3-2-3b-local
-    enabled: true
+    enabled: false
     provider: ollama
     base_url: http://localhost:11434/v1
     model: llama3.2:3b
@@ -80,7 +80,7 @@ models:
     # Useful to measure 3B floor vs 4B/8B on our FR/EN dataset.
 
   - name: phi4-mini-local
-    enabled: true
+    enabled: false
     provider: ollama
     base_url: http://localhost:11434/v1
     model: phi4-mini:latest
@@ -161,3 +161,57 @@ models:
     # SKIPPED: $0.70/M input, $2.50/M output. Only ~1.7x cheaper than Haiku.
     # Reasoning tokens add latency on short extraction tasks — poor ROI here.
     # Re-enable if we want to test max reasoning quality on hard cases.
+
+  # --- Hosted equivalents of Ollama-pullable small/medium models -------------
+  # These let us compare "is the local Ollama quant worth running?" vs the same
+  # model served by a pro inference provider. Wave 2 added these to complete
+  # the quality matrix.
+
+  - name: gemma3-4b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: google/gemma-3-4b-it
+    api_key_env: OPENROUTER_API_KEY
+    # $0.04/M in, $0.08/M out. Hosted equivalent of gemma3:4b (the v1 local winner).
+
+  - name: gemma3n-e2b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: google/gemma-3n-e2b-it:free
+    api_key_env: OPENROUTER_API_KEY
+    # Free tier on OR. Hosted equivalent of what Ollama ships as gemma4:e2b.
+
+  - name: gemma3n-e4b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: google/gemma-3n-e4b-it
+    api_key_env: OPENROUTER_API_KEY
+    # $0.02/M in, $0.04/M out. Hosted equivalent of Ollama gemma4:e4b.
+
+  - name: llama3-2-3b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: meta-llama/llama-3.2-3b-instruct
+    api_key_env: OPENROUTER_API_KEY
+    # $0.051/M in, $0.34/M out. Hosted equivalent of Ollama llama3.2:3b.
+
+  - name: mistral-nemo-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: mistralai/mistral-nemo
+    api_key_env: OPENROUTER_API_KEY
+    # $0.02/M in, $0.04/M out. Hosted equivalent of Ollama mistral-nemo:12b.
+
+  - name: qwen3-8b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: qwen/qwen3-8b
+    api_key_env: OPENROUTER_API_KEY
+    # $0.05/M in, $0.40/M out. Hosted equivalent of Ollama qwen3:8b.
+    # Interesting to see if OR serves it without thinking mode by default.

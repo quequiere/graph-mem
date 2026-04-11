@@ -1,0 +1,738 @@
+{
+  "version": "2.0",
+  "description": "Entity & relation extraction benchmark for graph-mem. Mix of French/English, user preferences, project facts, dedup, temporal, pronouns, negations. V2 adds critical cases on weak v1 categories (mixed, user_preference, project_fact relations, temporal past_*, negation).",
+  "predicate_guidance": "Relations use lowercase snake_case predicates. Invalidated/past facts are prefixed with 'past_' (e.g. past_uses). Merge aliases into a single entity.",
+  "cases": [
+    {
+      "id": "simple_entity_01",
+      "category": "simple_entity",
+      "input": "Bruno aime Python.",
+      "expected": {
+        "entities": [
+          {"name": "Bruno", "type": "Person"},
+          {"name": "Python", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Bruno", "predicate": "likes", "target": "Python"}
+        ]
+      }
+    },
+    {
+      "id": "simple_entity_02",
+      "category": "simple_entity",
+      "input": "Atlas is our main project.",
+      "expected": {
+        "entities": [
+          {"name": "Atlas", "type": "Project"}
+        ],
+        "relations": []
+      }
+    },
+    {
+      "id": "simple_entity_03",
+      "category": "simple_entity",
+      "input": "J'utilise VSCode tous les jours pour coder.",
+      "expected": {
+        "entities": [
+          {"name": "VSCode", "type": "Tool"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "uses", "target": "VSCode"}
+        ]
+      }
+    },
+    {
+      "id": "simple_relation_01",
+      "category": "simple_relation",
+      "input": "Bruno travaille avec Julie sur le projet Atlas.",
+      "expected": {
+        "entities": [
+          {"name": "Bruno", "type": "Person"},
+          {"name": "Julie", "type": "Person"},
+          {"name": "Atlas", "type": "Project"}
+        ],
+        "relations": [
+          {"source": "Bruno", "predicate": "works_with", "target": "Julie"},
+          {"source": "Bruno", "predicate": "works_on", "target": "Atlas"},
+          {"source": "Julie", "predicate": "works_on", "target": "Atlas"}
+        ]
+      }
+    },
+    {
+      "id": "simple_relation_02",
+      "category": "simple_relation",
+      "input": "Sylvie me coache sur C#.",
+      "expected": {
+        "entities": [
+          {"name": "Sylvie", "type": "Person"},
+          {"name": "C#", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Sylvie", "predicate": "coaches", "target": "user"},
+          {"source": "user", "predicate": "learns", "target": "C#"}
+        ]
+      }
+    },
+    {
+      "id": "simple_relation_03",
+      "category": "simple_relation",
+      "input": "Atlas uses Neo4j and Python.",
+      "expected": {
+        "entities": [
+          {"name": "Atlas", "type": "Project"},
+          {"name": "Neo4j", "type": "Technology"},
+          {"name": "Python", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Atlas", "predicate": "uses", "target": "Neo4j"},
+          {"source": "Atlas", "predicate": "uses", "target": "Python"}
+        ]
+      }
+    },
+    {
+      "id": "dedup_01",
+      "category": "dedup",
+      "input": "Thomas, qu'on appelle Tom, est développeur Rust.",
+      "expected": {
+        "entities": [
+          {"name": "Thomas", "type": "Person"},
+          {"name": "Rust", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Thomas", "predicate": "uses", "target": "Rust"}
+        ]
+      }
+    },
+    {
+      "id": "dedup_02",
+      "category": "dedup",
+      "input": "PostgreSQL, ou Postgres, est notre base principale.",
+      "expected": {
+        "entities": [
+          {"name": "PostgreSQL", "type": "Technology"}
+        ],
+        "relations": []
+      }
+    },
+    {
+      "id": "dedup_03",
+      "category": "dedup",
+      "input": "Michelin (la Manufacture Française des Pneumatiques Michelin) est basée à Clermont-Ferrand.",
+      "expected": {
+        "entities": [
+          {"name": "Michelin", "type": "Organization"},
+          {"name": "Clermont-Ferrand", "type": "Location"}
+        ],
+        "relations": [
+          {"source": "Michelin", "predicate": "located_in", "target": "Clermont-Ferrand"}
+        ]
+      }
+    },
+    {
+      "id": "temporal_01",
+      "category": "temporal",
+      "input": "Avant on utilisait MongoDB, maintenant on est passés à PostgreSQL.",
+      "expected": {
+        "entities": [
+          {"name": "MongoDB", "type": "Technology"},
+          {"name": "PostgreSQL", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "past_uses", "target": "MongoDB"},
+          {"source": "user", "predicate": "uses", "target": "PostgreSQL"}
+        ]
+      }
+    },
+    {
+      "id": "temporal_02",
+      "category": "temporal",
+      "input": "Julie était lead tech sur Atlas mais elle est partie en janvier.",
+      "expected": {
+        "entities": [
+          {"name": "Julie", "type": "Person"},
+          {"name": "Atlas", "type": "Project"}
+        ],
+        "relations": [
+          {"source": "Julie", "predicate": "past_leads", "target": "Atlas"}
+        ]
+      }
+    },
+    {
+      "id": "user_pref_01",
+      "category": "user_preference",
+      "input": "Je préfère le TDD aux tests manuels.",
+      "expected": {
+        "entities": [
+          {"name": "TDD", "type": "Practice"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "prefers", "target": "TDD"}
+        ]
+      }
+    },
+    {
+      "id": "user_pref_02",
+      "category": "user_preference",
+      "input": "J'écris mon code en anglais mais je discute en français.",
+      "expected": {
+        "entities": [
+          {"name": "English", "type": "Language"},
+          {"name": "French", "type": "Language"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "codes_in", "target": "English"},
+          {"source": "user", "predicate": "speaks", "target": "French"}
+        ]
+      }
+    },
+    {
+      "id": "user_pref_03",
+      "category": "user_preference",
+      "input": "I'm a senior developer with 10 years of experience in backend systems.",
+      "expected": {
+        "entities": [
+          {"name": "Senior Developer", "type": "Role"},
+          {"name": "backend systems", "type": "Domain"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "is", "target": "Senior Developer"},
+          {"source": "user", "predicate": "works_on", "target": "backend systems"}
+        ]
+      }
+    },
+    {
+      "id": "project_fact_01",
+      "category": "project_fact",
+      "input": "Graph-mem is a Claude Code plugin built in Python.",
+      "expected": {
+        "entities": [
+          {"name": "graph-mem", "type": "Project"},
+          {"name": "Claude Code", "type": "Tool"},
+          {"name": "Python", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "graph-mem", "predicate": "is_plugin_for", "target": "Claude Code"},
+          {"source": "graph-mem", "predicate": "uses", "target": "Python"}
+        ]
+      }
+    },
+    {
+      "id": "project_fact_02",
+      "category": "project_fact",
+      "input": "Notre stack c'est Neo4j 5.26 et Graphiti avec OpenRouter comme backend LLM.",
+      "expected": {
+        "entities": [
+          {"name": "Neo4j", "type": "Technology"},
+          {"name": "Graphiti", "type": "Technology"},
+          {"name": "OpenRouter", "type": "Service"}
+        ],
+        "relations": [
+          {"source": "project", "predicate": "uses", "target": "Neo4j"},
+          {"source": "project", "predicate": "uses", "target": "Graphiti"},
+          {"source": "project", "predicate": "uses", "target": "OpenRouter"}
+        ]
+      }
+    },
+    {
+      "id": "project_fact_03",
+      "category": "project_fact",
+      "input": "Deployment is via Docker Compose on a single VM.",
+      "expected": {
+        "entities": [
+          {"name": "Docker Compose", "type": "Tool"},
+          {"name": "VM", "type": "Infrastructure"}
+        ],
+        "relations": [
+          {"source": "project", "predicate": "deployed_via", "target": "Docker Compose"},
+          {"source": "project", "predicate": "runs_on", "target": "VM"}
+        ]
+      }
+    },
+    {
+      "id": "mixed_01",
+      "category": "mixed",
+      "input": "Bruno is fluent in Python and Go, but he's learning Rust now.",
+      "expected": {
+        "entities": [
+          {"name": "Bruno", "type": "Person"},
+          {"name": "Python", "type": "Technology"},
+          {"name": "Go", "type": "Technology"},
+          {"name": "Rust", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Bruno", "predicate": "knows", "target": "Python"},
+          {"source": "Bruno", "predicate": "knows", "target": "Go"},
+          {"source": "Bruno", "predicate": "learns", "target": "Rust"}
+        ]
+      }
+    },
+    {
+      "id": "pronoun_01",
+      "category": "pronoun",
+      "input": "Sylvie est ma collègue. Elle travaille sur le projet Atlas.",
+      "expected": {
+        "entities": [
+          {"name": "Sylvie", "type": "Person"},
+          {"name": "Atlas", "type": "Project"}
+        ],
+        "relations": [
+          {"source": "Sylvie", "predicate": "colleague_of", "target": "user"},
+          {"source": "Sylvie", "predicate": "works_on", "target": "Atlas"}
+        ]
+      }
+    },
+    {
+      "id": "negation_01",
+      "category": "negation",
+      "input": "Julie ne travaille plus sur Atlas depuis février.",
+      "expected": {
+        "entities": [
+          {"name": "Julie", "type": "Person"},
+          {"name": "Atlas", "type": "Project"}
+        ],
+        "relations": [
+          {"source": "Julie", "predicate": "past_works_on", "target": "Atlas"}
+        ]
+      }
+    },
+    {
+      "id": "nested_01",
+      "category": "nested",
+      "input": "L'équipe Atlas, dirigée par Bruno, utilise Python et Neo4j pour le backend.",
+      "expected": {
+        "entities": [
+          {"name": "Atlas", "type": "Project"},
+          {"name": "Bruno", "type": "Person"},
+          {"name": "Python", "type": "Technology"},
+          {"name": "Neo4j", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Atlas", "predicate": "led_by", "target": "Bruno"},
+          {"source": "Atlas", "predicate": "uses", "target": "Python"},
+          {"source": "Atlas", "predicate": "uses", "target": "Neo4j"}
+        ]
+      }
+    },
+    {
+      "id": "mixed_lang_01",
+      "category": "mixed",
+      "input": "The tech stack is Python, Go, et un peu de Rust pour les parties critiques.",
+      "expected": {
+        "entities": [
+          {"name": "Python", "type": "Technology"},
+          {"name": "Go", "type": "Technology"},
+          {"name": "Rust", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "project", "predicate": "uses", "target": "Python"},
+          {"source": "project", "predicate": "uses", "target": "Go"},
+          {"source": "project", "predicate": "uses", "target": "Rust"}
+        ]
+      }
+    },
+    {
+      "id": "abstract_01",
+      "category": "abstract",
+      "input": "Je crois fortement à la qualité du code et aux tests automatisés.",
+      "expected": {
+        "entities": [
+          {"name": "code quality", "type": "Value"},
+          {"name": "automated testing", "type": "Practice"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "values", "target": "code quality"},
+          {"source": "user", "predicate": "values", "target": "automated testing"}
+        ]
+      }
+    },
+    {
+      "id": "edge_empty_01",
+      "category": "edge",
+      "input": "On a un meeting demain à 14h pour discuter du budget.",
+      "expected": {
+        "entities": [],
+        "relations": []
+      }
+    },
+    {
+      "id": "edge_short_01",
+      "category": "edge",
+      "input": "J'adore Rust.",
+      "expected": {
+        "entities": [
+          {"name": "Rust", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "likes", "target": "Rust"}
+        ]
+      }
+    },
+    {
+      "id": "simple_relation_04",
+      "category": "simple_relation",
+      "input": "Léa enseigne le Rust à Thomas.",
+      "expected": {
+        "entities": [
+          {"name": "Léa", "type": "Person"},
+          {"name": "Thomas", "type": "Person"},
+          {"name": "Rust", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Léa", "predicate": "coaches", "target": "Thomas"},
+          {"source": "Thomas", "predicate": "learns", "target": "Rust"}
+        ]
+      }
+    },
+    {
+      "id": "mixed_02",
+      "category": "mixed",
+      "input": "Marie code en Java au boulot et en Python pour ses side projects.",
+      "expected": {
+        "entities": [
+          {"name": "Marie", "type": "Person"},
+          {"name": "Java", "type": "Technology"},
+          {"name": "Python", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Marie", "predicate": "codes_in", "target": "Java"},
+          {"source": "Marie", "predicate": "codes_in", "target": "Python"}
+        ]
+      }
+    },
+    {
+      "id": "mixed_03",
+      "category": "mixed",
+      "input": "We deploy Atlas via Docker on AWS.",
+      "expected": {
+        "entities": [
+          {"name": "Atlas", "type": "Project"},
+          {"name": "Docker", "type": "Tool"},
+          {"name": "AWS", "type": "Service"}
+        ],
+        "relations": [
+          {"source": "Atlas", "predicate": "deployed_via", "target": "Docker"},
+          {"source": "Atlas", "predicate": "runs_on", "target": "AWS"}
+        ]
+      }
+    },
+    {
+      "id": "mixed_04",
+      "category": "mixed",
+      "input": "Sarah is our DevOps lead and she knows Terraform and Ansible.",
+      "expected": {
+        "entities": [
+          {"name": "Sarah", "type": "Person"},
+          {"name": "DevOps Lead", "type": "Role"},
+          {"name": "Terraform", "type": "Technology"},
+          {"name": "Ansible", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Sarah", "predicate": "is", "target": "DevOps Lead"},
+          {"source": "Sarah", "predicate": "knows", "target": "Terraform"},
+          {"source": "Sarah", "predicate": "knows", "target": "Ansible"}
+        ]
+      }
+    },
+    {
+      "id": "mixed_05",
+      "category": "mixed",
+      "input": "Bruno préfère VSCode à IntelliJ et travaille sur graph-mem.",
+      "expected": {
+        "entities": [
+          {"name": "Bruno", "type": "Person"},
+          {"name": "VSCode", "type": "Tool"},
+          {"name": "IntelliJ", "type": "Tool"},
+          {"name": "graph-mem", "type": "Project"}
+        ],
+        "relations": [
+          {"source": "Bruno", "predicate": "prefers", "target": "VSCode"},
+          {"source": "Bruno", "predicate": "works_on", "target": "graph-mem"}
+        ]
+      }
+    },
+    {
+      "id": "user_pref_04",
+      "category": "user_preference",
+      "input": "Je préfère Fastify à Express pour les APIs Node.",
+      "expected": {
+        "entities": [
+          {"name": "Fastify", "type": "Technology"},
+          {"name": "Express", "type": "Technology"},
+          {"name": "Node", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "prefers", "target": "Fastify"}
+        ]
+      }
+    },
+    {
+      "id": "user_pref_05",
+      "category": "user_preference",
+      "input": "I strongly value code reviews and pair programming.",
+      "expected": {
+        "entities": [
+          {"name": "code reviews", "type": "Practice"},
+          {"name": "pair programming", "type": "Practice"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "values", "target": "code reviews"},
+          {"source": "user", "predicate": "values", "target": "pair programming"}
+        ]
+      }
+    },
+    {
+      "id": "user_pref_06",
+      "category": "user_preference",
+      "input": "En tant qu'architecte, je tiens beaucoup à la simplicité.",
+      "expected": {
+        "entities": [
+          {"name": "Architect", "type": "Role"},
+          {"name": "simplicity", "type": "Value"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "is", "target": "Architect"},
+          {"source": "user", "predicate": "values", "target": "simplicity"}
+        ]
+      }
+    },
+    {
+      "id": "project_fact_04",
+      "category": "project_fact",
+      "input": "Helios runs on Kubernetes and uses Redis for caching.",
+      "expected": {
+        "entities": [
+          {"name": "Helios", "type": "Project"},
+          {"name": "Kubernetes", "type": "Tool"},
+          {"name": "Redis", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Helios", "predicate": "runs_on", "target": "Kubernetes"},
+          {"source": "Helios", "predicate": "uses", "target": "Redis"}
+        ]
+      }
+    },
+    {
+      "id": "project_fact_05",
+      "category": "project_fact",
+      "input": "Le frontend d'Atlas est codé en TypeScript avec React.",
+      "expected": {
+        "entities": [
+          {"name": "Atlas", "type": "Project"},
+          {"name": "TypeScript", "type": "Technology"},
+          {"name": "React", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Atlas", "predicate": "uses", "target": "TypeScript"},
+          {"source": "Atlas", "predicate": "uses", "target": "React"}
+        ]
+      }
+    },
+    {
+      "id": "project_fact_06",
+      "category": "project_fact",
+      "input": "The graph-mem plugin stores data in Neo4j.",
+      "expected": {
+        "entities": [
+          {"name": "graph-mem", "type": "Project"},
+          {"name": "Neo4j", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "graph-mem", "predicate": "uses", "target": "Neo4j"}
+        ]
+      }
+    },
+    {
+      "id": "dedup_04",
+      "category": "dedup",
+      "input": "K8s (Kubernetes) is our orchestrator of choice.",
+      "expected": {
+        "entities": [
+          {"name": "Kubernetes", "type": "Tool"}
+        ],
+        "relations": [
+          {"source": "project", "predicate": "uses", "target": "Kubernetes"}
+        ]
+      }
+    },
+    {
+      "id": "dedup_05",
+      "category": "dedup",
+      "input": "JavaScript, qu'on appelle souvent JS, est partout sur le web.",
+      "expected": {
+        "entities": [
+          {"name": "JavaScript", "type": "Technology"}
+        ],
+        "relations": []
+      }
+    },
+    {
+      "id": "temporal_03",
+      "category": "temporal",
+      "input": "J'étais développeur chez Renault, maintenant je suis chez Michelin.",
+      "expected": {
+        "entities": [
+          {"name": "Renault", "type": "Organization"},
+          {"name": "Michelin", "type": "Organization"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "past_works_with", "target": "Renault"},
+          {"source": "user", "predicate": "works_with", "target": "Michelin"}
+        ]
+      }
+    },
+    {
+      "id": "temporal_04",
+      "category": "temporal",
+      "input": "We used to deploy on Heroku but we moved to AWS last year.",
+      "expected": {
+        "entities": [
+          {"name": "Heroku", "type": "Service"},
+          {"name": "AWS", "type": "Service"}
+        ],
+        "relations": [
+          {"source": "project", "predicate": "past_runs_on", "target": "Heroku"},
+          {"source": "project", "predicate": "runs_on", "target": "AWS"}
+        ]
+      }
+    },
+    {
+      "id": "negation_02",
+      "category": "negation",
+      "input": "Je n'utilise plus Jira depuis qu'on est passés sur Linear.",
+      "expected": {
+        "entities": [
+          {"name": "Jira", "type": "Tool"},
+          {"name": "Linear", "type": "Tool"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "past_uses", "target": "Jira"},
+          {"source": "user", "predicate": "uses", "target": "Linear"}
+        ]
+      }
+    },
+    {
+      "id": "negation_03",
+      "category": "negation",
+      "input": "Claire doesn't work on Atlas anymore, she left the team in March.",
+      "expected": {
+        "entities": [
+          {"name": "Claire", "type": "Person"},
+          {"name": "Atlas", "type": "Project"}
+        ],
+        "relations": [
+          {"source": "Claire", "predicate": "past_works_on", "target": "Atlas"}
+        ]
+      }
+    },
+    {
+      "id": "negation_04",
+      "category": "negation",
+      "input": "On n'utilise plus Docker Swarm depuis 2024.",
+      "expected": {
+        "entities": [
+          {"name": "Docker Swarm", "type": "Tool"}
+        ],
+        "relations": [
+          {"source": "project", "predicate": "past_uses", "target": "Docker Swarm"}
+        ]
+      }
+    },
+    {
+      "id": "edge_empty_02",
+      "category": "edge",
+      "input": "Pense à checker ton mail ce soir.",
+      "expected": {
+        "entities": [],
+        "relations": []
+      }
+    },
+    {
+      "id": "edge_short_02",
+      "category": "edge",
+      "input": "I love TypeScript.",
+      "expected": {
+        "entities": [
+          {"name": "TypeScript", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "user", "predicate": "likes", "target": "TypeScript"}
+        ]
+      }
+    },
+    {
+      "id": "edge_multi_01",
+      "category": "edge",
+      "input": "Alice joined the team last month. She's an expert in Kubernetes.",
+      "expected": {
+        "entities": [
+          {"name": "Alice", "type": "Person"},
+          {"name": "Kubernetes", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Alice", "predicate": "knows", "target": "Kubernetes"}
+        ]
+      }
+    },
+    {
+      "id": "pronoun_02",
+      "category": "pronoun",
+      "input": "J'ai rencontré Thomas hier. Il bosse maintenant sur React Native.",
+      "expected": {
+        "entities": [
+          {"name": "Thomas", "type": "Person"},
+          {"name": "React Native", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Thomas", "predicate": "works_on", "target": "React Native"}
+        ]
+      }
+    },
+    {
+      "id": "pronoun_03",
+      "category": "pronoun",
+      "input": "Paul gave a talk about graph-mem. He is the main author.",
+      "expected": {
+        "entities": [
+          {"name": "Paul", "type": "Person"},
+          {"name": "graph-mem", "type": "Project"}
+        ],
+        "relations": [
+          {"source": "Paul", "predicate": "works_on", "target": "graph-mem"}
+        ]
+      }
+    },
+    {
+      "id": "pronoun_04",
+      "category": "pronoun",
+      "input": "Chez nous, on utilise principalement Python et Rust.",
+      "expected": {
+        "entities": [
+          {"name": "Python", "type": "Technology"},
+          {"name": "Rust", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "project", "predicate": "uses", "target": "Python"},
+          {"source": "project", "predicate": "uses", "target": "Rust"}
+        ]
+      }
+    },
+    {
+      "id": "nested_02",
+      "category": "nested",
+      "input": "Atlas, le projet open-source de Bruno écrit en Rust, utilise Neo4j comme base.",
+      "expected": {
+        "entities": [
+          {"name": "Atlas", "type": "Project"},
+          {"name": "Bruno", "type": "Person"},
+          {"name": "Rust", "type": "Technology"},
+          {"name": "Neo4j", "type": "Technology"}
+        ],
+        "relations": [
+          {"source": "Atlas", "predicate": "led_by", "target": "Bruno"},
+          {"source": "Atlas", "predicate": "uses", "target": "Rust"},
+          {"source": "Atlas", "predicate": "uses", "target": "Neo4j"}
+        ]
+      }
+    }
+  ]
+}

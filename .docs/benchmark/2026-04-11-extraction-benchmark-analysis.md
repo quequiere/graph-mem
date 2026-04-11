@@ -53,26 +53,34 @@ Notes on the cost column:
 
 ## 3. Cost analysis
 
-### 3.1 Cost per extraction call
+### 3.1 Cost and latency per extraction call
 
-Unit cost for a single extraction call (average over the 25-case run):
+Unit cost and average wall-clock latency for a single extraction call (average over the 25-case run). Latency is the **raw LLM call only**, not the full Graphiti ingestion pipeline (entity resolution + Neo4j write would add another 1–3×).
 
-| Model | $ / extraction | $ / 1k extractions | $ / 100 k extractions |
-|---|---:|---:|---:|
-| `claude-haiku-4.5` | $0.000855 | $0.855 | **$85.48** |
-| `deepseek-v3` | $0.000135 | $0.135 | $13.50 |
-| `gemma-4-26b-a4b-it` | $0.0000893 | $0.089 | $8.93 |
-| `gpt-4o-mini` | $0.0000856 | $0.086 | $8.56 |
-| `gemini-2.5-flash-lite` | $0.0000839 | $0.084 | $8.39 |
-| `mistral-small-3.2-24b` | $0.0000471 | $0.047 | $4.71 |
-| `qwen-turbo` | **$0.0000218** | **$0.022** | **$2.18** |
-| `gemma3:4b` *(local; OR equiv.)* | $0.0000216 | $0.022 | $2.16 |
-| `mistral-nemo:12b` *(local; OR equiv.)* | $0.0000105 | $0.011 | $1.05 |
-| `gemma4:e4b` *(local; OR equiv.)* | $0.0000101 | $0.010 | $1.01 |
-| `llama3.2:3b` *(local; OR equiv.)* | $0.0000529 | $0.053 | $5.29 |
-| `qwen3:8b` *(local; OR equiv.)* | $0.0000293 | $0.029 | $2.93 |
-| `gemma4:e2b` *(local; only free tier on OR)* | $0 | $0 | $0 |
-| `phi4-mini`, `granite3.3:8b` | — | no OpenRouter equivalent | — |
+| Model | **Avg. latency / ingestion** | $ / extraction | $ / 1k extractions | $ / 100 k extractions |
+|---|---:|---:|---:|---:|
+| `gpt-4o-mini` | **1.3 s** | $0.0000856 | $0.086 | $8.56 |
+| `mistral-small-3.2-24b` | 1.5 s | $0.0000471 | $0.047 | $4.71 |
+| `qwen-turbo` | 1.6 s | **$0.0000218** | **$0.022** | **$2.18** |
+| `gemini-2.5-flash-lite` | 1.6 s | $0.0000839 | $0.084 | $8.39 |
+| `claude-haiku-4.5` | 2.0 s | $0.000855 | $0.855 | **$85.48** |
+| `phi4-mini` *(local)* | 6.9 s | — (no OR equiv.) | — | — |
+| `deepseek-v3` | 7.3 s | $0.000135 | $0.135 | $13.50 |
+| `llama3.2:3b` *(local; OR equiv.)* | 8.3 s | $0.0000529 | $0.053 | $5.29 |
+| `gemma-4-26b-a4b-it` | 8.7 s | $0.0000893 | $0.089 | $8.93 |
+| **`gemma3:4b`** *(local; OR equiv.)* | **10.4 s** | $0.0000216 | $0.022 | $2.16 |
+| `gemma4:e4b` *(local; OR equiv.)* | 17.5 s | $0.0000101 | $0.010 | $1.01 |
+| `granite3.3:8b` *(local)* | 21.3 s | — (no OR equiv.) | — | — |
+| `mistral-nemo:12b` *(local; OR equiv.)* | 23.9 s | $0.0000105 | $0.011 | $1.05 |
+| `gemma4:e2b` *(local; only free on OR)* | 37.0 s | $0 | $0 | $0 |
+| `qwen3:8b` *(local; OR equiv., thinking mode)* | 137.3 s | $0.0000293 | $0.029 | $2.93 |
+
+**Latency observations:**
+- The five hosted models are all in the **1.3–2.0 s** range — a ~5× advantage over the fastest local model.
+- Among locals, only `phi4-mini` (6.9 s) and `llama3.2:3b` (8.3 s) beat the 10 s hook budget. `gemma3:4b` sits right on the limit.
+- **`gemma3:4b` latency (10.4 s) is the primary cost** of going local — it's ~3× slower than `deepseek-v3` on OpenRouter, for comparable quality but $0 marginal cost.
+- `qwen3:8b` at 137 s is entirely caused by thinking-mode leakage (the model generates long `<think>…</think>` blocks that never terminate cleanly). Not representative — retest required.
+- These numbers are for a **cold-cached Ollama call** (no KV-cache reuse between cases). Persistent Ollama sessions and batching could likely halve local latencies.
 
 ### 3.2 Realistic graph-mem usage scenario
 
