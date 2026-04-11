@@ -7,7 +7,7 @@ from graph_mem.config import Settings, get_settings
 
 def test_default_settings():
     settings = get_settings()
-    assert settings.graphiti_url == "http://localhost:8000"
+    assert settings.graphiti_url == "http://127.0.0.1:8000"
     assert settings.graphiti_api_key is None
 
 

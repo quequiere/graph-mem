@@ -1,7 +1,9 @@
-"""Configuration from environment variables."""
+"""Configuration from environment variables and shared constants."""
 
 import os
 from dataclasses import dataclass
+
+USER_PROFILE = "user_profile"
 
 
 @dataclass

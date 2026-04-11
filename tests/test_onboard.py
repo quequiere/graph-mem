@@ -1,5 +1,6 @@
 import pytest
 from graph_mem.client import GraphitiClient
+from graph_mem.config import USER_PROFILE
 from graph_mem.tools.onboard import check_project, onboard_project
 
 
@@ -46,7 +47,7 @@ async def test_onboard_project(client, monkeypatch, tmp_path):
     result = await onboard_project(client, project_id="project_my-project", project_path=str(tmp_path), description="A test project")
     project_calls = [c for c in calls if c["group_id"] == "project_my-project"]
     assert len(project_calls) >= 1
-    profile_calls = [c for c in calls if c["group_id"] == "user_profile"]
+    profile_calls = [c for c in calls if c["group_id"] == USER_PROFILE]
     assert len(profile_calls) >= 1
 
 

@@ -10,11 +10,9 @@ import asyncio
 import sys
 
 from graph_mem.client import GraphitiClient
-from graph_mem.config import get_settings
+from graph_mem.config import USER_PROFILE, get_settings
 from graph_mem.hooks._classifier import classify_message
 from graph_mem.project_id import get_project_id
-
-USER_PROFILE_GROUP = "user_profile"
 
 
 async def ingest(group_id: str, content: str) -> None:
@@ -48,7 +46,7 @@ def main():
             sys.exit(0)
 
         if classification == "USER":
-            group_id = USER_PROFILE_GROUP
+            group_id = USER_PROFILE
         else:
             group_id = get_project_id(project_path=cwd)
 

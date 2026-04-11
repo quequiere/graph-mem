@@ -9,15 +9,13 @@ increase the chance that the model actually uses them.
 from mcp.server.fastmcp import FastMCP
 
 from graph_mem.client import GraphitiClient
-from graph_mem.config import get_settings
+from graph_mem.config import USER_PROFILE, get_settings
 from graph_mem.project_id import get_project_id
 from graph_mem.tools import memory as memory_tools
 from graph_mem.tools import passthrough
 from graph_mem.viewer import start_viewer
 
 mcp = FastMCP("graph-mem")
-
-USER_PROFILE = "user_profile"
 
 
 def _error(action: str, e: Exception) -> str:
