@@ -164,6 +164,20 @@ Your machine                          Docker (local by default)
 - Communication is plain HTTP — no JSON-RPC, works behind corporate proxies
 - Memory is scoped by `user_profile` (global) and `project_{identifier}` (per-repo, derived from git remote URL); both scopes are merged at query time
 
+## Which model to choose?
+
+### LLM backend
+
+- 🥇 **`google/gemma-3-4b-it`** — default choice. Best quality / cost / latency balance, and runs locally as `gemma3:4b` for offline fallback.
+- 🥈 **`anthropic/claude-haiku-4.5`** — when relation quality matters most (user preferences, past facts, negations). ~42× more expensive.
+- 🥉 **`google/gemini-2.5-flash-lite`** — when sub-second latency is a hard requirement.
+
+→ **Full report:** [LLM extraction benchmark — 2026-04-11](doc/benchmark/2026-04-11-extraction-benchmark-v2.md)
+
+### Embedding backend
+
+*Benchmark coming soon. The current default is `qwen/qwen3-embedding-8b` via OpenRouter.*
+
 ## Built on
 
 - **[Graphiti](https://github.com/getzep/graphiti)** — Temporally-aware knowledge graph framework by Zep
