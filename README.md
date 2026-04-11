@@ -5,66 +5,42 @@
 [![PyPI](https://img.shields.io/pypi/v/graph-mem)](https://pypi.org/project/graph-mem/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
-[![Status](https://img.shields.io/badge/status-not%20usable%20yet-red)](https://github.com/quequiere/graph-mem/issues)
-
-> **⚠️ Not usable yet.** This is the first development milestone — the code is written but the project has not been tested end-to-end against a live Graphiti instance. Do not try to use it yet. Follow the repo or [open an issue](https://github.com/quequiere/graph-mem/issues) to be notified when it's ready.
+[![Status](https://img.shields.io/badge/status-alpha-orange)](https://github.com/quequiere/graph-mem/issues)
 
 <p align="center">
   <img src="docs/graph-mem-hero.svg" alt="graph-mem knowledge graph — your projects, teammates, decisions and skills connected over time" width="800"/>
 </p>
 
-## What it looks like in practice
+> **Alpha — not usable yet.** The code is written but hasn't been tested end-to-end against a live Graphiti instance. [Watch the repo](https://github.com/quequiere/graph-mem) to know when it ships.
 
-**Session 1** — Working on a FastAPI project with Julie. graph-mem learns:
-> *"Developer uses Python, works on project_atlas with Julie (tech lead), prefers pnpm, uses TDD."*
+## Demo
 
-**Session 12** — You start learning Rust on a side project. graph-mem adds:
-> *"Developer is learning Rust (beginner), started project_oxide, still active on project_atlas."*
+> 🚧 **Under construction.** A short screencast is coming once the embedding benchmark lands. In the meantime, here's the idea:
 
-**Session 47** — You open a new terminal. Before you type anything, your assistant already knows:
-> *"You're in the project_atlas repo. Julie pushed a migration yesterday. There's a CI blocker (OOM on E2E tests). You prefer no mocks in integration tests. Reminder: bump deps to v2.1."*
+**Session 1** — You start a FastAPI project with Julie.
+> *graph-mem learns: Python dev, project_atlas, Julie (tech lead), prefers pnpm, does TDD.*
 
-This happens automatically via Claude Code hooks — no manual prompt engineering required.
+**Session 47** — New terminal, new day. Before you type anything:
+> *"You're in project_atlas. Julie pushed a migration yesterday. CI is blocked on OOM in E2E. Reminder: bump deps to v2.1."*
 
-## Why not just use CLAUDE.md or mem0?
+No prompt engineering. Claude Code hooks inject the context automatically at session start.
 
-`CLAUDE.md` is a static file you maintain by hand — it doesn't track relationships or evolve over time. mem0 is a flat vector store that retrieves similar text; it doesn't know that Julie is your tech lead on project_atlas, or that the OOM blocker is blocking *that specific project's* CI. graph-mem builds a **temporal knowledge graph**: entities connect to each other, facts carry timestamps, and the graph grows smarter as you work.
+## Why not just CLAUDE.md or mem0?
 
-> **Privacy:** By default, everything runs on your machine — Ollama, Graphiti, and Neo4j all live in Docker, and no data leaves your host. If you configure a remote provider in `.env` (OpenRouter, OpenAI, etc.), session summaries and saved facts will be sent to that provider during entity extraction. Review what graph-mem stores before enabling a remote mode on sensitive work projects.
-
-## MCP — what is it?
-
-[MCP](https://modelcontextprotocol.io) (Model Context Protocol) is the plugin system that lets tools like graph-mem extend what Claude, Cursor, and other AI assistants can do. If you use Claude Code or Cursor, you likely already have MCP support — you just add graph-mem to your config.
+`CLAUDE.md` is a static file you maintain by hand. `mem0` is a flat vector store that retrieves similar text. Neither knows that Julie is your tech lead *on project_atlas*, or that the OOM blocker is blocking *that specific* CI. **graph-mem is a temporal knowledge graph** — entities connect, facts carry timestamps, and the graph grows smarter as you work.
 
 ## Quick start
 
-**Prerequisites:** Python 3.11+, Docker & Docker Compose v2.20+.
-
-By default, graph-mem runs **fully local** — no API keys required, no data leaves your machine. Ollama, Graphiti and Neo4j all run in Docker.
-
-### 1. Start the backend
+**Prereqs:** Python 3.11+, Docker Compose v2.20+. The default stack is **fully local** (Ollama + Graphiti + Neo4j in Docker, no API keys, no data leaves your machine).
 
 ```bash
 git clone https://github.com/quequiere/graph-mem && cd graph-mem
 cp .env.example .env
-
-# Full local (default — Ollama + Graphiti + Neo4j)
-docker compose up -d
-
-# OR full remote (after editing .env to point at your LLM provider)
-docker compose up -d neo4j graphiti
-```
-
-First local launch downloads two Ollama models (~3.5 GB). Subsequent launches are instant thanks to the persistent volume. Neo4j needs ~2 GB RAM; Ollama adds ~4 GB when enabled.
-
-### 2. Connect your MCP client
-
-```bash
+docker compose up -d          # Neo4j + Graphiti + Ollama (~3.5 GB on first run)
 pip install graph-mem
-# or run without installing: uvx graph-mem
 ```
 
-Add to Claude Code (`~/.claude/claude_desktop_config.json` or via `claude mcp add`):
+Then add graph-mem to your MCP client (`~/.claude/claude_desktop_config.json`, Cursor, Windsurf, …):
 
 ```json
 {
@@ -78,11 +54,10 @@ Add to Claude Code (`~/.claude/claude_desktop_config.json` or via `claude mcp ad
 }
 ```
 
-Same config block works for Cursor, Windsurf, and any other MCP-compatible client.
+<details>
+<summary><b>Enable automatic hooks</b> — context injection at session start, auto-save at stop (recommended)</summary>
 
-### 3. (Optional) Enable automatic hooks
-
-Add to `~/.claude/settings.json` for automatic context injection at session start and auto-save at stop:
+Add to `~/.claude/settings.json`:
 
 ```json
 {
@@ -93,101 +68,88 @@ Add to `~/.claude/settings.json` for automatic context injection at session star
 }
 ```
 
-`graph-mem-session-start` and `graph-mem-session-end` are CLI commands installed with `pip install graph-mem`. The `Stop` hook has a 30-second timeout — if Graphiti is unreachable, it exits with a warning and your session ends normally (no data loss; re-save manually via `save_session` next time). Without hooks, call `get_context` and `save_session` manually from the chat.
+The `Stop` hook has a 30s timeout. If Graphiti is unreachable it exits with a warning and your session ends normally — no data loss, just re-save via `save_session` next time.
 
-## Other modes
+</details>
 
-Need a remote LLM, a local embedder, or a mix? Everything is configurable from [`.env`](.env.example). Each variable has an inline comment showing the remote alternative — just swap the values you want, set `COMPOSE_PROFILES=` to skip the bundled Ollama container, and run `docker compose up -d` again. **The command is always the same.**
+<details>
+<summary><b>Use a remote LLM provider</b> (OpenRouter, OpenAI, Anthropic, …)</summary>
 
-## What gets stored?
+Edit `.env` — every variable has an inline comment showing the remote alternative. Then skip the bundled Ollama container:
 
-graph-mem captures the **essence** of your work — not your code. Here's what the knowledge graph tracks:
+```bash
+COMPOSE_PROFILES= docker compose up -d
+```
 
-| Entity type | Examples | How it's captured |
-|---|---|---|
-| **Developer profile** | Expertise, seniority, habits | Accumulated across sessions |
-| **Technologies** | Languages, frameworks, tools | Detected from project context |
-| **Projects** | Name, stack, team, status | `onboard_project` or auto-detected |
-| **People** | Colleagues, roles, relationships | Mentioned in conversations |
-| **Preferences** | Tooling choices, coding style | Stated or observed over time |
-| **Principles** | "TDD always", "no mocks in integration" | Stated by the developer |
-| **Blockers** | CI failures, environment issues | Reported during sessions |
-| **Reminders** | "bump deps", "renew API key" | Explicit `add_reminder` calls |
-| **Decisions** | Architecture choices, trade-offs | Captured in session summaries |
+⚠️ Session summaries and saved facts will be sent to that provider during entity extraction. Review what graph-mem stores before enabling a remote mode on sensitive work projects.
 
-Everything is **temporally aware** — graph-mem knows when you started learning Rust, when you switched from npm to pnpm, and when a blocker was resolved.
+</details>
 
-## MCP Tools
+## What gets stored
 
-### High-level tools
+graph-mem captures the **essence** of your work — not your code:
+
+- **Developer profile** — expertise, seniority, habits
+- **Projects** — name, stack, team, status
+- **People** — colleagues, roles, relationships
+- **Preferences & principles** — *"TDD always"*, *"no mocks in integration"*
+- **Blockers & reminders** — CI failures, deps to bump, keys to renew
+- **Decisions** — architecture choices captured in session summaries
+
+Everything is **temporally aware** — graph-mem knows *when* you started learning Rust, *when* you switched from npm to pnpm, *when* a blocker was resolved.
+
+## MCP tools
+
+The three you'll actually use day-to-day:
 
 | Tool | What it does |
 |---|---|
-| `get_context` | Injects your full profile + current project context + active reminders |
-| `onboard_project` | Analyzes and memorizes a new project's structure, stack, and team |
-| `save_session` | Summarizes and persists the current session to the knowledge graph |
+| `get_context` | Injects your profile + current project context + active reminders |
 | `save_memory` | Stores a specific fact, preference, or decision |
-| `get_profile` | Retrieves your developer profile |
-| `check_project` | Checks whether the current project is known; suggests onboarding if not |
-| `add_reminder` | Adds a reminder that will surface in future sessions |
-| `get_reminders` | Lists active reminders |
+| `save_session` | Summarizes and persists the current session to the graph |
 
-### Passthrough tools (direct Graphiti access)
+<details>
+<summary>Full tool list (onboarding, reminders, passthrough Graphiti access, …)</summary>
 
-| Tool | What it does |
-|---|---|
-| `add_raw_memory` | Adds raw text or JSON directly to the knowledge graph |
-| `search_entities` | Searches for entities (nodes) by natural language |
-| `search_facts` | Searches for facts (relationships) between entities |
-| `reset_memory` | Clears memory for a given scope (`user_profile` or `project_{identifier}`) — destructive, cannot be undone |
-| `status` | Checks Graphiti connection health |
+**High-level**
+- `onboard_project` — analyzes and memorizes a project's stack and team
+- `get_profile` — retrieves your developer profile
+- `check_project` — checks if the current project is known, suggests onboarding if not
+- `add_reminder` / `get_reminders` — explicit reminders surfaced in future sessions
+
+**Passthrough (direct Graphiti access)**
+- `add_raw_memory` — raw text or JSON straight into the graph
+- `search_entities` / `search_facts` — natural-language search over nodes and relationships
+- `reset_memory` — destructive, per scope (`user_profile` or `project_{identifier}`)
+- `status` — Graphiti connection health check
+
+</details>
 
 ## Architecture
 
 ```
 Your machine                          Docker (local by default)
 ┌──────────────────────┐              ┌──────────────────────────┐
-│ Claude Code / Cursor │              │  Graphiti REST API       │
-│         │            │    HTTP      │         │                │
-│    stdio│            │ ──────────►  │    graphiti_core         │
-│         ▼            │              │      │         │         │
-│ graph-mem MCP server │              │    Neo4j     Ollama*     │
-└──────────────────────┘              └──────────────────────────┘
-                                       * Ollama is optional — disable
-                                         via COMPOSE_PROFILES= when
-                                         using a remote LLM provider.
+│ Claude Code / Cursor │    stdio     │  Graphiti REST API       │
+│         │            │  ──────►     │         │                │
+│         ▼            │    HTTP      │    graphiti_core         │
+│ graph-mem MCP server │              │      │         │         │
+└──────────────────────┘              │    Neo4j     Ollama*     │
+                                      └──────────────────────────┘
+                                       * disable via COMPOSE_PROFILES=
+                                         to use a remote LLM provider
 ```
 
-- **graph-mem** runs locally as an MCP server (stdio transport)
-- **Graphiti** runs in Docker, handles entity extraction, embeddings, and graph storage
-- **Ollama** runs in Docker by default and serves both the LLM and the embedder; swap to any OpenAI-compatible remote provider by editing `.env`
-- Communication is plain HTTP — no JSON-RPC, works behind corporate proxies
-- Memory is scoped by `user_profile` (global) and `project_{identifier}` (per-repo, derived from git remote URL); both scopes are merged at query time
+Memory is scoped by `user_profile` (global) and `project_{identifier}` (per-repo, derived from git remote URL). Both scopes merge at query time. Communication is plain HTTP — no JSON-RPC, works behind corporate proxies.
 
-## Which model to choose?
+## Model choice
 
-### LLM backend
-
-- 🥇 **`google/gemma-3-4b-it`** — default choice. Best quality / cost / latency balance, and runs locally as `gemma3:4b` for offline fallback.
-- 🥈 **`anthropic/claude-haiku-4.5`** — when relation quality matters most (user preferences, past facts, negations). ~42× more expensive.
-- 🥉 **`google/gemini-2.5-flash-lite`** — when sub-second latency is a hard requirement.
-
-→ **Full report:** [LLM extraction benchmark — 2026-04-11](doc/benchmark/2026-04-11-extraction-benchmark-v2.md)
-
-### Embedding backend
-
-*Benchmark coming soon. The current default is `qwen/qwen3-embedding-8b` via OpenRouter.*
+Default is **`google/gemma-3-4b-it`** — best quality / cost / latency balance, and runs locally as `gemma3:4b` for offline fallback. Swap via `.env`. Full report: [LLM extraction benchmark (2026-04-11)](doc/benchmark/2026-04-11-extraction-benchmark-v2.md). Embedding benchmark in progress.
 
 ## Built on
 
-- **[Graphiti](https://github.com/getzep/graphiti)** — Temporally-aware knowledge graph framework by Zep
-- **[FastMCP](https://github.com/jlowin/fastmcp)** — Python MCP server framework
-- **[Neo4j](https://neo4j.com)** — Graph database backend
-
-## Contributing
-
-Open an issue first to discuss what you'd like to change. Pull requests welcome.
+[Graphiti](https://github.com/getzep/graphiti) · [FastMCP](https://github.com/jlowin/fastmcp) · [Neo4j](https://neo4j.com)
 
 ## License
 
-Apache-2.0 — see [LICENSE](LICENSE)
+Apache-2.0 — see [LICENSE](LICENSE). Contributions welcome — open an issue first to discuss.
