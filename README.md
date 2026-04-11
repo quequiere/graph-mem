@@ -144,7 +144,18 @@ Memory is scoped by `user_profile` (global) and `project_{identifier}` (per-repo
 
 ## Model choice
 
-Default is **`google/gemma-3-4b-it`** — best quality / cost / latency balance, and runs locally as `gemma3:4b` for offline fallback. Swap via `.env`. Full report: [LLM extraction benchmark (2026-04-11)](doc/benchmark/2026-04-11-extraction-benchmark-v2.md). Embedding benchmark in progress.
+Two independent models, both swappable via `.env`, both mixable local/remote.
+
+| | Default (local) | Remote alternative |
+|---|---|---|
+| **LLM** | `gemma3:4b` | `google/gemma-3-4b-it` (OpenRouter) |
+| **Embedder** | `qwen3-embedding:4b` | `openai/text-embedding-3-small` @ 1024 |
+
+Both defaults are the winners of their benchmark. Embedder picks in particular: `qwen3-embedding:4b` is the only tested model with FR = EN quality (MRR 0.862 / 0.867) and perfect negation handling; `text-embedding-3-small` @ 1024 is the best hosted result (MRR 0.883) at ~$0.02/1M tokens. Tight on disk? `qwen3-embedding:0.6b` (639 MB, MRR 0.809) is a drop-in lighter fallback.
+
+Reports: [LLM extraction benchmark](.docs/benchmark/2026-04-11-extraction-benchmark-v2.md) · [Embedding benchmark](.docs/benchmark/2026-04-11-embedding-benchmark-analysis.md).
+
+> ⚠️ Switching embedders on an existing install means re-ingesting — two embedders don't share a cosine space. Wipe the Neo4j volume and re-run `/onboard`.
 
 ## Built on
 

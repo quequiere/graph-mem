@@ -1,0 +1,154 @@
+# Embedding models under test for graph-mem.
+#
+# HOSTED (5 via OpenRouter): we only use models available through the
+# OpenRouter /v1/embeddings endpoint. Voyage, Cohere and Mistral are NOT on
+# OpenRouter and would need direct API keys — dropped for this run.
+#
+# LOCAL (6): Ollama (Qwen3 embedding family) and sentence-transformers
+# (BGE-M3, Jina v3, Nomic, Stella).
+#
+# Two model identities (bge-m3, qwen3-embedding-8b) appear in BOTH phases
+# deliberately — this lets us measure the impact of Ollama GGUF quantization
+# and HF-to-OR hosting quality differences on the same underlying weights.
+#
+# `enabled: false` -> skip without running.
+
+models:
+  # ========================================================================
+  # HOSTED — via OpenRouter (OpenAI-compat /v1/embeddings)
+  # ========================================================================
+
+  or-openai-3-small:
+    enabled: true
+    phase: hosted
+    family: openrouter
+    model: openai/text-embedding-3-small
+    api_key_env: OPENROUTER_API_KEY
+    dim_native: 1536
+    dim_runs: [1536, 1024]
+    price_per_1m_usd: 0.02
+    max_ctx: 8191
+
+  or-openai-3-large:
+    enabled: true
+    phase: hosted
+    family: openrouter
+    model: openai/text-embedding-3-large
+    api_key_env: OPENROUTER_API_KEY
+    dim_native: 3072
+    dim_runs: [3072, 1024]
+    price_per_1m_usd: 0.13
+    max_ctx: 8191
+
+  or-gemini-001:
+    enabled: true
+    phase: hosted
+    family: openrouter
+    model: google/gemini-embedding-001
+    api_key_env: OPENROUTER_API_KEY
+    dim_native: 3072
+    dim_runs: [3072, 1024]
+    price_per_1m_usd: 0.15
+    max_ctx: 8192
+
+  or-bge-m3:
+    enabled: true
+    phase: hosted
+    family: openrouter
+    model: baai/bge-m3
+    api_key_env: OPENROUTER_API_KEY
+    dim_native: 1024
+    dim_runs: [1024]
+    price_per_1m_usd: 0.01
+    max_ctx: 8192
+
+  or-qwen3-8b:
+    enabled: true
+    phase: hosted
+    family: openrouter
+    model: qwen/qwen3-embedding-8b
+    api_key_env: OPENROUTER_API_KEY
+    dim_native: 4096
+    dim_runs: [4096, 1024]
+    price_per_1m_usd: 0.01
+    max_ctx: 32000
+
+  # ========================================================================
+  # LOCAL — Ollama + sentence-transformers
+  # ========================================================================
+
+  qwen3-embedding-8b:
+    enabled: true
+    phase: local
+    family: ollama
+    model: qwen3-embedding:8b
+    base_url_env: OLLAMA_BASE_URL
+    dim_native: 4096
+    dim_runs: [1024]
+    price_per_1m_usd: null
+    max_ctx: 32000
+
+  qwen3-embedding-4b:
+    enabled: true
+    phase: local
+    family: ollama
+    model: qwen3-embedding:4b
+    base_url_env: OLLAMA_BASE_URL
+    dim_native: 2560
+    dim_runs: [1024]
+    price_per_1m_usd: null
+    max_ctx: 32000
+
+  qwen3-embedding-0.6b:
+    enabled: true
+    phase: local
+    family: ollama
+    model: qwen3-embedding:0.6b
+    base_url_env: OLLAMA_BASE_URL
+    dim_native: 1024
+    dim_runs: [1024]
+    price_per_1m_usd: null
+    max_ctx: 32000
+
+  bge-m3:
+    enabled: true
+    phase: local
+    family: sentence-transformers
+    model: BAAI/bge-m3
+    dim_native: 1024
+    dim_runs: [1024]
+    price_per_1m_usd: null
+    max_ctx: 8192
+
+  jina-v3:
+    enabled: true
+    phase: local
+    family: sentence-transformers
+    model: jinaai/jina-embeddings-v3
+    dim_native: 1024
+    dim_runs: [1024]
+    price_per_1m_usd: null
+    max_ctx: 8192
+
+  nomic-v1.5:
+    enabled: true
+    phase: local
+    family: sentence-transformers
+    model: nomic-ai/nomic-embed-text-v1.5
+    dim_native: 768
+    dim_runs: [768]
+    price_per_1m_usd: null
+    max_ctx: 8192
+
+  stella-en-1.5b:
+    # Disabled: custom code uses transformers.DynamicCache.get_usable_length
+    # which was removed in recent transformers. English-only anyway -- not a
+    # fit for graph-mem's FR/EN workload. Kept in the file as a reference.
+    enabled: false
+    phase: local
+    family: sentence-transformers
+    model: NovaSearch/stella_en_1.5B_v5
+    dim_native: 1024
+    dim_runs: [1024]
+    price_per_1m_usd: null
+    max_ctx: 512

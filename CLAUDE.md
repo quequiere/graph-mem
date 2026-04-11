@@ -10,7 +10,7 @@
 
 ## Design Spec
 
-Full design document: `.doc/specs/2026-04-05-graph-mem-design.md`
+Full design document: `.docs/specs/2026-04-05-graph-mem-design.md`
 
 ## Architecture
 
