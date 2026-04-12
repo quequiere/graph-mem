@@ -284,7 +284,7 @@ While the MCP server is running, a graph viewer is available at:
 http://127.0.0.1:8050
 ```
 
-You can also browse the raw graph via Neo4j Browser at `http://127.0.0.1:7474` (login: `neo4j` / `graphiti`).
+You can also browse the raw graph via Neo4j Browser at `http://127.0.0.1:7475` (login: `neo4j` / `graphiti`).
 
 ## License
 
