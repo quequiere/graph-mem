@@ -5,5 +5,6 @@ FROM zepai/graphiti:latest
 
 COPY zep_graphiti.py /app/graph_service/zep_graphiti.py
 COPY ingest.py /app/graph_service/routers/ingest.py
+COPY entities.py /app/graph_service/entities.py
 
 CMD ["/app/.venv/bin/uvicorn", "graph_service.main:app", "--host", "0.0.0.0", "--port", "8000"]
