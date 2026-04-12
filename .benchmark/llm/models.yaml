@@ -1,0 +1,217 @@
+# Benchmark targets for entity/relation extraction comparison.
+#
+# Each model is called via an OpenAI-compatible /v1/chat/completions endpoint.
+# Toggle `enabled: false` to skip a model without removing it.
+# Add `--only name1,name2` on the CLI to run a subset.
+#
+# Local models assume Ollama at http://localhost:11434.
+# Pull them first: `ollama pull gemma4:e4b` etc.
+
+models:
+  # --- Local via Ollama -----------------------------------------------------
+  # Target machine: NVIDIA T1200 4GB VRAM, 32GB RAM, i7-11850H (8 cores)
+
+  - name: gemma3-4b-local
+    enabled: false
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: gemma3:4b
+    # Baseline: Gemma 3 4B, already pulled. Useful smoke test + comparison point
+    # to see how much Gemma 4 improves over Gemma 3 at the same size class.
+
+  - name: gemma4-e2b-local
+    enabled: false
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: gemma4:e2b
+    # ~3.2GB Q4 -> fully on GPU. Edge model, probable quality floor.
+
+  - name: gemma4-e4b-local
+    enabled: false
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: gemma4:e4b
+    # ~5GB Q4 -> partial CPU offload on 4GB VRAM. "Laptop grand public" target.
+
+  - name: gemma4-26b-local
+    enabled: false
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: gemma4:26b
+    # ~15.6GB Q4 -> CPU-only inference (32GB RAM). MoE with 3.8B active params,
+    # so speed is closer to a 4B model despite total size. Slow but high-quality.
+
+  - name: qwen3-8b-local
+    enabled: false
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: qwen3:8b
+    no_think: true
+    # SKIPPED: too slow even with no_think (~30-60s/case on this hardware).
+    # Thinking mode caused 64% JSON parse failures in initial run.
+
+  - name: granite3-3-8b-local
+    enabled: false
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: granite3.3:8b
+    # NEEDS PULL: `ollama pull granite3.3:8b` (~5GB Q4).
+    # IBM Granite 3.3 8B Instruct. Designed explicitly for text extraction,
+    # RAG, classification, function calling. 12 languages incl. French.
+    # Strong enterprise IE candidate, structured <think>/<response> mode.
+
+  - name: mistral-nemo-12b-local
+    enabled: false
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: mistral-nemo:12b
+    # NEEDS PULL: `ollama pull mistral-nemo:12b` (~7GB Q4).
+    # Mistral-Nemo 12B Instruct. Official Ollama library tag.
+    # Strong French support (same family as Ministral), 128k context,
+    # function calling. Will spill to CPU partially on 4GB VRAM.
+
+  - name: llama3-2-3b-local
+    enabled: false
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: llama3.2:3b
+    # NEEDS PULL: `ollama pull llama3.2:3b` (~2GB Q4).
+    # Small multilingual baseline (8 languages incl. French).
+    # Useful to measure 3B floor vs 4B/8B on our FR/EN dataset.
+
+  - name: phi4-mini-local
+    enabled: false
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model: phi4-mini:latest
+    # NEEDS PULL: `ollama pull phi4-mini` (~2.5GB Q4).
+    # Microsoft Phi-4-mini 3.8B. Reputation for strong JSON / function calling.
+    # FR support is weaker than EN per Microsoft docs — worth measuring on our
+    # mixed dataset to see how it handles the French half.
+
+  # --- Hosted baselines via OpenRouter --------------------------------------
+
+  - name: claude-haiku-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: anthropic/claude-haiku-4.5
+    api_key_env: OPENROUTER_API_KEY
+    # Quality ceiling baseline. $1.00/M input, $5.00/M output.
+
+  - name: gemma4-26b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: google/gemma-4-26b-a4b-it
+    api_key_env: OPENROUTER_API_KEY
+    # Current docker-compose default. Lets us see if local 26B matches hosted.
+
+  - name: gpt-4o-mini-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: openai/gpt-4o-mini
+    api_key_env: OPENROUTER_API_KEY
+    # $0.15/M input, $0.60/M output. ~7.5x cheaper than Haiku.
+    # Native JSON mode, strong FR/EN, good coreference + alias handling.
+
+  - name: gemini-flash-lite-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: google/gemini-2.5-flash-lite
+    api_key_env: OPENROUTER_API_KEY
+    # $0.10/M input, $0.40/M output. ~11x cheaper than Haiku.
+    # Structured outputs supported, 1M context, Gemini 2.5 family.
+
+  - name: deepseek-v3-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: deepseek/deepseek-chat-v3-0324
+    api_key_env: OPENROUTER_API_KEY
+    # $0.20/M input, $0.77/M output. ~5.8x cheaper than Haiku.
+    # Strong reasoning / code, good multilingual incl. French.
+
+  - name: qwen-turbo-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: qwen/qwen-turbo
+    api_key_env: OPENROUTER_API_KEY
+    # $0.0325/M input, $0.13/M output. ~35x cheaper than Haiku.
+    # Ultra low-cost floor. Structured output + function calling supported.
+
+  - name: mistral-small-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: mistralai/mistral-small-3.2-24b-instruct
+    api_key_env: OPENROUTER_API_KEY
+    # $0.10/M input, $0.30/M output. ~13x cheaper than Haiku.
+    # Native JSON mode + function calling. Strong French (EU-language focus).
+
+  - name: deepseek-r1-openrouter
+    enabled: false
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: deepseek/deepseek-r1
+    api_key_env: OPENROUTER_API_KEY
+    # SKIPPED: $0.70/M input, $2.50/M output. Only ~1.7x cheaper than Haiku.
+    # Reasoning tokens add latency on short extraction tasks — poor ROI here.
+    # Re-enable if we want to test max reasoning quality on hard cases.
+
+  # --- Hosted equivalents of Ollama-pullable small/medium models -------------
+  # These let us compare "is the local Ollama quant worth running?" vs the same
+  # model served by a pro inference provider. Wave 2 added these to complete
+  # the quality matrix.
+
+  - name: gemma3-4b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: google/gemma-3-4b-it
+    api_key_env: OPENROUTER_API_KEY
+    # $0.04/M in, $0.08/M out. Hosted equivalent of gemma3:4b (the v1 local winner).
+
+  - name: gemma3n-e2b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: google/gemma-3n-e2b-it:free
+    api_key_env: OPENROUTER_API_KEY
+    # Free tier on OR. Hosted equivalent of what Ollama ships as gemma4:e2b.
+
+  - name: gemma3n-e4b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: google/gemma-3n-e4b-it
+    api_key_env: OPENROUTER_API_KEY
+    # $0.02/M in, $0.04/M out. Hosted equivalent of Ollama gemma4:e4b.
+
+  - name: llama3-2-3b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: meta-llama/llama-3.2-3b-instruct
+    api_key_env: OPENROUTER_API_KEY
+    # $0.051/M in, $0.34/M out. Hosted equivalent of Ollama llama3.2:3b.
+
+  - name: mistral-nemo-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: mistralai/mistral-nemo
+    api_key_env: OPENROUTER_API_KEY
+    # $0.02/M in, $0.04/M out. Hosted equivalent of Ollama mistral-nemo:12b.
+
+  - name: qwen3-8b-openrouter
+    enabled: true
+    provider: openai-compat
+    base_url: https://openrouter.ai/api/v1
+    model: qwen/qwen3-8b
+    api_key_env: OPENROUTER_API_KEY
+    # $0.05/M in, $0.40/M out. Hosted equivalent of Ollama qwen3:8b.
+    # Interesting to see if OR serves it without thinking mode by default.

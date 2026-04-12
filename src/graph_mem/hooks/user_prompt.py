@@ -34,7 +34,9 @@ def main():
         }
         if os.name == "nt":
             popen_kwargs["creationflags"] = (
-                subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
+                subprocess.CREATE_NEW_PROCESS_GROUP
+                | subprocess.DETACHED_PROCESS
+                | subprocess.CREATE_NO_WINDOW
             )
         else:
             popen_kwargs["start_new_session"] = True

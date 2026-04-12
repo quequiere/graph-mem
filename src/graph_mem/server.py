@@ -48,10 +48,9 @@ async def important() -> str:
 You have a knowledge graph that persists across sessions.
 Current project: {_project_id}
 
-WHEN TO SAVE (use save_memory):
-- User shares preferences, personal info, expertise, role → scope="user"
-- Project decisions, team info, stack choices, context → scope="project"
-- User says "remember this", "don't forget", "note that"
+AUTO-CAPTURE: User messages are automatically captured by a background hook.
+Do NOT call save_memory proactively — it is only needed when the user
+explicitly asks you to "remember this" or "note that".
 
 WHEN TO SEARCH (use search_memory):
 - User asks "what do you know about me?", "do you remember?"
@@ -67,10 +66,10 @@ DO NOT STORE: source code, secrets, ephemeral commands, info derivable from code
 
 @mcp.tool()
 async def save_memory(content: str, scope: str = "user") -> str:
-    """Save information to persistent memory.
+    """Save information to persistent memory (manual fallback).
 
-    Use this when the user shares preferences, personal info, project decisions,
-    or explicitly asks you to remember something.
+    NOTE: User messages are auto-captured by a background hook.
+    Only use this when the user EXPLICITLY asks to remember something specific.
 
     Args:
         content: The information to store.

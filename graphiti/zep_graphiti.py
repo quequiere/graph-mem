@@ -8,6 +8,7 @@ Fixes two issues in the stock Graphiti server:
 
 import json
 import logging
+import os
 import typing
 from typing import Annotated
 
@@ -185,26 +186,36 @@ class ZepGraphiti(Graphiti):
 
 
 async def get_graphiti(settings: ZepEnvDep):
-    base_url = settings.openai_base_url
-    api_key = settings.openai_api_key
-    model = settings.model_name
-    embedding_model = settings.embedding_model_name or 'text-embedding-3-small'
+    # LLM config (from settings — stock Graphiti path)
+    llm_api_key = settings.openai_api_key
+    llm_base_url = settings.openai_base_url
+    llm_model = settings.model_name
+
+    # Embedder config (decoupled — read directly from env, no fallback).
+    # KeyError here is intentional: missing EMBEDDING_* vars must fail loud
+    # at startup rather than silently reusing the LLM provider.
+    embed_api_key = os.environ["EMBEDDING_API_KEY"]
+    embed_base_url = os.environ["EMBEDDING_BASE_URL"]
+    embed_model = os.environ["EMBEDDING_MODEL_NAME"]
 
     llm_config = LLMConfig(
-        api_key=api_key,
-        model=model,
-        small_model=model,
-        base_url=base_url,
+        api_key=llm_api_key,
+        model=llm_model,
+        small_model=llm_model,
+        base_url=llm_base_url,
     )
     llm_client = ExampleLLMClient(config=llm_config)
 
     embedder = OpenAIEmbedder(config=OpenAIEmbedderConfig(
-        api_key=api_key,
-        embedding_model=embedding_model,
+        api_key=embed_api_key,
+        embedding_model=embed_model,
         embedding_dim=EMBEDDING_DIM,
-        base_url=base_url,
+        base_url=embed_base_url,
     ))
 
+    # Cross-encoder stays coupled to the LLM client: it reranks via text
+    # generation, not embeddings, so it's consistent for it to follow the
+    # LLM mode (remote or local).
     cross_encoder = OpenAIRerankerClient(client=llm_client, config=llm_config)
 
     client = ZepGraphiti(

@@ -5,10 +5,10 @@ services:
     ports:
       - "11434"
     healthcheck:
-      test: ["CMD-SHELL", "ollama list | grep -q 'nomic-embed-text' && ollama list | grep -q 'qwen2.5:3b'"]
+      test: ["CMD-SHELL", "ollama list | grep -q 'qwen3-embedding:4b' && ollama list | grep -q 'gemma3:4b'"]
       interval: 15s
       timeout: 10s
-      retries: 40
+      retries: 60
       start_period: 30s
     volumes:
       - ollama_data:/root/.ollama
@@ -18,8 +18,8 @@ services:
         /bin/ollama serve &
         SERVER_PID=$$!
         until ollama list > /dev/null 2>&1; do sleep 2; done
-        ollama pull nomic-embed-text
-        ollama pull qwen2.5:3b
+        ollama pull gemma3:4b
+        ollama pull qwen3-embedding:4b
         echo "All models ready."
         wait $$SERVER_PID
 
@@ -39,17 +39,24 @@ services:
 
   graphiti:
     build:
-      context: ./graphiti
+      # Build from the repo-root graphiti/ folder so integration tests exercise
+      # the exact same patch that ships in production (avoids drift with the
+      # legacy standalone patch that used to live under tests/integration/graphiti).
+      context: ../../graphiti
       dockerfile: Dockerfile
     ports:
       - "8000"
     environment:
+      # LLM (OLLAMA_URL lets callers point to their own Ollama instance;
+      # default host.docker.internal:11434 reaches the host's local Ollama).
       - OPENAI_API_KEY=ollama
-      # OLLAMA_URL env var lets callers point to their own Ollama instance.
-      # Default: host.docker.internal:11434 reaches the host's local Ollama.
       - OPENAI_BASE_URL=${OLLAMA_URL:-http://host.docker.internal:11434}/v1
-      - MODEL_NAME=${OLLAMA_MODEL:-qwen2.5:3b}
-      - EMBEDDING_MODEL_NAME=${OLLAMA_EMBED_MODEL:-nomic-embed-text}
+      - MODEL_NAME=${OLLAMA_MODEL:-gemma3:4b}
+      # Embedder — decoupled from LLM since the fail-loud patch in
+      # graphiti/zep_graphiti.py. Point it at the same Ollama instance.
+      - EMBEDDING_API_KEY=ollama
+      - EMBEDDING_BASE_URL=${OLLAMA_URL:-http://host.docker.internal:11434}/v1
+      - EMBEDDING_MODEL_NAME=${OLLAMA_EMBED_MODEL:-qwen3-embedding:4b}
       - NEO4J_URI=bolt://neo4j:7687
       - NEO4J_USER=neo4j
       - NEO4J_PASSWORD=graphiti-test

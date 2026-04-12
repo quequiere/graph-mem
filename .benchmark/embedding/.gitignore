@@ -1,0 +1,6 @@
+results/*.json
+!results/.gitkeep
+.env
+__pycache__/
+*.pyc
+.pytest_cache/

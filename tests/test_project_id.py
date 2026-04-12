@@ -6,6 +6,11 @@ import pytest
 from graph_mem.project_id import get_project_id, normalize_git_url
 
 
+# Graphiti requires group_ids to be alphanumeric, dashes, or underscores —
+# so normalize_git_url replaces any other character (dots, slashes, colons)
+# with '_'. Dashes inside repo names are preserved.
+
+
 def test_normalize_https_url():
     assert normalize_git_url("https://github.com/user/repo.git") == "github_com_user_repo"
 
