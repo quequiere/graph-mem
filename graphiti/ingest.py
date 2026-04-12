@@ -11,6 +11,7 @@ from graphiti_core.utils.maintenance.graph_data_operations import clear_data
 
 from graph_service.dto import AddEntityNodeRequest, AddMessagesRequest, Message, Result
 from graph_service.zep_graphiti import ZepGraphitiDep
+from graph_service.entities import EDGE_TYPE_MAP, EDGE_TYPES, ENTITY_TYPES
 
 logger = logging.getLogger(__name__)
 
@@ -71,10 +72,13 @@ async def add_messages(
             uuid=m.uuid,
             group_id=request.group_id,
             name=m.name,
-            episode_body=f'{m.role or ""}({m.role_type}): {m.content}',
+            episode_body=m.content,
             reference_time=m.timestamp,
             source=EpisodeType.message,
             source_description=m.source_description,
+            entity_types=ENTITY_TYPES,
+            edge_types=EDGE_TYPES,
+            edge_type_map=EDGE_TYPE_MAP,
         )
 
     for m in request.messages:
