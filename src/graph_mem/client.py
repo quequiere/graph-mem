@@ -9,10 +9,20 @@ class GraphitiClient:
     """Wraps all Graphiti REST API calls.
 
     Maintains a shared httpx.AsyncClient for connection reuse across calls.
+    Supports async context manager for proper cleanup:
+
+        async with GraphitiClient(base_url="...") as client:
+            await client.healthcheck()
     """
 
-    def __init__(self, base_url: str = "http://localhost:8000", api_key: str | None = None):
+    def __init__(
+        self,
+        base_url: str = "http://localhost:8000",
+        api_key: str | None = None,
+        timeout: float = 60.0,
+    ):
         self.base_url = base_url.rstrip("/")
+        self._timeout = timeout
         headers = {}
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
@@ -22,9 +32,21 @@ class GraphitiClient:
     async def _get_client(self) -> httpx.AsyncClient:
         if self._http is None or self._http.is_closed:
             self._http = httpx.AsyncClient(
-                base_url=self.base_url, headers=self._headers, timeout=60.0
+                base_url=self.base_url, headers=self._headers, timeout=self._timeout
             )
         return self._http
+
+    async def close(self) -> None:
+        """Close the underlying HTTP client and release connections."""
+        if self._http is not None and not self._http.is_closed:
+            await self._http.aclose()
+            self._http = None
+
+    async def __aenter__(self) -> "GraphitiClient":
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        await self.close()
 
     async def healthcheck(self) -> dict[str, Any]:
         client = await self._get_client()

@@ -218,7 +218,7 @@ We depend on the model calling `save_memory` explicitly. The model often doesn't
 - `src/graph_mem/hooks/session_end.py` — Stop hook
 - `src/graph_mem/tools/context.py` — get_context (parallelized searches)
 - `src/graph_mem/project_id.py` — git remote → project_id
-- `src/graph_mem/config.py` — Settings (GRAPHITI_URL, etc.) + shared constants (`USER_PROFILE`)
+- `src/graph_mem/config.py` — Settings (GRAPHITI_URL, GRAPHITI_TIMEOUT, etc.) + shared constants (`USER_PROFILE`)
 - `graphiti/zep_graphiti.py` — ExampleLLMClient + embedder patch
 - `graphiti/ingest.py` — AsyncWorker error handling patch
 - `docker-compose.yml` — Neo4j 5.26 + patched Graphiti

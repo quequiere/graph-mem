@@ -26,6 +26,7 @@ _settings = get_settings()
 _client = GraphitiClient(
     base_url=_settings.graphiti_url,
     api_key=_settings.graphiti_api_key,
+    timeout=_settings.graphiti_timeout,
 )
 _project_id = get_project_id()
 

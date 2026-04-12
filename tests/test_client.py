@@ -131,3 +131,52 @@ async def test_client_with_api_key():
     with respx.mock:
         result = await client.healthcheck()
     assert result == {"status": "healthy"}
+
+
+@pytest.mark.asyncio
+async def test_custom_timeout():
+    client = GraphitiClient(base_url="http://localhost:8000", timeout=30.0)
+    assert client._timeout == 30.0
+    http = await client._get_client()
+    assert http.timeout.read == 30.0
+    await client.close()
+
+
+@pytest.mark.asyncio
+async def test_default_timeout():
+    client = GraphitiClient(base_url="http://localhost:8000")
+    assert client._timeout == 60.0
+    http = await client._get_client()
+    assert http.timeout.read == 60.0
+    await client.close()
+
+
+@pytest.mark.asyncio
+async def test_close():
+    client = GraphitiClient(base_url="http://localhost:8000")
+    http = await client._get_client()
+    assert not http.is_closed
+    await client.close()
+    assert client._http is None
+
+
+@pytest.mark.asyncio
+async def test_close_idempotent():
+    client = GraphitiClient(base_url="http://localhost:8000")
+    await client.close()  # no client opened yet — should not raise
+    await client.close()  # still safe
+
+
+@respx.mock
+@pytest.mark.asyncio
+async def test_async_context_manager():
+    respx.get("http://localhost:8000/healthcheck").mock(
+        return_value=httpx.Response(200, json={"status": "healthy"})
+    )
+    async with GraphitiClient(base_url="http://localhost:8000") as client:
+        result = await client.healthcheck()
+        assert result == {"status": "healthy"}
+        http = client._http
+    # after exiting, client should be closed
+    assert client._http is None
+    assert http.is_closed
