@@ -1,0 +1,8 @@
+{
+  "name": "graph-mem",
+  "description": "Persistent memory using knowledge graphs",
+  "version": "0.1.0",
+  "author": { "name": "quequiere" },
+  "repository": "https://github.com/quequiere/graph-mem",
+  "license": "Apache-2.0"
+}
