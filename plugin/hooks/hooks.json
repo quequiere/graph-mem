@@ -1,0 +1,28 @@
+{
+  "description": "graph-mem memory system hooks",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --directory \"${CLAUDE_PLUGIN_ROOT}/..\" graph-mem-session-start",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --directory \"${CLAUDE_PLUGIN_ROOT}/..\" graph-mem-session-end",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

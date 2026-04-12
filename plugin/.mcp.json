@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "graph-mem": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--directory", "${CLAUDE_PLUGIN_ROOT}/..", "graph-mem"],
+      "env": {
+        "GRAPHITI_URL": "http://127.0.0.1:8000"
+      }
+    }
+  }
+}

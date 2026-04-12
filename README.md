@@ -11,7 +11,7 @@
   <img src="docs/graph-mem-hero.svg" alt="graph-mem knowledge graph — your projects, teammates, decisions and skills connected over time" width="800"/>
 </p>
 
-> **Alpha — not usable yet.** The code is written but hasn't been tested end-to-end against a live Graphiti instance. [Watch the repo](https://github.com/quequiere/graph-mem) to know when it ships.
+> **Alpha — not stable yet.** The code is written but hasn't been tested end-to-end against a live Graphiti instance. [Watch the repo](https://github.com/quequiere/graph-mem) to know when it ships.
 
 ## Demo
 
@@ -36,30 +36,25 @@ No prompt engineering. Claude Code hooks inject the context automatically at ses
 ### 1. Start the backend
 
 ```bash
-curl -sL https://raw.githubusercontent.com/quequiere/graph-mem/main/docker-compose.prod.yml -o docker-compose.yml
 curl -sL https://raw.githubusercontent.com/quequiere/graph-mem/main/.env.example -o .env
-# Edit .env: set your API key (or leave defaults for local Ollama)
+
+curl -sL https://raw.githubusercontent.com/quequiere/graph-mem/main/docker-compose.yml -o docker-compose.yml
 docker compose up -d
-```
-
-Wait for Graphiti to be healthy:
-
-```bash
-curl http://127.0.0.1:8000/healthcheck
 ```
 
 ### 2. Install the plugin (Claude Code)
 
 ```
-/plugin install github:quequiere/graph-mem
+/plugin marketplace add quequiere/graph-mem
+/plugin install graph-mem
 ```
 
-That's it — MCP server and hooks are configured automatically.
+That's it — MCP server and hooks are configured automatically. Your knowledge graph is browsable at [`http://127.0.0.1:8050`](http://127.0.0.1:8050) and the raw Neo4j browser at [`http://127.0.0.1:7475`](http://127.0.0.1:7475).
 
 <details>
 <summary><b>Manual setup</b> — for Cursor, Windsurf, and other MCP clients</summary>
 
-Add to your MCP client config (`~/.claude/claude_desktop_config.json`, `.cursor/mcp.json`, …):
+Add to your MCP client config (`.cursor/mcp.json`, `.windsurf/mcp.json`, …):
 
 ```json
 {
@@ -72,19 +67,6 @@ Add to your MCP client config (`~/.claude/claude_desktop_config.json`, `.cursor/
   }
 }
 ```
-
-For Claude Code hooks, add to `~/.claude/settings.json`:
-
-```json
-{
-  "hooks": {
-    "SessionStart": [{ "command": "graph-mem-session-start" }],
-    "Stop": [{ "command": "graph-mem-session-end", "blocking": true }]
-  }
-}
-```
-
-The `Stop` hook has a 30s timeout. If Graphiti is unreachable it exits with a warning — no data loss.
 
 </details>
 
@@ -177,114 +159,7 @@ Reports: [LLM extraction benchmark](.docs/benchmark/2026-04-11-extraction-benchm
 
 [Graphiti](https://github.com/getzep/graphiti) · [FastMCP](https://github.com/jlowin/fastmcp) · [Neo4j](https://neo4j.com)
 
-### Local development
-
-**Prerequisites:** Python 3.11+, [uv](https://docs.astral.sh/uv/), Docker & Docker Compose.
-
-#### 1. Clone and start Graphiti + Neo4j
-
-```bash
-git clone https://github.com/quequiere/graph-mem && cd graph-mem
-cp .env.example .env
-# Edit .env — set OPENAI_API_KEY (OpenRouter, Ollama, or any OpenAI-compatible provider)
-docker compose up -d --build
-```
-
-Verify Graphiti is healthy:
-
-```bash
-docker compose ps
-curl http://127.0.0.1:8000/healthcheck
-```
-
-#### 2. Run tests
-
-```bash
-# Unit tests (no Docker needed)
-uv run pytest tests/ -v
-
-# Integration tests (requires Docker running)
-uv run pytest tests/integration/ -v -m integration
-```
-
-#### 3. Configure Claude Code MCP server
-
-Register graph-mem as an MCP server using `uv run` so changes are picked up immediately without reinstalling:
-
-```bash
-claude mcp add graph-mem -s user -- uv run --directory /path/to/graph-mem graph-mem
-```
-
-#### 4. Configure Claude Code hooks
-
-Add to `~/.claude/settings.json`:
-
-```json
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "uv run --directory /path/to/graph-mem graph-mem-session-start",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "uv run --directory /path/to/graph-mem graph-mem-session-end"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-Replace `/path/to/graph-mem` with your clone's absolute path.
-
-#### 5. Configure VS Code MCP server (optional)
-
-Add to `.vscode/mcp.json` in any project where you want graph-mem available:
-
-```json
-{
-  "servers": {
-    "graph-mem": {
-      "command": "uv",
-      "args": ["run", "--directory", "/path/to/graph-mem", "graph-mem"],
-      "type": "stdio"
-    }
-  }
-}
-```
-
-#### 6. Interactive debugging with MCP Inspector
-
-Test MCP tools interactively without Claude Code:
-
-```bash
-npx @modelcontextprotocol/inspector uv run --directory /path/to/graph-mem graph-mem
-```
-
-This opens a web UI where you can call `save_memory`, `search_memory`, etc. and inspect responses.
-
-#### 7. Graph viewer
-
-While the MCP server is running, a graph viewer is available at:
-
-```
-http://127.0.0.1:8050
-```
-
-You can also browse the raw graph via Neo4j Browser at `http://127.0.0.1:7475` (login: `neo4j` / `graphiti`).
+### [Local development](.docs/local-development.md)
 
 ## License
 

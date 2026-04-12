@@ -1,9 +1,3 @@
-# graph-mem production stack
-# Usage:
-#   curl -sL https://raw.githubusercontent.com/quequiere/graph-mem/main/docker-compose.prod.yml -o docker-compose.yml
-#   cp .env.example from the repo or create .env with your API keys
-#   docker compose up -d
-
 services:
   neo4j:
     image: neo4j:5.26.0
@@ -21,7 +15,9 @@ services:
       retries: 5
 
   graphiti:
-    image: ghcr.io/quequiere/graph-mem-graphiti:latest
+    build:
+      context: ./graphiti
+      dockerfile: Dockerfile
     ports:
       - "${GRAPHITI_PORT:-8000}:8000"
     environment:
