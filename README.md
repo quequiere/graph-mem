@@ -11,7 +11,7 @@
   <img src="docs/graph-mem-hero.svg" alt="graph-mem knowledge graph — your projects, teammates, decisions and skills connected over time" width="800"/>
 </p>
 
-> **Alpha — not usable yet.** The code is written but hasn't been tested end-to-end against a live Graphiti instance. [Watch the repo](https://github.com/quequiere/graph-mem) to know when it ships.
+> **Alpha — not stable yet.** The code is written but hasn't been tested end-to-end against a live Graphiti instance. [Watch the repo](https://github.com/quequiere/graph-mem) to know when it ships.
 
 ## Demo
 
