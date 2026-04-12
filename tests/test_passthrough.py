@@ -1,7 +1,8 @@
 import pytest
 
-from graph_mem.tools.passthrough import status, add_raw_memory, search_facts, search_entities, reset_memory
 from graph_mem.client import GraphitiClient
+from graph_mem.config import USER_PROFILE
+from graph_mem.tools.passthrough import status, add_raw_memory, search_facts, search_entities, reset_memory
 
 
 @pytest.fixture
@@ -26,7 +27,7 @@ async def test_add_raw_memory(client, monkeypatch):
     result = await add_raw_memory(
         client,
         content="test memory",
-        group_id="user_profile",
+        group_id=USER_PROFILE,
         source_description="test",
     )
     assert "success" in result.lower() or "added" in result.lower()
@@ -49,7 +50,7 @@ async def test_search_facts(client, monkeypatch):
             ]
         }
     monkeypatch.setattr(client, "search", mock_search)
-    result = await search_facts(client, query="dark mode", group_ids=["user_profile"])
+    result = await search_facts(client, query="dark mode", group_ids=[USER_PROFILE])
     assert "dark mode" in result
 
 
@@ -58,7 +59,7 @@ async def test_search_entities(client, monkeypatch):
     async def mock_search(query, group_ids=None, max_facts=10):
         return {"facts": []}
     monkeypatch.setattr(client, "search", mock_search)
-    result = await search_entities(client, query="Python", group_ids=["user_profile"])
+    result = await search_entities(client, query="Python", group_ids=[USER_PROFILE])
     assert isinstance(result, str)
 
 
@@ -69,6 +70,6 @@ async def test_reset_memory(client, monkeypatch):
         deleted.append(group_id)
         return {"success": True, "message": "Group deleted"}
     monkeypatch.setattr(client, "delete_group", mock_delete_group)
-    result = await reset_memory(client, group_ids=["user_profile", "project_test"])
+    result = await reset_memory(client, group_ids=[USER_PROFILE, "project_test"])
     assert len(deleted) == 2
     assert "deleted" in result.lower() or "reset" in result.lower()

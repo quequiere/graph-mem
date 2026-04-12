@@ -1,5 +1,6 @@
 import pytest
 from graph_mem.client import GraphitiClient
+from graph_mem.config import USER_PROFILE
 from graph_mem.tools.context import get_context
 
 
@@ -11,7 +12,7 @@ def client():
 @pytest.mark.asyncio
 async def test_get_context(client, monkeypatch):
     async def mock_search(query, group_ids=None, max_facts=10):
-        if group_ids == ["user_profile"]:
+        if group_ids == [USER_PROFILE]:
             if "reminder" in query.lower():
                 return {"facts": [
                     {"uuid": "r1", "name": "reminder", "fact": "Reminder: renew API key before April 15",

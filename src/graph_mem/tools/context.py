@@ -3,9 +3,8 @@
 import asyncio
 
 from graph_mem.client import GraphitiClient
+from graph_mem.config import USER_PROFILE
 from graph_mem.tools.passthrough import _format_facts
-
-USER_PROFILE = "user_profile"
 
 
 async def _fetch_sections(

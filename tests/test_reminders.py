@@ -1,5 +1,6 @@
 import pytest
 from graph_mem.client import GraphitiClient
+from graph_mem.config import USER_PROFILE
 from graph_mem.tools.reminders import add_reminder, get_reminders
 
 
@@ -15,7 +16,7 @@ async def test_add_reminder(client, monkeypatch):
         calls.append({"group_id": group_id, "messages": messages})
         return {"success": True, "message": "ok"}
     monkeypatch.setattr(client, "add_messages", mock_add_messages)
-    result = await add_reminder(client, content="Renew API key before April 15", group_id="user_profile")
+    result = await add_reminder(client, content="Renew API key before April 15", group_id=USER_PROFILE)
     assert len(calls) == 1
     assert "Renew API key" in calls[0]["messages"][0]["content"]
     assert "REMINDER" in calls[0]["messages"][0]["content"]
@@ -42,7 +43,7 @@ async def test_get_reminders(client, monkeypatch):
             ]
         }
     monkeypatch.setattr(client, "search", mock_search)
-    result = await get_reminders(client, group_ids=["user_profile"])
+    result = await get_reminders(client, group_ids=[USER_PROFILE])
     assert "API key" in result
 
 

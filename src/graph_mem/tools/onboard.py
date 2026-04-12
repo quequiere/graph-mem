@@ -4,8 +4,7 @@ import os
 from typing import Any
 
 from graph_mem.client import GraphitiClient
-
-USER_PROFILE = "user_profile"
+from graph_mem.config import USER_PROFILE
 
 MANIFEST_FILES = [
     "package.json", "pyproject.toml", "Cargo.toml", "go.mod",
