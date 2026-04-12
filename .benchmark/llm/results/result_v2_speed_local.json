@@ -1,0 +1,655 @@
+{
+  "run_at": "2026-04-11T13:28:49.776103+00:00",
+  "dataset_version": "2.0",
+  "dataset_size": 5,
+  "semantic_scoring": false,
+  "embed_threshold": null,
+  "models": [
+    {
+      "name": "gemma3-4b-local",
+      "base_url": "http://localhost:11434/v1",
+      "model_id": "gemma3:4b",
+      "total_cases": 5,
+      "success": 5,
+      "failed": 0,
+      "avg_latency_ms": 8506.8,
+      "avg_entity_precision": 1.0,
+      "avg_entity_recall": 0.8,
+      "avg_relation_precision": 0.6,
+      "avg_relation_recall": 0.778,
+      "entity_f1": 0.889,
+      "relation_f1": 0.677,
+      "type_accuracy": 0.857,
+      "type_name_matches_total": 7,
+      "avg_entity_precision_sem": null,
+      "avg_entity_recall_sem": null,
+      "avg_relation_precision_sem": null,
+      "avg_relation_recall_sem": null,
+      "entity_f1_sem": null,
+      "relation_f1_sem": null,
+      "cases": [
+        {
+          "id": "simple_entity_01",
+          "category": "simple_entity",
+          "input": "Bruno aime Python.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "Person"
+              },
+              {
+                "name": "Python",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "likes",
+                "target": "Python"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "person"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "likes",
+                "target": "Python"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\"entities\": [{\"name\": \"Bruno\", \"type\": \"person\"}], \"relations\": [{\"source\": \"Bruno\", \"predicate\": \"likes\", \"target\": \"Python\"}]}\n```",
+          "latency_ms": 9460.4,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 0.5,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 1,
+          "type_correct": 1,
+          "entity_precision_sem": null,
+          "entity_recall_sem": null,
+          "relation_precision_sem": null,
+          "relation_recall_sem": null
+        },
+        {
+          "id": "simple_entity_02",
+          "category": "simple_entity",
+          "input": "Atlas is our main project.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Atlas",
+                "type": "Project"
+              }
+            ],
+            "relations": []
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Atlas",
+                "type": "project"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Atlas",
+                "predicate": "is",
+                "target": "main project"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\"entities\": [{\"name\": \"Atlas\", \"type\": \"project\"}], \"relations\": [{\"source\": \"Atlas\", \"predicate\": \"is\", \"target\": \"main project\"}]}\n```",
+          "latency_ms": 7826.7,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 1,
+          "type_correct": 1,
+          "entity_precision_sem": null,
+          "entity_recall_sem": null,
+          "relation_precision_sem": null,
+          "relation_recall_sem": null
+        },
+        {
+          "id": "simple_entity_03",
+          "category": "simple_entity",
+          "input": "J'utilise VSCode tous les jours pour coder.",
+          "expected": {
+            "entities": [
+              {
+                "name": "VSCode",
+                "type": "Tool"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "VSCode"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "VSCode",
+                "type": "technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "VSCode"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\"entities\": [{\"name\": \"VSCode\", \"type\": \"technology\"}], \"relations\": [{\"source\": \"user\", \"predicate\": \"uses\", \"target\": \"VSCode\"}]}\n```",
+          "latency_ms": 7662.0,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 1,
+          "type_correct": 0,
+          "entity_precision_sem": null,
+          "entity_recall_sem": null,
+          "relation_precision_sem": null,
+          "relation_recall_sem": null
+        },
+        {
+          "id": "simple_relation_01",
+          "category": "simple_relation",
+          "input": "Bruno travaille avec Julie sur le projet Atlas.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "Person"
+              },
+              {
+                "name": "Julie",
+                "type": "Person"
+              },
+              {
+                "name": "Atlas",
+                "type": "Project"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "works_with",
+                "target": "Julie"
+              },
+              {
+                "source": "Bruno",
+                "predicate": "works_on",
+                "target": "Atlas"
+              },
+              {
+                "source": "Julie",
+                "predicate": "works_on",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "person"
+              },
+              {
+                "name": "Julie",
+                "type": "person"
+              },
+              {
+                "name": "Atlas",
+                "type": "project"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "works_with",
+                "target": "Julie"
+              },
+              {
+                "source": "Bruno",
+                "predicate": "works_on",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\"entities\": [{\"name\": \"Bruno\", \"type\": \"person\"}, {\"name\": \"Julie\", \"type\": \"person\"}, {\"name\": \"Atlas\", \"type\": \"project\"}], \"relations\": [{\"source\": \"Bruno\", \"predicate\": \"works_with\", \"target\": \"Julie\"}, {\"source\": \"Bruno\", \"predicate\": \"works_on\", \"target\": \"Atlas\"}]}\n```",
+          "latency_ms": 9627.5,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 0.889,
+          "type_name_matches": 3,
+          "type_correct": 3,
+          "entity_precision_sem": null,
+          "entity_recall_sem": null,
+          "relation_precision_sem": null,
+          "relation_recall_sem": null
+        },
+        {
+          "id": "simple_relation_02",
+          "category": "simple_relation",
+          "input": "Sylvie me coache sur C#.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Sylvie",
+                "type": "Person"
+              },
+              {
+                "name": "C#",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Sylvie",
+                "predicate": "coaches",
+                "target": "user"
+              },
+              {
+                "source": "user",
+                "predicate": "learns",
+                "target": "C#"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Sylvie",
+                "type": "person"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "coaches",
+                "target": "Sylvie"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\"entities\": [{\"name\": \"Sylvie\", \"type\": \"person\"}], \"relations\": [{\"source\": \"user\", \"predicate\": \"coaches\", \"target\": \"Sylvie\"}]}\n```",
+          "latency_ms": 7957.2,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 0.5,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "type_name_matches": 1,
+          "type_correct": 1,
+          "entity_precision_sem": null,
+          "entity_recall_sem": null,
+          "relation_precision_sem": null,
+          "relation_recall_sem": null
+        }
+      ]
+    },
+    {
+      "name": "phi4-mini-local",
+      "base_url": "http://localhost:11434/v1",
+      "model_id": "phi4-mini:latest",
+      "total_cases": 5,
+      "success": 5,
+      "failed": 0,
+      "avg_latency_ms": 9637.2,
+      "avg_entity_precision": 0.8,
+      "avg_entity_recall": 1.0,
+      "avg_relation_precision": 0.733,
+      "avg_relation_recall": 0.844,
+      "entity_f1": 0.889,
+      "relation_f1": 0.785,
+      "type_accuracy": 1.0,
+      "type_name_matches_total": 9,
+      "avg_entity_precision_sem": null,
+      "avg_entity_recall_sem": null,
+      "avg_relation_precision_sem": null,
+      "avg_relation_recall_sem": null,
+      "entity_f1_sem": null,
+      "relation_f1_sem": null,
+      "cases": [
+        {
+          "id": "simple_entity_01",
+          "category": "simple_entity",
+          "input": "Bruno aime Python.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "Person"
+              },
+              {
+                "name": "Python",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "likes",
+                "target": "Python"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "bruno",
+                "type": "person"
+              },
+              {
+                "name": "python",
+                "type": "technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "bruno",
+                "predicate": "likes",
+                "target": "python"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\"name\": \"bruno\", \"type\": \"person\"},\n    {\"name\": \"python\", \"type\": \"technology\"}\n  ],\n  \"relations\": [\n    {\n      \"source\": \"bruno\",\n      \"predicate\": \"likes\",\n      \"target\": \"python\"\n    }\n  ]\n}\n```",
+          "latency_ms": 11327.4,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 2,
+          "type_correct": 2,
+          "entity_precision_sem": null,
+          "entity_recall_sem": null,
+          "relation_precision_sem": null,
+          "relation_recall_sem": null
+        },
+        {
+          "id": "simple_entity_02",
+          "category": "simple_entity",
+          "input": "Atlas is our main project.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Atlas",
+                "type": "Project"
+              }
+            ],
+            "relations": []
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "atlas",
+                "type": "project"
+              },
+              {
+                "name": "our",
+                "type": "concept"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "works_on",
+                "target": "atlas"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\"name\": \"atlas\", \"type\": \"project\"},\n    {\"name\": \"our\", \"type\": \"concept\"}\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"works_on\",\n      \"target\": \"atlas\"\n    }\n  ]\n}\n```",
+          "latency_ms": 8369.3,
+          "error": null,
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 1,
+          "type_correct": 1,
+          "entity_precision_sem": null,
+          "entity_recall_sem": null,
+          "relation_precision_sem": null,
+          "relation_recall_sem": null
+        },
+        {
+          "id": "simple_entity_03",
+          "category": "simple_entity",
+          "input": "J'utilise VSCode tous les jours pour coder.",
+          "expected": {
+            "entities": [
+              {
+                "name": "VSCode",
+                "type": "Tool"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "VSCode"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "user",
+                "type": "person"
+              },
+              {
+                "name": "VSCode",
+                "type": "tool"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "uses",
+                "target": "VSCode"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\"name\": \"user\", \"type\": \"person\"},\n    {\"name\": \"VSCode\", \"type\": \"tool\"}\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"uses\",\n      \"target\": \"VSCode\"\n    }\n  ]\n}\n```",
+          "latency_ms": 8645.3,
+          "error": null,
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "type_name_matches": 1,
+          "type_correct": 1,
+          "entity_precision_sem": null,
+          "entity_recall_sem": null,
+          "relation_precision_sem": null,
+          "relation_recall_sem": null
+        },
+        {
+          "id": "simple_relation_01",
+          "category": "simple_relation",
+          "input": "Bruno travaille avec Julie sur le projet Atlas.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Bruno",
+                "type": "Person"
+              },
+              {
+                "name": "Julie",
+                "type": "Person"
+              },
+              {
+                "name": "Atlas",
+                "type": "Project"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Bruno",
+                "predicate": "works_with",
+                "target": "Julie"
+              },
+              {
+                "source": "Bruno",
+                "predicate": "works_on",
+                "target": "Atlas"
+              },
+              {
+                "source": "Julie",
+                "predicate": "works_on",
+                "target": "Atlas"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "bruno",
+                "type": "person"
+              },
+              {
+                "name": "julie",
+                "type": "person"
+              },
+              {
+                "name": "atlas",
+                "type": "project"
+              }
+            ],
+            "relations": [
+              {
+                "source": "bruno",
+                "predicate": "works_with",
+                "target": "julie"
+              },
+              {
+                "source": "bruno",
+                "predicate": "works_on",
+                "target": "atlas"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\"name\": \"bruno\", \"type\": \"person\"},\n    {\"name\": \"julie\", \"type\": \"person\"},\n    {\"name\": \"atlas\", \"type\": \"project\"}\n  ],\n  \"relations\": [\n    {\n      \"source\": \"bruno\",\n      \"predicate\": \"works_with\",\n      \"target\": \"julie\"\n    },\n    {\n      \"source\": \"bruno\",\n      \"predicate\": \"works_on\",\n      \"target\": \"atlas\"\n    }\n  ]\n}\n```",
+          "latency_ms": 9967.9,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 0.889,
+          "type_name_matches": 3,
+          "type_correct": 3,
+          "entity_precision_sem": null,
+          "entity_recall_sem": null,
+          "relation_precision_sem": null,
+          "relation_recall_sem": null
+        },
+        {
+          "id": "simple_relation_02",
+          "category": "simple_relation",
+          "input": "Sylvie me coache sur C#.",
+          "expected": {
+            "entities": [
+              {
+                "name": "Sylvie",
+                "type": "Person"
+              },
+              {
+                "name": "C#",
+                "type": "Technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "Sylvie",
+                "predicate": "coaches",
+                "target": "user"
+              },
+              {
+                "source": "user",
+                "predicate": "learns",
+                "target": "C#"
+              }
+            ]
+          },
+          "actual": {
+            "entities": [
+              {
+                "name": "Sylvie",
+                "type": "person"
+              },
+              {
+                "name": "C#",
+                "type": "technology"
+              }
+            ],
+            "relations": [
+              {
+                "source": "user",
+                "predicate": "coaches_on",
+                "target": "C#"
+              }
+            ]
+          },
+          "raw_response": "```json\n{\n  \"entities\": [\n    {\"name\": \"Sylvie\", \"type\": \"person\"},\n    {\"name\": \"C#\", \"type\": \"technology\"}\n  ],\n  \"relations\": [\n    {\n      \"source\": \"user\",\n      \"predicate\": \"coaches_on\",\n      \"target\": \"C#\"\n    }\n  ]\n}\n```",
+          "latency_ms": 9875.9,
+          "error": null,
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "relation_precision": 0.667,
+          "relation_recall": 0.333,
+          "type_name_matches": 2,
+          "type_correct": 2,
+          "entity_precision_sem": null,
+          "entity_recall_sem": null,
+          "relation_precision_sem": null,
+          "relation_recall_sem": null
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "name": "gemma3-4b-local",
+      "model_id": "gemma3:4b",
+      "success_rate": 1.0,
+      "entity_f1": 0.889,
+      "relation_f1": 0.677,
+      "entity_f1_sem": null,
+      "relation_f1_sem": null,
+      "type_accuracy": 0.857,
+      "avg_latency_ms": 8506.8
+    },
+    {
+      "name": "phi4-mini-local",
+      "model_id": "phi4-mini:latest",
+      "success_rate": 1.0,
+      "entity_f1": 0.889,
+      "relation_f1": 0.785,
+      "entity_f1_sem": null,
+      "relation_f1_sem": null,
+      "type_accuracy": 1.0,
+      "avg_latency_ms": 9637.2
+    }
+  ]
+}

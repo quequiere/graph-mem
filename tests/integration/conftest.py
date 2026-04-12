@@ -13,7 +13,16 @@ import sys
 import time
 from pathlib import Path
 
+import httpx
 import pytest
+
+# Deterministic test project — a throwaway git remote is materialized in a
+# session-scoped tmp dir and used as the MCP subprocess cwd. This keeps the
+# test's project_id stable across runs AND isolated from the real graph-mem
+# repo's project_id (which would otherwise get polluted).
+TEST_REMOTE_URL = "https://example.com/graph-mem/integration-tests.git"
+TEST_PROJECT_ID = "project_example_com_graph-mem_integration-tests"
+USER_PROFILE_GROUP = "user_profile"
 
 COMPOSE_FILE = str(Path(__file__).parent / "docker-compose.yml")
 PROJECT_NAME = "graphmem-integration"
@@ -91,7 +100,21 @@ def graphiti_url(docker_services):
     raise RuntimeError("Graphiti did not become responsive within 300s")
 
 
-def _make_server_params(graphiti_url: str):
+@pytest.fixture(scope="session")
+def test_project_dir(tmp_path_factory) -> Path:
+    """Create a throwaway git repo so the MCP server computes a stable,
+    test-specific project_id (instead of the real graph-mem remote).
+    """
+    path = tmp_path_factory.mktemp("mcp_cwd")
+    subprocess.run(["git", "init"], cwd=path, capture_output=True, check=True)
+    subprocess.run(
+        ["git", "remote", "add", "origin", TEST_REMOTE_URL],
+        cwd=path, capture_output=True, check=True,
+    )
+    return path
+
+
+def _make_server_params(graphiti_url: str, cwd: Path):
     """Build StdioServerParameters for the graph-mem MCP server."""
     from mcp import StdioServerParameters
 
@@ -105,11 +128,24 @@ def _make_server_params(graphiti_url: str):
     if os.environ.get("VIRTUAL_ENV"):
         env["VIRTUAL_ENV"] = os.environ["VIRTUAL_ENV"]
 
-    return StdioServerParameters(command="graph-mem", env=env)
+    return StdioServerParameters(command="graph-mem", env=env, cwd=str(cwd))
+
+
+async def _delete_group(graphiti_url: str, group_id: str) -> None:
+    """Best-effort cleanup via Graphiti REST (bypasses MCP — reset_memory
+    is no longer exposed as a tool in the current minimal server surface).
+    """
+    async with httpx.AsyncClient(base_url=graphiti_url, timeout=30.0) as client:
+        try:
+            resp = await client.delete(f"/group/{group_id}")
+            if resp.status_code not in (200, 204, 404):
+                resp.raise_for_status()
+        except httpx.HTTPError:
+            pass  # stack may still be warming up; best-effort
 
 
 @pytest.fixture()
-async def mcp_session(graphiti_url):
+async def mcp_session(graphiti_url, test_project_dir):
     """Launch graph-mem MCP server as a stdio subprocess and yield a ClientSession.
 
     Function-scoped so each test gets a fresh session on its own event loop,
@@ -118,7 +154,7 @@ async def mcp_session(graphiti_url):
     from mcp import ClientSession
     from mcp.client.stdio import stdio_client
 
-    server_params = _make_server_params(graphiti_url)
+    server_params = _make_server_params(graphiti_url, test_project_dir)
     ctx = stdio_client(server_params)
 
     try:
@@ -145,15 +181,7 @@ async def mcp_session(graphiti_url):
 
 
 @pytest.fixture(autouse=True)
-async def _clean(mcp_session):
-    """Reset test groups before each test (Neo4j data persists across MCP sessions)."""
-    try:
-        await asyncio.wait_for(
-            mcp_session.call_tool(
-                "reset_memory",
-                arguments={"group_ids": ["user_profile", "project_test-project"]},
-            ),
-            timeout=60,
-        )
-    except Exception:
-        pass  # ignore if groups don't exist yet
+async def _clean(graphiti_url):
+    """Reset test groups before each test via direct Graphiti REST calls."""
+    for gid in (USER_PROFILE_GROUP, TEST_PROJECT_ID):
+        await _delete_group(graphiti_url, gid)

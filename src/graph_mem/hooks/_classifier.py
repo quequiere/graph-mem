@@ -1,6 +1,7 @@
 """Classify user messages using Claude Haiku for memory relevance."""
 
 import subprocess
+import sys
 
 CLASSIFICATION_PROMPT = """You are a memory classifier for an AI coding assistant. Analyze this user message and classify it.
 
@@ -26,11 +27,17 @@ def classify_message(message: str) -> str | None:
     prompt = CLASSIFICATION_PROMPT.format(message=message[:2000])
 
     try:
+        run_kwargs: dict = {
+            "capture_output": True,
+            "text": True,
+            "timeout": 15,
+        }
+        if sys.platform == "win32":
+            run_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+
         result = subprocess.run(
             ["claude", "--model", "haiku", "--print", "-p", prompt],
-            capture_output=True,
-            text=True,
-            timeout=15,
+            **run_kwargs,
         )
         if result.returncode != 0:
             return None

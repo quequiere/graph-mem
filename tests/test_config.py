@@ -7,7 +7,9 @@ from graph_mem.config import Settings, get_settings
 
 def test_default_settings():
     settings = get_settings()
-    assert settings.graphiti_url == "http://localhost:8000"
+    # 127.0.0.1 (not localhost) — on Windows, 'localhost' resolves to IPv6 ::1
+    # but the Graphiti container only listens on IPv4.
+    assert settings.graphiti_url == "http://127.0.0.1:8000"
     assert settings.graphiti_api_key is None
 
 
