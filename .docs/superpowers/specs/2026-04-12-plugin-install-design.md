@@ -13,8 +13,7 @@ echo "OPENROUTER_API_KEY=sk-..." > .env
 docker compose up -d
 
 # 2. In Claude Code
-/plugin marketplace add quequiere/claude-plugins
-/plugin install graph-mem
+/plugin install github:quequiere/graph-mem
 # → MCP server + hooks auto-configured
 ```
 

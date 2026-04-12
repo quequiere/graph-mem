@@ -31,16 +31,35 @@ No prompt engineering. Claude Code hooks inject the context automatically at ses
 
 ## Quick start
 
-**Prereqs:** Python 3.11+, Docker Compose v2.20+. The default stack is **fully local** (Ollama + Graphiti + Neo4j in Docker, no API keys, no data leaves your machine).
+**Prereqs:** Docker Compose v2.20+. The default stack is **fully local** (Ollama + Graphiti + Neo4j in Docker, no API keys, no data leaves your machine).
+
+### 1. Start the backend
 
 ```bash
-git clone https://github.com/quequiere/graph-mem && cd graph-mem
-cp .env.example .env
-docker compose up -d          # Neo4j + Graphiti + Ollama (~3.5 GB on first run)
-pip install graph-mem
+curl -sL https://raw.githubusercontent.com/quequiere/graph-mem/main/docker-compose.prod.yml -o docker-compose.yml
+curl -sL https://raw.githubusercontent.com/quequiere/graph-mem/main/.env.example -o .env
+# Edit .env: set your API key (or leave defaults for local Ollama)
+docker compose up -d
 ```
 
-Then add graph-mem to your MCP client (`~/.claude/claude_desktop_config.json`, Cursor, Windsurf, …):
+Wait for Graphiti to be healthy:
+
+```bash
+curl http://127.0.0.1:8000/healthcheck
+```
+
+### 2. Install the plugin (Claude Code)
+
+```
+/plugin install github:quequiere/graph-mem
+```
+
+That's it — MCP server and hooks are configured automatically.
+
+<details>
+<summary><b>Manual setup</b> — for Cursor, Windsurf, and other MCP clients</summary>
+
+Add to your MCP client config (`~/.claude/claude_desktop_config.json`, `.cursor/mcp.json`, …):
 
 ```json
 {
@@ -48,16 +67,13 @@ Then add graph-mem to your MCP client (`~/.claude/claude_desktop_config.json`, C
     "graph-mem": {
       "command": "uvx",
       "args": ["graph-mem"],
-      "env": { "GRAPHITI_URL": "http://localhost:8000" }
+      "env": { "GRAPHITI_URL": "http://127.0.0.1:8000" }
     }
   }
 }
 ```
 
-<details>
-<summary><b>Enable automatic hooks</b> — context injection at session start, auto-save at stop (recommended)</summary>
-
-Add to `~/.claude/settings.json`:
+For Claude Code hooks, add to `~/.claude/settings.json`:
 
 ```json
 {
@@ -68,7 +84,7 @@ Add to `~/.claude/settings.json`:
 }
 ```
 
-The `Stop` hook has a 30s timeout. If Graphiti is unreachable it exits with a warning and your session ends normally — no data loss, just re-save via `save_session` next time.
+The `Stop` hook has a 30s timeout. If Graphiti is unreachable it exits with a warning — no data loss.
 
 </details>
 

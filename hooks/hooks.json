@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "SessionStart": [
+      { "command": "graph-mem-session-start" }
+    ],
+    "Stop": [
+      { "command": "graph-mem-session-end", "blocking": true }
+    ]
+  }
+}
