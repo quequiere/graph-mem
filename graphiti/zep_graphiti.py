@@ -12,6 +12,7 @@ import os
 import typing
 from typing import Annotated
 
+import httpx
 from fastapi import Depends, HTTPException
 from graphiti_core import Graphiti
 from graphiti_core.cross_encoder.openai_reranker_client import OpenAIRerankerClient
@@ -33,6 +34,21 @@ logger = logging.getLogger(__name__)
 # Embedding dimension for Neo4j vector index. graphiti_core truncates client-side
 # via [:embedding_dim], so this can be smaller than the model's native output.
 EMBEDDING_DIM = 1024
+
+
+def _ssl_verify() -> bool:
+    """Return False when SSL_VERIFY env var is explicitly disabled (corporate proxy)."""
+    return os.environ.get("SSL_VERIFY", "true").lower() not in ("false", "0", "no")
+
+
+def _make_openai_client(api_key: str, base_url: str) -> "AsyncOpenAI":
+    """Build an AsyncOpenAI client, optionally disabling SSL verification."""
+    from openai import AsyncOpenAI
+
+    kwargs: dict[str, typing.Any] = {"api_key": api_key, "base_url": base_url}
+    if not _ssl_verify():
+        kwargs["http_client"] = httpx.AsyncClient(verify=False)
+    return AsyncOpenAI(**kwargs)
 
 
 def _schema_to_example(schema: dict, defs: dict | None = None) -> object:
@@ -204,14 +220,19 @@ async def get_graphiti(settings: ZepEnvDep):
         small_model=llm_model,
         base_url=llm_base_url,
     )
-    llm_client = ExampleLLMClient(config=llm_config)
+    llm_openai = _make_openai_client(llm_api_key, llm_base_url)
+    llm_client = ExampleLLMClient(config=llm_config, client=llm_openai)
 
-    embedder = OpenAIEmbedder(config=OpenAIEmbedderConfig(
-        api_key=embed_api_key,
-        embedding_model=embed_model,
-        embedding_dim=EMBEDDING_DIM,
-        base_url=embed_base_url,
-    ))
+    embed_openai = _make_openai_client(embed_api_key, embed_base_url)
+    embedder = OpenAIEmbedder(
+        config=OpenAIEmbedderConfig(
+            api_key=embed_api_key,
+            embedding_model=embed_model,
+            embedding_dim=EMBEDDING_DIM,
+            base_url=embed_base_url,
+        ),
+        client=embed_openai,
+    )
 
     # Cross-encoder stays coupled to the LLM client: it reranks via text
     # generation, not embeddings, so it's consistent for it to follow the
