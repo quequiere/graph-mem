@@ -1,8 +1,6 @@
 """Unit tests for the UserPromptSubmit hook."""
 
 import json
-import subprocess
-import sys
 
 import pytest
 

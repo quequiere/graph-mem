@@ -2,7 +2,6 @@
 
 import subprocess
 
-import pytest
 
 from graph_mem.hooks._classifier import classify_message
 
