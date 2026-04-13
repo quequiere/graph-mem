@@ -1,6 +1,5 @@
 """Passthrough tools: thin wrappers over Graphiti REST API."""
 
-import json
 
 from graph_mem.client import GraphitiClient
 

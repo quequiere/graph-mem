@@ -5,7 +5,6 @@ By default, Graphiti connects to the host's local Ollama instance
 run: docker compose --profile ollama up -d
 """
 
-import asyncio
 import json
 import os
 import subprocess

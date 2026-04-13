@@ -44,7 +44,7 @@ async def test_onboard_project(client, monkeypatch, tmp_path):
         return {"success": True, "message": "ok"}
     monkeypatch.setattr(client, "add_messages", mock_add_messages)
 
-    result = await onboard_project(client, project_id="project_my-project", project_path=str(tmp_path), description="A test project")
+    await onboard_project(client, project_id="project_my-project", project_path=str(tmp_path), description="A test project")
     project_calls = [c for c in calls if c["group_id"] == "project_my-project"]
     assert len(project_calls) >= 1
     profile_calls = [c for c in calls if c["group_id"] == USER_PROFILE]
@@ -59,5 +59,5 @@ async def test_onboard_project_no_readme(client, monkeypatch, tmp_path):
         return {"success": True, "message": "ok"}
     monkeypatch.setattr(client, "add_messages", mock_add_messages)
 
-    result = await onboard_project(client, project_id="project_bare", project_path=str(tmp_path))
+    await onboard_project(client, project_id="project_bare", project_path=str(tmp_path))
     assert len(calls) >= 1

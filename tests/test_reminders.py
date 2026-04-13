@@ -16,7 +16,7 @@ async def test_add_reminder(client, monkeypatch):
         calls.append({"group_id": group_id, "messages": messages})
         return {"success": True, "message": "ok"}
     monkeypatch.setattr(client, "add_messages", mock_add_messages)
-    result = await add_reminder(client, content="Renew API key before April 15", group_id=USER_PROFILE)
+    await add_reminder(client, content="Renew API key before April 15", group_id=USER_PROFILE)
     assert len(calls) == 1
     assert "Renew API key" in calls[0]["messages"][0]["content"]
     assert "REMINDER" in calls[0]["messages"][0]["content"]
@@ -29,7 +29,7 @@ async def test_add_reminder_project(client, monkeypatch):
         calls.append({"group_id": group_id, "messages": messages})
         return {"success": True, "message": "ok"}
     monkeypatch.setattr(client, "add_messages", mock_add_messages)
-    result = await add_reminder(client, content="Update deps before release", group_id="project_myapp")
+    await add_reminder(client, content="Update deps before release", group_id="project_myapp")
     assert calls[0]["group_id"] == "project_myapp"
 
 
