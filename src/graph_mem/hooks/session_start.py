@@ -53,7 +53,6 @@ def _build_system_message(sections: dict) -> str:
 async def run() -> dict:
     """Return a dict with additionalContext (for Claude) and systemMessage (for user)."""
     settings = get_settings()
-    client = GraphitiClient(base_url=settings.graphiti_url, api_key=settings.graphiti_api_key)
 
     project_id = get_project_id()
     parts = [INSTRUCTIONS]
@@ -61,11 +60,16 @@ async def run() -> dict:
 
     # Inject any existing context (profile + project + reminders)
     try:
-        sections = await get_context_sections(client, project_id=project_id)
-        context = sections.get("formatted")
-        if context and "no context available" not in context.lower():
-            parts.append(f"--- Recalled context ---\n{context}")
-        system_message = _build_system_message(sections)
+        async with GraphitiClient(
+            base_url=settings.graphiti_url,
+            api_key=settings.graphiti_api_key,
+            timeout=settings.graphiti_timeout,
+        ) as client:
+            sections = await get_context_sections(client, project_id=project_id)
+            context = sections.get("formatted")
+            if context and "no context available" not in context.lower():
+                parts.append(f"--- Recalled context ---\n{context}")
+            system_message = _build_system_message(sections)
     except Exception:
         pass  # Graphiti may be down; don't block session start
 

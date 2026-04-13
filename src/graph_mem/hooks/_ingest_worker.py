@@ -17,21 +17,23 @@ from graph_mem.project_id import get_project_id
 
 async def ingest(group_id: str, content: str) -> None:
     settings = get_settings()
-    client = GraphitiClient(
-        base_url=settings.graphiti_url, api_key=settings.graphiti_api_key
-    )
-    await client.add_messages(
-        group_id=group_id,
-        messages=[
-            {
-                "content": content,
-                "role_type": "user",
-                "role": "developer",
-                "name": "auto-capture",
-                "source_description": "Auto-captured from user message by UserPromptSubmit hook.",
-            }
-        ],
-    )
+    async with GraphitiClient(
+        base_url=settings.graphiti_url,
+        api_key=settings.graphiti_api_key,
+        timeout=settings.graphiti_timeout,
+    ) as client:
+        await client.add_messages(
+            group_id=group_id,
+            messages=[
+                {
+                    "content": content,
+                    "role_type": "user",
+                    "role": "developer",
+                    "name": "auto-capture",
+                    "source_description": "Auto-captured from user message by UserPromptSubmit hook.",
+                }
+            ],
+        )
 
 
 def main():

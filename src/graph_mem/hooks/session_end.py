@@ -14,10 +14,14 @@ async def run(summary: str) -> None:
         return
 
     settings = get_settings()
-    client = GraphitiClient(base_url=settings.graphiti_url, api_key=settings.graphiti_api_key)
     project_id = get_project_id()
 
-    await save_session(client, summary=summary, project_id=project_id)
+    async with GraphitiClient(
+        base_url=settings.graphiti_url,
+        api_key=settings.graphiti_api_key,
+        timeout=settings.graphiti_timeout,
+    ) as client:
+        await save_session(client, summary=summary, project_id=project_id)
 
 
 def main():
