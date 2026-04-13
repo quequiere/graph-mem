@@ -47,6 +47,18 @@ services:
         condition: service_completed_successfully
         required: false
 
+  viewer:
+    build: ./viewer
+    ports:
+      - "${VIEWER_PORT:-8050}:8080"
+    environment:
+      - NEO4J_HTTP_URL=http://127.0.0.1:${NEO4J_HTTP_PORT:-7475}
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-graphiti}
+    depends_on:
+      neo4j:
+        condition: service_healthy
+
   ollama:
     image: ollama/ollama:latest
     profiles: [ollama]
