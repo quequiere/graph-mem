@@ -1,0 +1,4364 @@
+{
+  "run_at": "2026-04-12T17:20:32.802232+00:00",
+  "dataset_version": "2.0",
+  "dataset_size": 50,
+  "entity_types": [
+    "Person",
+    "Technology",
+    "Tool",
+    "Project",
+    "Organization",
+    "Language",
+    "Location",
+    "Role",
+    "Domain",
+    "Practice",
+    "Infrastructure",
+    "Service",
+    "Value"
+  ],
+  "predicates": [
+    "likes",
+    "uses",
+    "works_on",
+    "works_with",
+    "knows",
+    "codes_in",
+    "speaks",
+    "prefers",
+    "learns",
+    "colleague_of",
+    "located_in",
+    "deployed_via",
+    "runs_on",
+    "is",
+    "is_plugin_for",
+    "led_by",
+    "coaches",
+    "values",
+    "past_uses",
+    "past_works_on",
+    "past_works_with",
+    "past_leads",
+    "past_runs_on"
+  ],
+  "models": [
+    {
+      "name": "gliner2-base",
+      "model_id": "fastino/gliner2-base-v1",
+      "total_cases": 50,
+      "success": 50,
+      "failed": 0,
+      "avg_entity_precision": 0.67,
+      "avg_entity_recall": 0.8966666666666667,
+      "entity_f1": 0.766936170212766,
+      "avg_relation_precision": 0.3723809523809524,
+      "avg_relation_recall": 0.5266666666666666,
+      "relation_f1": 0.43628531073446325,
+      "type_accuracy": 0.5833333333333334,
+      "avg_latency_ms": 1496.7799854278564,
+      "cases": [
+        {
+          "id": "simple_entity_01",
+          "category": "simple_entity",
+          "entity_precision": 0.5,
+          "entity_recall": 0.5,
+          "entity_f1": 0.5,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1751.6121864318848,
+          "predicted_entities": [
+            {
+              "name": "Bruno aime",
+              "type": "Person"
+            },
+            {
+              "name": "Python",
+              "type": "Technology"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Bruno aime",
+              "predicate": "codes_in",
+              "target": "Python"
+            },
+            {
+              "source": "Bruno aime",
+              "predicate": "is_plugin_for",
+              "target": "Python"
+            }
+          ]
+        },
+        {
+          "id": "simple_entity_02",
+          "category": "simple_entity",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 1.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1394.542932510376,
+          "predicted_entities": [
+            {
+              "name": "Atlas",
+              "type": "Project"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Atlas",
+              "predicate": "is",
+              "target": "main project"
+            }
+          ]
+        },
+        {
+          "id": "simple_entity_03",
+          "category": "simple_entity",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1593.5907363891602,
+          "predicted_entities": [
+            {
+              "name": "VSCode",
+              "type": "Tool"
+            },
+            {
+              "name": "coder",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "VSCode",
+              "predicate": "codes_in",
+              "target": "VSCode"
+            },
+            {
+              "source": "VSCode",
+              "predicate": "deployed_via",
+              "target": "tous les jours"
+            },
+            {
+              "source": "VSCode",
+              "predicate": "is_plugin_for",
+              "target": "coder"
+            }
+          ]
+        },
+        {
+          "id": "simple_relation_01",
+          "category": "simple_relation",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.8,
+          "relation_recall": 0.6666666666666666,
+          "relation_f1": 0.7272727272727272,
+          "latency_ms": 1458.1868648529053,
+          "predicted_entities": [
+            {
+              "name": "Julie",
+              "type": "Person"
+            },
+            {
+              "name": "Bruno",
+              "type": "Person"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Bruno",
+              "predicate": "works_on",
+              "target": "projet Atlas"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "works_with",
+              "target": "Julie"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "colleague_of",
+              "target": "Julie"
+            },
+            {
+              "source": "Julie",
+              "predicate": "coaches",
+              "target": "Bruno"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "past_works_with",
+              "target": "Julie"
+            }
+          ]
+        },
+        {
+          "id": "simple_relation_02",
+          "category": "simple_relation",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1667.1807765960693,
+          "predicted_entities": [
+            {
+              "name": "Sylvie",
+              "type": "Person"
+            },
+            {
+              "name": "C#",
+              "type": "Technology"
+            },
+            {
+              "name": "coache",
+              "type": "Tool"
+            },
+            {
+              "name": "C#",
+              "type": "Language"
+            },
+            {
+              "name": "coache",
+              "type": "Role"
+            },
+            {
+              "name": "coache",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Sylvie me",
+              "predicate": "coaches",
+              "target": "C#"
+            }
+          ]
+        },
+        {
+          "id": "simple_relation_03",
+          "category": "simple_relation",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.8571428571428571,
+          "relation_recall": 1.0,
+          "relation_f1": 0.923076923076923,
+          "latency_ms": 1374.5548725128174,
+          "predicted_entities": [
+            {
+              "name": "Neo4j",
+              "type": "Technology"
+            },
+            {
+              "name": "Neo4j",
+              "type": "Tool"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "Atlas",
+              "type": "Organization"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "works_with",
+              "target": "Python"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "codes_in",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "deployed_via",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Neo4j",
+              "predicate": "is_plugin_for",
+              "target": "Atlas"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "past_uses",
+              "target": "Python"
+            }
+          ]
+        },
+        {
+          "id": "dedup_01",
+          "category": "dedup",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1539.7896766662598,
+          "predicted_entities": [
+            {
+              "name": "Thomas",
+              "type": "Person"
+            },
+            {
+              "name": "Tom",
+              "type": "Person"
+            },
+            {
+              "name": "Rust",
+              "type": "Technology"
+            },
+            {
+              "name": "développeur",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Thomas",
+              "predicate": "speaks",
+              "target": "appelle Tom"
+            },
+            {
+              "source": "Thomas",
+              "predicate": "deployed_via",
+              "target": "appelle Tom"
+            },
+            {
+              "source": "Thomas",
+              "predicate": "is",
+              "target": "développeur"
+            },
+            {
+              "source": "Thomas",
+              "predicate": "is_plugin_for",
+              "target": "appelle Tom"
+            }
+          ]
+        },
+        {
+          "id": "dedup_02",
+          "category": "dedup",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 1.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1499.2949962615967,
+          "predicted_entities": [
+            {
+              "name": "PostgreSQL",
+              "type": "Technology"
+            },
+            {
+              "name": "Postgres",
+              "type": "Technology"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "PostgreSQL",
+              "predicate": "colleague_of",
+              "target": "Postgres"
+            },
+            {
+              "source": "PostgreSQL",
+              "predicate": "deployed_via",
+              "target": "Postgres"
+            },
+            {
+              "source": "PostgreSQL",
+              "predicate": "is",
+              "target": "base principale"
+            }
+          ]
+        },
+        {
+          "id": "dedup_03",
+          "category": "dedup",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 1674.0007400512695,
+          "predicted_entities": [
+            {
+              "name": "Pneumatiques Michelin",
+              "type": "Technology"
+            },
+            {
+              "name": "Michelin",
+              "type": "Organization"
+            },
+            {
+              "name": "Française",
+              "type": "Language"
+            },
+            {
+              "name": "Clermont-Ferrand",
+              "type": "Location"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Michelin",
+              "predicate": "located_in",
+              "target": "Clermont-Ferrand"
+            }
+          ]
+        },
+        {
+          "id": "temporal_01",
+          "category": "temporal",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1947.6659297943115,
+          "predicted_entities": [
+            {
+              "name": "MongoDB",
+              "type": "Technology"
+            },
+            {
+              "name": "PostgreSQL",
+              "type": "Technology"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Avant",
+              "predicate": "uses",
+              "target": "MongoDB"
+            }
+          ]
+        },
+        {
+          "id": "temporal_02",
+          "category": "temporal",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.4,
+          "relation_recall": 1.0,
+          "relation_f1": 0.5714285714285715,
+          "latency_ms": 1230.1018238067627,
+          "predicted_entities": [
+            {
+              "name": "Julie",
+              "type": "Person"
+            },
+            {
+              "name": "Atlas",
+              "type": "Organization"
+            },
+            {
+              "name": "lead tech",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Julie",
+              "predicate": "works_on",
+              "target": "Atlas"
+            },
+            {
+              "source": "Julie",
+              "predicate": "located_in",
+              "target": "janvier"
+            },
+            {
+              "source": "Julie",
+              "predicate": "deployed_via",
+              "target": "janvier"
+            },
+            {
+              "source": "Julie",
+              "predicate": "is",
+              "target": "lead tech"
+            },
+            {
+              "source": "Julie",
+              "predicate": "is_plugin_for",
+              "target": "Atlas"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_01",
+          "category": "user_preference",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1535.5265140533447,
+          "predicted_entities": [
+            {
+              "name": "TDD",
+              "type": "Tool"
+            },
+            {
+              "name": "tests manuels",
+              "type": "Practice"
+            },
+            {
+              "name": "tests manuels",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "TDD",
+              "predicate": "is_plugin_for",
+              "target": "tests manuels"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_02",
+          "category": "user_preference",
+          "entity_precision": 0.0,
+          "entity_recall": 0.0,
+          "entity_f1": 0.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1213.1550312042236,
+          "predicted_entities": [
+            {
+              "name": "français",
+              "type": "Language"
+            },
+            {
+              "name": "anglais",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "code",
+              "predicate": "codes_in",
+              "target": "anglais"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_03",
+          "category": "user_preference",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1538.0682945251465,
+          "predicted_entities": [
+            {
+              "name": "backend systems",
+              "type": "Technology"
+            },
+            {
+              "name": "senior developer",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "project_fact_01",
+          "category": "project_fact",
+          "entity_precision": 1.0,
+          "entity_recall": 0.6666666666666666,
+          "entity_f1": 0.8,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.8333333333333334,
+          "relation_recall": 1.0,
+          "relation_f1": 0.9090909090909091,
+          "latency_ms": 1570.1680183410645,
+          "predicted_entities": [
+            {
+              "name": "Graph-mem",
+              "type": "Tool"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Graph-mem",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "Graph-mem",
+              "predicate": "codes_in",
+              "target": "Python"
+            },
+            {
+              "source": "Graph-mem",
+              "predicate": "located_in",
+              "target": "Python"
+            },
+            {
+              "source": "Graph-mem",
+              "predicate": "deployed_via",
+              "target": "Python"
+            },
+            {
+              "source": "Graph-mem",
+              "predicate": "is",
+              "target": "Claude Code plugin"
+            },
+            {
+              "source": "Graph-mem",
+              "predicate": "is_plugin_for",
+              "target": "Claude Code"
+            }
+          ]
+        },
+        {
+          "id": "project_fact_02",
+          "category": "project_fact",
+          "entity_precision": 0.2,
+          "entity_recall": 0.3333333333333333,
+          "entity_f1": 0.25,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1567.1889781951904,
+          "predicted_entities": [
+            {
+              "name": "Neo4j 5.26",
+              "type": "Technology"
+            },
+            {
+              "name": "OpenRouter",
+              "type": "Tool"
+            },
+            {
+              "name": "stack",
+              "type": "Project"
+            },
+            {
+              "name": "c",
+              "type": "Language"
+            },
+            {
+              "name": "backend",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "project_fact_03",
+          "category": "project_fact",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.3333333333333333,
+          "relation_recall": 0.5,
+          "relation_f1": 0.4,
+          "latency_ms": 1088.9930725097656,
+          "predicted_entities": [
+            {
+              "name": "Docker Compose",
+              "type": "Tool"
+            },
+            {
+              "name": "VM",
+              "type": "Infrastructure"
+            },
+            {
+              "name": "Deployment",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Deployment",
+              "predicate": "uses",
+              "target": "Docker Compose"
+            },
+            {
+              "source": "Deployment",
+              "predicate": "deployed_via",
+              "target": "Docker Compose"
+            },
+            {
+              "source": "Docker Compose",
+              "predicate": "is_plugin_for",
+              "target": "single VM"
+            }
+          ]
+        },
+        {
+          "id": "mixed_01",
+          "category": "mixed",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.25,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 1425.689697265625,
+          "predicted_entities": [
+            {
+              "name": "Bruno",
+              "type": "Person"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            },
+            {
+              "name": "Rust",
+              "type": "Language"
+            },
+            {
+              "name": "Go",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Bruno",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "uses",
+              "target": "Go"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "knows",
+              "target": "Rust"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "knows",
+              "target": "Rust"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "codes_in",
+              "target": "Python"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "speaks",
+              "target": "Python"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "learns",
+              "target": "Rust"
+            }
+          ]
+        },
+        {
+          "id": "pronoun_01",
+          "category": "pronoun",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.5,
+          "relation_recall": 0.5,
+          "relation_f1": 0.5,
+          "latency_ms": 1165.2507781982422,
+          "predicted_entities": [
+            {
+              "name": "Sylvie",
+              "type": "Person"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "collègue",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Sylvie",
+              "predicate": "works_on",
+              "target": "projet Atlas"
+            },
+            {
+              "source": "Sylvie",
+              "predicate": "is_plugin_for",
+              "target": "projet Atlas"
+            }
+          ]
+        },
+        {
+          "id": "negation_01",
+          "category": "negation",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.6666666666666666,
+          "relation_recall": 1.0,
+          "relation_f1": 0.8,
+          "latency_ms": 1510.4107856750488,
+          "predicted_entities": [
+            {
+              "name": "Julie",
+              "type": "Person"
+            },
+            {
+              "name": "Atlas",
+              "type": "Infrastructure"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Julie",
+              "predicate": "works_on",
+              "target": "Atlas"
+            },
+            {
+              "source": "Julie",
+              "predicate": "located_in",
+              "target": "Atlas"
+            },
+            {
+              "source": "Julie",
+              "predicate": "deployed_via",
+              "target": "février"
+            }
+          ]
+        },
+        {
+          "id": "nested_01",
+          "category": "nested",
+          "entity_precision": 0.8,
+          "entity_recall": 1.0,
+          "entity_f1": 0.888888888888889,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.42857142857142855,
+          "relation_recall": 1.0,
+          "relation_f1": 0.6,
+          "latency_ms": 1350.358247756958,
+          "predicted_entities": [
+            {
+              "name": "Bruno",
+              "type": "Person"
+            },
+            {
+              "name": "Neo4j",
+              "type": "Technology"
+            },
+            {
+              "name": "Neo4j",
+              "type": "Tool"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            },
+            {
+              "name": "backend",
+              "type": "Domain"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "équipe Atlas",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "équipe Atlas",
+              "predicate": "uses",
+              "target": "Neo4j"
+            },
+            {
+              "source": "équipe Atlas",
+              "predicate": "works_with",
+              "target": "Python"
+            },
+            {
+              "source": "équipe Atlas",
+              "predicate": "codes_in",
+              "target": "Python"
+            },
+            {
+              "source": "équipe Atlas",
+              "predicate": "deployed_via",
+              "target": "Python"
+            },
+            {
+              "source": "équipe Atlas",
+              "predicate": "led_by",
+              "target": "Bruno"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "coaches",
+              "target": "équipe Atlas"
+            }
+          ]
+        },
+        {
+          "id": "mixed_lang_01",
+          "category": "mixed",
+          "entity_precision": 0.6,
+          "entity_recall": 1.0,
+          "entity_f1": 0.7499999999999999,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1613.1973266601562,
+          "predicted_entities": [
+            {
+              "name": "Rust",
+              "type": "Technology"
+            },
+            {
+              "name": "tech stack",
+              "type": "Technology"
+            },
+            {
+              "name": "Python",
+              "type": "Technology"
+            },
+            {
+              "name": "Go",
+              "type": "Technology"
+            },
+            {
+              "name": "Go",
+              "type": "Language"
+            },
+            {
+              "name": "Rust",
+              "type": "Language"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            },
+            {
+              "name": "parties critiques",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Python",
+              "predicate": "is",
+              "target": "tech stack"
+            },
+            {
+              "source": "Go",
+              "predicate": "is",
+              "target": "tech stack"
+            }
+          ]
+        },
+        {
+          "id": "abstract_01",
+          "category": "abstract",
+          "entity_precision": 0.0,
+          "entity_recall": 0.0,
+          "entity_f1": 0.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1491.5401935577393,
+          "predicted_entities": [
+            {
+              "name": "code",
+              "type": "Domain"
+            },
+            {
+              "name": "tests automatisés",
+              "type": "Service"
+            },
+            {
+              "name": "qualité",
+              "type": "Value"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Je",
+              "predicate": "knows",
+              "target": "qualité du code"
+            },
+            {
+              "source": "Je",
+              "predicate": "learns",
+              "target": "qualité du code"
+            },
+            {
+              "source": "Je",
+              "predicate": "values",
+              "target": "qualité du code"
+            }
+          ]
+        },
+        {
+          "id": "edge_empty_01",
+          "category": "edge",
+          "entity_precision": 0.0,
+          "entity_recall": 1.0,
+          "entity_f1": 0.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 1675.4255294799805,
+          "predicted_entities": [
+            {
+              "name": "meeting",
+              "type": "Organization"
+            },
+            {
+              "name": "budget",
+              "type": "Domain"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "edge_short_01",
+          "category": "edge",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.2,
+          "relation_recall": 1.0,
+          "relation_f1": 0.33333333333333337,
+          "latency_ms": 1354.7427654266357,
+          "predicted_entities": [
+            {
+              "name": "J",
+              "type": "Person"
+            },
+            {
+              "name": "Rust",
+              "type": "Technology"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "J",
+              "predicate": "likes",
+              "target": "Rust"
+            },
+            {
+              "source": "J",
+              "predicate": "knows",
+              "target": "Rust"
+            },
+            {
+              "source": "J",
+              "predicate": "prefers",
+              "target": "Rust"
+            },
+            {
+              "source": "J",
+              "predicate": "learns",
+              "target": "Rust"
+            },
+            {
+              "source": "J",
+              "predicate": "values",
+              "target": "Rust"
+            }
+          ]
+        },
+        {
+          "id": "simple_relation_04",
+          "category": "simple_relation",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.6666666666666666,
+          "relation_precision": 1.0,
+          "relation_recall": 0.5,
+          "relation_f1": 0.6666666666666666,
+          "latency_ms": 1482.5494289398193,
+          "predicted_entities": [
+            {
+              "name": "Thomas",
+              "type": "Person"
+            },
+            {
+              "name": "Rust",
+              "type": "Technology"
+            },
+            {
+              "name": "Léa",
+              "type": "Tool"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Léa",
+              "predicate": "is_plugin_for",
+              "target": "Thomas"
+            },
+            {
+              "source": "Léa",
+              "predicate": "coaches",
+              "target": "Thomas"
+            }
+          ]
+        },
+        {
+          "id": "mixed_02",
+          "category": "mixed",
+          "entity_precision": 0.4,
+          "entity_recall": 0.6666666666666666,
+          "entity_f1": 0.5,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.5,
+          "relation_recall": 1.0,
+          "relation_f1": 0.6666666666666666,
+          "latency_ms": 1521.9602584838867,
+          "predicted_entities": [
+            {
+              "name": "Marie code",
+              "type": "Person"
+            },
+            {
+              "name": "Java",
+              "type": "Technology"
+            },
+            {
+              "name": "side projects",
+              "type": "Project"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            },
+            {
+              "name": "boulot",
+              "type": "Role"
+            },
+            {
+              "name": "boulot",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Marie code",
+              "predicate": "uses",
+              "target": "Java"
+            },
+            {
+              "source": "Marie code",
+              "predicate": "works_with",
+              "target": "Python"
+            },
+            {
+              "source": "Marie",
+              "predicate": "codes_in",
+              "target": "Java"
+            },
+            {
+              "source": "Marie",
+              "predicate": "codes_in",
+              "target": "Python"
+            }
+          ]
+        },
+        {
+          "id": "mixed_03",
+          "category": "mixed",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.3333333333333333,
+          "relation_precision": 1.0,
+          "relation_recall": 0.5,
+          "relation_f1": 0.6666666666666666,
+          "latency_ms": 1690.0155544281006,
+          "predicted_entities": [
+            {
+              "name": "Docker",
+              "type": "Technology"
+            },
+            {
+              "name": "Docker",
+              "type": "Tool"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "AWS",
+              "type": "Organization"
+            },
+            {
+              "name": "AWS",
+              "type": "Infrastructure"
+            },
+            {
+              "name": "Atlas",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "Docker"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "deployed_via",
+              "target": "Docker"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "is_plugin_for",
+              "target": "Docker"
+            }
+          ]
+        },
+        {
+          "id": "mixed_04",
+          "category": "mixed",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 1592.2017097473145,
+          "predicted_entities": [
+            {
+              "name": "Sarah",
+              "type": "Person"
+            },
+            {
+              "name": "Terraform",
+              "type": "Technology"
+            },
+            {
+              "name": "Ansible",
+              "type": "Technology"
+            },
+            {
+              "name": "DevOps lead",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Sarah",
+              "predicate": "knows",
+              "target": "Terraform"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "knows",
+              "target": "Ansible"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "speaks",
+              "target": "Terraform"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "learns",
+              "target": "Terraform"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "learns",
+              "target": "Ansible"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "is",
+              "target": "DevOps lead"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "led_by",
+              "target": "DevOps lead"
+            }
+          ]
+        },
+        {
+          "id": "mixed_05",
+          "category": "mixed",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.75,
+          "relation_precision": 0.16666666666666666,
+          "relation_recall": 0.5,
+          "relation_f1": 0.25,
+          "latency_ms": 1483.752965927124,
+          "predicted_entities": [
+            {
+              "name": "Bruno",
+              "type": "Person"
+            },
+            {
+              "name": "VSCode",
+              "type": "Technology"
+            },
+            {
+              "name": "IntelliJ",
+              "type": "Tool"
+            },
+            {
+              "name": "VSCode",
+              "type": "Tool"
+            },
+            {
+              "name": "graph-mem",
+              "type": "Infrastructure"
+            },
+            {
+              "name": "graph-mem",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Bruno préfère",
+              "predicate": "uses",
+              "target": "VSCode"
+            },
+            {
+              "source": "Bruno préfère",
+              "predicate": "works_on",
+              "target": "graph-mem"
+            },
+            {
+              "source": "Bruno préfère",
+              "predicate": "codes_in",
+              "target": "IntelliJ"
+            },
+            {
+              "source": "Bruno préfère",
+              "predicate": "located_in",
+              "target": "IntelliJ"
+            },
+            {
+              "source": "VSCode",
+              "predicate": "deployed_via",
+              "target": "IntelliJ"
+            },
+            {
+              "source": "VSCode",
+              "predicate": "is_plugin_for",
+              "target": "IntelliJ"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_04",
+          "category": "user_preference",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 0.6666666666666666,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1543.6196327209473,
+          "predicted_entities": [
+            {
+              "name": "Fastify",
+              "type": "Tool"
+            },
+            {
+              "name": "Express",
+              "type": "Tool"
+            },
+            {
+              "name": "APIs Node",
+              "type": "Infrastructure"
+            },
+            {
+              "name": "Express",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Fastify",
+              "predicate": "deployed_via",
+              "target": "Express"
+            },
+            {
+              "source": "Fastify",
+              "predicate": "is_plugin_for",
+              "target": "APIs Node"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_05",
+          "category": "user_preference",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.3333333333333333,
+          "relation_recall": 0.5,
+          "relation_f1": 0.4,
+          "latency_ms": 1109.2808246612549,
+          "predicted_entities": [
+            {
+              "name": "I",
+              "type": "Person"
+            },
+            {
+              "name": "pair programming",
+              "type": "Practice"
+            },
+            {
+              "name": "code reviews",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "I",
+              "predicate": "likes",
+              "target": "code reviews"
+            },
+            {
+              "source": "I",
+              "predicate": "prefers",
+              "target": "code reviews"
+            },
+            {
+              "source": "I",
+              "predicate": "values",
+              "target": "code reviews"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_06",
+          "category": "user_preference",
+          "entity_precision": 0.0,
+          "entity_recall": 0.0,
+          "entity_f1": 0.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1336.8239402770996,
+          "predicted_entities": [
+            {
+              "name": "architecte",
+              "type": "Role"
+            },
+            {
+              "name": "simplicité",
+              "type": "Value"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "project_fact_04",
+          "category": "project_fact",
+          "entity_precision": 0.75,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8571428571428571,
+          "type_accuracy": 0.3333333333333333,
+          "relation_precision": 0.75,
+          "relation_recall": 1.0,
+          "relation_f1": 0.8571428571428571,
+          "latency_ms": 1145.9770202636719,
+          "predicted_entities": [
+            {
+              "name": "Helios",
+              "type": "Tool"
+            },
+            {
+              "name": "Helios",
+              "type": "Project"
+            },
+            {
+              "name": "caching",
+              "type": "Role"
+            },
+            {
+              "name": "Kubernetes",
+              "type": "Infrastructure"
+            },
+            {
+              "name": "Redis",
+              "type": "Value"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Helios",
+              "predicate": "uses",
+              "target": "Redis"
+            },
+            {
+              "source": "Helios",
+              "predicate": "deployed_via",
+              "target": "Redis"
+            },
+            {
+              "source": "Helios",
+              "predicate": "runs_on",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "Redis",
+              "predicate": "is_plugin_for",
+              "target": "caching"
+            }
+          ]
+        },
+        {
+          "id": "project_fact_05",
+          "category": "project_fact",
+          "entity_precision": 0.75,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8571428571428571,
+          "type_accuracy": 0.3333333333333333,
+          "relation_precision": 0.5,
+          "relation_recall": 1.0,
+          "relation_f1": 0.6666666666666666,
+          "latency_ms": 1215.517520904541,
+          "predicted_entities": [
+            {
+              "name": "React",
+              "type": "Technology"
+            },
+            {
+              "name": "React",
+              "type": "Tool"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "TypeScript",
+              "type": "Language"
+            },
+            {
+              "name": "frontend",
+              "type": "Infrastructure"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "TypeScript"
+            },
+            {
+              "source": "TypeScript",
+              "predicate": "is_plugin_for",
+              "target": "Atlas"
+            }
+          ]
+        },
+        {
+          "id": "project_fact_06",
+          "category": "project_fact",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.8,
+          "relation_recall": 1.0,
+          "relation_f1": 0.888888888888889,
+          "latency_ms": 1420.393943786621,
+          "predicted_entities": [
+            {
+              "name": "graph-mem",
+              "type": "Technology"
+            },
+            {
+              "name": "Neo4j",
+              "type": "Technology"
+            },
+            {
+              "name": "Neo4j",
+              "type": "Tool"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "graph-mem",
+              "predicate": "uses",
+              "target": "Neo4j"
+            },
+            {
+              "source": "graph-mem",
+              "predicate": "codes_in",
+              "target": "Neo4j"
+            },
+            {
+              "source": "graph-mem",
+              "predicate": "deployed_via",
+              "target": "Neo4j"
+            },
+            {
+              "source": "graph-mem",
+              "predicate": "is",
+              "target": "plugin"
+            },
+            {
+              "source": "graph-mem",
+              "predicate": "is_plugin_for",
+              "target": "Neo4j"
+            }
+          ]
+        },
+        {
+          "id": "dedup_04",
+          "category": "dedup",
+          "entity_precision": 0.3333333333333333,
+          "entity_recall": 1.0,
+          "entity_f1": 0.5,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1344.5451259613037,
+          "predicted_entities": [
+            {
+              "name": "Kubernetes",
+              "type": "Technology"
+            },
+            {
+              "name": "K8s",
+              "type": "Technology"
+            },
+            {
+              "name": "K8s",
+              "type": "Tool"
+            },
+            {
+              "name": "orchestrator",
+              "type": "Role"
+            },
+            {
+              "name": "Kubernetes",
+              "type": "Infrastructure"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "K8s",
+              "predicate": "deployed_via",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "K8s",
+              "predicate": "is",
+              "target": "orchestrator"
+            }
+          ]
+        },
+        {
+          "id": "dedup_05",
+          "category": "dedup",
+          "entity_precision": 0.3333333333333333,
+          "entity_recall": 1.0,
+          "entity_f1": 0.5,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 1.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1297.4631786346436,
+          "predicted_entities": [
+            {
+              "name": "JavaScript",
+              "type": "Technology"
+            },
+            {
+              "name": "JS",
+              "type": "Language"
+            },
+            {
+              "name": "web",
+              "type": "Domain"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "JavaScript",
+              "predicate": "codes_in",
+              "target": "web"
+            },
+            {
+              "source": "qu'on appelle souvent JS",
+              "predicate": "deployed_via",
+              "target": "web"
+            },
+            {
+              "source": "qu'on appelle souvent JS",
+              "predicate": "is_plugin_for",
+              "target": "JavaScript"
+            }
+          ]
+        },
+        {
+          "id": "temporal_03",
+          "category": "temporal",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1332.8778743743896,
+          "predicted_entities": [
+            {
+              "name": "Renault",
+              "type": "Organization"
+            },
+            {
+              "name": "Michelin",
+              "type": "Organization"
+            },
+            {
+              "name": "développeur",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "temporal_04",
+          "category": "temporal",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1620.6574440002441,
+          "predicted_entities": [
+            {
+              "name": "Heroku",
+              "type": "Technology"
+            },
+            {
+              "name": "AWS",
+              "type": "Technology"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "We",
+              "predicate": "located_in",
+              "target": "AWS"
+            },
+            {
+              "source": "We",
+              "predicate": "deployed_via",
+              "target": "Heroku"
+            },
+            {
+              "source": "We",
+              "predicate": "past_uses",
+              "target": "Heroku"
+            },
+            {
+              "source": "We",
+              "predicate": "past_works_on",
+              "target": "Heroku"
+            }
+          ]
+        },
+        {
+          "id": "negation_02",
+          "category": "negation",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1541.8519973754883,
+          "predicted_entities": [
+            {
+              "name": "Jira",
+              "type": "Tool"
+            },
+            {
+              "name": "Linear",
+              "type": "Infrastructure"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Jira",
+              "predicate": "deployed_via",
+              "target": "Linear"
+            }
+          ]
+        },
+        {
+          "id": "negation_03",
+          "category": "negation",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 1556.995153427124,
+          "predicted_entities": [
+            {
+              "name": "Claire",
+              "type": "Person"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "team",
+              "type": "Organization"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Claire",
+              "predicate": "works_on",
+              "target": "Atlas"
+            }
+          ]
+        },
+        {
+          "id": "negation_04",
+          "category": "negation",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1594.7248935699463,
+          "predicted_entities": [
+            {
+              "name": "Docker Swarm",
+              "type": "Technology"
+            },
+            {
+              "name": "Docker Swarm",
+              "type": "Tool"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "edge_empty_02",
+          "category": "edge",
+          "entity_precision": 0.0,
+          "entity_recall": 1.0,
+          "entity_f1": 0.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 2002.0036697387695,
+          "predicted_entities": [
+            {
+              "name": "ce soir",
+              "type": "Location"
+            },
+            {
+              "name": "ton mail",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "edge_short_02",
+          "category": "edge",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.3333333333333333,
+          "relation_recall": 1.0,
+          "relation_f1": 0.5,
+          "latency_ms": 1610.7735633850098,
+          "predicted_entities": [
+            {
+              "name": "TypeScript",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "I",
+              "predicate": "likes",
+              "target": "TypeScript"
+            },
+            {
+              "source": "I",
+              "predicate": "prefers",
+              "target": "TypeScript"
+            },
+            {
+              "source": "I",
+              "predicate": "values",
+              "target": "TypeScript"
+            }
+          ]
+        },
+        {
+          "id": "edge_multi_01",
+          "category": "edge",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.8,
+          "relation_recall": 1.0,
+          "relation_f1": 0.888888888888889,
+          "latency_ms": 1746.9801902770996,
+          "predicted_entities": [
+            {
+              "name": "Alice",
+              "type": "Person"
+            },
+            {
+              "name": "Kubernetes",
+              "type": "Technology"
+            },
+            {
+              "name": "team",
+              "type": "Organization"
+            },
+            {
+              "name": "expert",
+              "type": "Role"
+            },
+            {
+              "name": "Kubernetes",
+              "type": "Infrastructure"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Alice",
+              "predicate": "works_on",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "Alice",
+              "predicate": "knows",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "Alice",
+              "predicate": "codes_in",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "Alice",
+              "predicate": "learns",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "Alice",
+              "predicate": "is",
+              "target": "expert"
+            }
+          ]
+        },
+        {
+          "id": "pronoun_02",
+          "category": "pronoun",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1616.9650554656982,
+          "predicted_entities": [
+            {
+              "name": "Thomas",
+              "type": "Person"
+            },
+            {
+              "name": "React Native",
+              "type": "Technology"
+            },
+            {
+              "name": "J'ai",
+              "type": "Tool"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Thomas hier",
+              "predicate": "colleague_of",
+              "target": "Thomas hier"
+            }
+          ]
+        },
+        {
+          "id": "pronoun_03",
+          "category": "pronoun",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 1665.4667854309082,
+          "predicted_entities": [
+            {
+              "name": "Paul",
+              "type": "Person"
+            },
+            {
+              "name": "graph-mem",
+              "type": "Technology"
+            },
+            {
+              "name": "author",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Paul",
+              "predicate": "colleague_of",
+              "target": "Paul"
+            },
+            {
+              "source": "Paul",
+              "predicate": "is",
+              "target": "main author"
+            },
+            {
+              "source": "graph-mem",
+              "predicate": "is_plugin_for",
+              "target": "graph-mem"
+            }
+          ]
+        },
+        {
+          "id": "pronoun_04",
+          "category": "pronoun",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.6666666666666666,
+          "relation_recall": 1.0,
+          "relation_f1": 0.8,
+          "latency_ms": 1523.7553119659424,
+          "predicted_entities": [
+            {
+              "name": "Python",
+              "type": "Language"
+            },
+            {
+              "name": "Rust",
+              "type": "Language"
+            },
+            {
+              "name": "Chez nous",
+              "type": "Location"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "on",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "on",
+              "predicate": "uses",
+              "target": "Rust"
+            },
+            {
+              "source": "Python",
+              "predicate": "deployed_via",
+              "target": "Python"
+            }
+          ]
+        },
+        {
+          "id": "nested_02",
+          "category": "nested",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.75,
+          "relation_recall": 0.6666666666666666,
+          "relation_f1": 0.7058823529411765,
+          "latency_ms": 1611.6094589233398,
+          "predicted_entities": [
+            {
+              "name": "Bruno",
+              "type": "Person"
+            },
+            {
+              "name": "Neo4j",
+              "type": "Tool"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "Rust",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "codes_in",
+              "target": "Rust"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "deployed_via",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "is",
+              "target": "projet open-source"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "gliner2-large",
+      "model_id": "fastino/gliner2-large-v1",
+      "total_cases": 50,
+      "success": 50,
+      "failed": 0,
+      "avg_entity_precision": 0.725,
+      "avg_entity_recall": 0.8733333333333333,
+      "entity_f1": 0.7922836287799793,
+      "avg_relation_precision": 0.4776666666666667,
+      "avg_relation_recall": 0.6433333333333333,
+      "relation_f1": 0.548258499355734,
+      "type_accuracy": 0.59,
+      "avg_latency_ms": 4276.645736694336,
+      "cases": [
+        {
+          "id": "simple_entity_01",
+          "category": "simple_entity",
+          "entity_precision": 0.5,
+          "entity_recall": 0.5,
+          "entity_f1": 0.5,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4020.132064819336,
+          "predicted_entities": [
+            {
+              "name": "Bruno aime",
+              "type": "Person"
+            },
+            {
+              "name": "Python",
+              "type": "Technology"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "simple_entity_02",
+          "category": "simple_entity",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 1.0,
+          "relation_f1": 0.0,
+          "latency_ms": 3964.606761932373,
+          "predicted_entities": [
+            {
+              "name": "Atlas",
+              "type": "Project"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Atlas",
+              "predicate": "is",
+              "target": "main project"
+            }
+          ]
+        },
+        {
+          "id": "simple_entity_03",
+          "category": "simple_entity",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4094.200372695923,
+          "predicted_entities": [
+            {
+              "name": "VSCode",
+              "type": "Tool"
+            },
+            {
+              "name": "coder",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "J",
+              "predicate": "likes",
+              "target": "VSCode"
+            }
+          ]
+        },
+        {
+          "id": "simple_relation_01",
+          "category": "simple_relation",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 0.6666666666666666,
+          "relation_f1": 0.8,
+          "latency_ms": 4033.278226852417,
+          "predicted_entities": [
+            {
+              "name": "Julie",
+              "type": "Person"
+            },
+            {
+              "name": "Bruno",
+              "type": "Person"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Bruno",
+              "predicate": "works_on",
+              "target": "projet Atlas"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "works_with",
+              "target": "Julie"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "colleague_of",
+              "target": "Julie"
+            }
+          ]
+        },
+        {
+          "id": "simple_relation_02",
+          "category": "simple_relation",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.25,
+          "relation_recall": 0.5,
+          "relation_f1": 0.3333333333333333,
+          "latency_ms": 4147.402048110962,
+          "predicted_entities": [
+            {
+              "name": "Sylvie",
+              "type": "Person"
+            },
+            {
+              "name": "C#",
+              "type": "Technology"
+            },
+            {
+              "name": "coache",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Sylvie",
+              "predicate": "uses",
+              "target": "C#"
+            },
+            {
+              "source": "Sylvie",
+              "predicate": "knows",
+              "target": "C#"
+            },
+            {
+              "source": "Sylvie",
+              "predicate": "speaks",
+              "target": "C#"
+            },
+            {
+              "source": "Sylvie",
+              "predicate": "coaches",
+              "target": "me"
+            }
+          ]
+        },
+        {
+          "id": "simple_relation_03",
+          "category": "simple_relation",
+          "entity_precision": 1.0,
+          "entity_recall": 0.6666666666666666,
+          "entity_f1": 0.8,
+          "type_accuracy": 0.5,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 4191.434621810913,
+          "predicted_entities": [
+            {
+              "name": "Neo4j",
+              "type": "Technology"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "knows",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "learns",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "values",
+              "target": "Neo4j"
+            }
+          ]
+        },
+        {
+          "id": "dedup_01",
+          "category": "dedup",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4272.829294204712,
+          "predicted_entities": [
+            {
+              "name": "Thomas",
+              "type": "Person"
+            },
+            {
+              "name": "Tom",
+              "type": "Person"
+            },
+            {
+              "name": "Rust",
+              "type": "Technology"
+            },
+            {
+              "name": "Rust",
+              "type": "Language"
+            },
+            {
+              "name": "développeur",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Thomas",
+              "predicate": "is",
+              "target": "développeur Rust"
+            }
+          ]
+        },
+        {
+          "id": "dedup_02",
+          "category": "dedup",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 1.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4332.593202590942,
+          "predicted_entities": [
+            {
+              "name": "PostgreSQL",
+              "type": "Technology"
+            },
+            {
+              "name": "Postgres",
+              "type": "Technology"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "PostgreSQL",
+              "predicate": "is",
+              "target": "base principale"
+            }
+          ]
+        },
+        {
+          "id": "dedup_03",
+          "category": "dedup",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.5,
+          "relation_recall": 1.0,
+          "relation_f1": 0.6666666666666666,
+          "latency_ms": 4431.462287902832,
+          "predicted_entities": [
+            {
+              "name": "Michelin",
+              "type": "Organization"
+            },
+            {
+              "name": "Clermont-Ferrand",
+              "type": "Location"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Michelin",
+              "predicate": "located_in",
+              "target": "Clermont-Ferrand"
+            },
+            {
+              "source": "Michelin",
+              "predicate": "is",
+              "target": "Manufacture Française des Pneumatiques Michelin"
+            }
+          ]
+        },
+        {
+          "id": "temporal_01",
+          "category": "temporal",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 0.5,
+          "relation_f1": 0.6666666666666666,
+          "latency_ms": 4576.8725872039795,
+          "predicted_entities": [
+            {
+              "name": "MongoDB",
+              "type": "Technology"
+            },
+            {
+              "name": "PostgreSQL",
+              "type": "Technology"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "on",
+              "predicate": "past_uses",
+              "target": "MongoDB"
+            }
+          ]
+        },
+        {
+          "id": "temporal_02",
+          "category": "temporal",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.8,
+          "relation_recall": 1.0,
+          "relation_f1": 0.888888888888889,
+          "latency_ms": 4529.393434524536,
+          "predicted_entities": [
+            {
+              "name": "Julie",
+              "type": "Person"
+            },
+            {
+              "name": "Atlas",
+              "type": "Organization"
+            },
+            {
+              "name": "lead tech",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Julie",
+              "predicate": "works_on",
+              "target": "Atlas"
+            },
+            {
+              "source": "Julie",
+              "predicate": "colleague_of",
+              "target": "Atlas"
+            },
+            {
+              "source": "Julie",
+              "predicate": "is",
+              "target": "lead tech"
+            },
+            {
+              "source": "Julie",
+              "predicate": "led_by",
+              "target": "Atlas"
+            },
+            {
+              "source": "Julie",
+              "predicate": "past_leads",
+              "target": "Atlas"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_01",
+          "category": "user_preference",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.5,
+          "relation_recall": 1.0,
+          "relation_f1": 0.6666666666666666,
+          "latency_ms": 4130.208969116211,
+          "predicted_entities": [
+            {
+              "name": "TDD",
+              "type": "Technology"
+            },
+            {
+              "name": "tests manuels",
+              "type": "Practice"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Je",
+              "predicate": "likes",
+              "target": "TDD"
+            },
+            {
+              "source": "Je",
+              "predicate": "prefers",
+              "target": "TDD"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_02",
+          "category": "user_preference",
+          "entity_precision": 0.0,
+          "entity_recall": 0.0,
+          "entity_f1": 0.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4150.080919265747,
+          "predicted_entities": [
+            {
+              "name": "code",
+              "type": "Technology"
+            },
+            {
+              "name": "français",
+              "type": "Language"
+            },
+            {
+              "name": "anglais",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "code",
+              "predicate": "codes_in",
+              "target": "anglais"
+            },
+            {
+              "source": "code",
+              "predicate": "values",
+              "target": "anglais"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_03",
+          "category": "user_preference",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.5,
+          "relation_recall": 0.5,
+          "relation_f1": 0.5,
+          "latency_ms": 4553.849458694458,
+          "predicted_entities": [
+            {
+              "name": "backend systems",
+              "type": "Technology"
+            },
+            {
+              "name": "senior developer",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "senior developer",
+              "predicate": "works_on",
+              "target": "backend systems"
+            },
+            {
+              "source": "senior developer",
+              "predicate": "codes_in",
+              "target": "backend systems"
+            }
+          ]
+        },
+        {
+          "id": "project_fact_01",
+          "category": "project_fact",
+          "entity_precision": 0.5,
+          "entity_recall": 0.3333333333333333,
+          "entity_f1": 0.4,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.8,
+          "relation_recall": 1.0,
+          "relation_f1": 0.888888888888889,
+          "latency_ms": 4091.9995307922363,
+          "predicted_entities": [
+            {
+              "name": "Claude Code plugin",
+              "type": "Tool"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Graph-mem",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "Graph-mem",
+              "predicate": "works_on",
+              "target": "Python"
+            },
+            {
+              "source": "Graph-mem",
+              "predicate": "codes_in",
+              "target": "Python"
+            },
+            {
+              "source": "Graph-mem",
+              "predicate": "is",
+              "target": "Claude Code plugin"
+            },
+            {
+              "source": "Graph-mem",
+              "predicate": "is_plugin_for",
+              "target": "Claude"
+            }
+          ]
+        },
+        {
+          "id": "project_fact_02",
+          "category": "project_fact",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 0.6666666666666666,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4255.124092102051,
+          "predicted_entities": [
+            {
+              "name": "Neo4j",
+              "type": "Technology"
+            },
+            {
+              "name": "OpenRouter",
+              "type": "Tool"
+            },
+            {
+              "name": "LLM",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Neo4j",
+              "predicate": "values",
+              "target": "5.26"
+            }
+          ]
+        },
+        {
+          "id": "project_fact_03",
+          "category": "project_fact",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.5,
+          "relation_recall": 0.5,
+          "relation_f1": 0.5,
+          "latency_ms": 3641.368627548218,
+          "predicted_entities": [
+            {
+              "name": "Docker Compose",
+              "type": "Tool"
+            },
+            {
+              "name": "VM",
+              "type": "Infrastructure"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Deployment",
+              "predicate": "deployed_via",
+              "target": "Docker Compose"
+            },
+            {
+              "source": "Docker Compose",
+              "predicate": "runs_on",
+              "target": "single VM"
+            }
+          ]
+        },
+        {
+          "id": "mixed_01",
+          "category": "mixed",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.25,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 3505.091428756714,
+          "predicted_entities": [
+            {
+              "name": "Bruno",
+              "type": "Person"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            },
+            {
+              "name": "Go",
+              "type": "Language"
+            },
+            {
+              "name": "Rust",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Bruno",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "knows",
+              "target": "Python"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "knows",
+              "target": "Go"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "codes_in",
+              "target": "Python"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "speaks",
+              "target": "Python"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "learns",
+              "target": "Rust"
+            }
+          ]
+        },
+        {
+          "id": "pronoun_01",
+          "category": "pronoun",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.6666666666666666,
+          "relation_recall": 1.0,
+          "relation_f1": 0.8,
+          "latency_ms": 3656.3942432403564,
+          "predicted_entities": [
+            {
+              "name": "Sylvie",
+              "type": "Person"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "collègue",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Sylvie",
+              "predicate": "works_on",
+              "target": "projet Atlas"
+            },
+            {
+              "source": "Sylvie",
+              "predicate": "colleague_of",
+              "target": "ma"
+            },
+            {
+              "source": "Sylvie",
+              "predicate": "is",
+              "target": "collègue"
+            }
+          ]
+        },
+        {
+          "id": "negation_01",
+          "category": "negation",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.5,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 4333.472728729248,
+          "predicted_entities": [
+            {
+              "name": "Julie",
+              "type": "Person"
+            },
+            {
+              "name": "Atlas",
+              "type": "Organization"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Julie",
+              "predicate": "works_on",
+              "target": "Atlas"
+            },
+            {
+              "source": "Julie",
+              "predicate": "colleague_of",
+              "target": "Atlas"
+            }
+          ]
+        },
+        {
+          "id": "nested_01",
+          "category": "nested",
+          "entity_precision": 0.8,
+          "entity_recall": 1.0,
+          "entity_f1": 0.888888888888889,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.875,
+          "relation_recall": 1.0,
+          "relation_f1": 0.9333333333333333,
+          "latency_ms": 4519.572973251343,
+          "predicted_entities": [
+            {
+              "name": "Bruno",
+              "type": "Person"
+            },
+            {
+              "name": "Neo4j",
+              "type": "Technology"
+            },
+            {
+              "name": "Atlas",
+              "type": "Organization"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            },
+            {
+              "name": "backend",
+              "type": "Infrastructure"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "works_with",
+              "target": "Python"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "codes_in",
+              "target": "Python"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "speaks",
+              "target": "Python"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "colleague_of",
+              "target": "Bruno"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "led_by",
+              "target": "Bruno"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "coaches",
+              "target": "Atlas"
+            }
+          ]
+        },
+        {
+          "id": "mixed_lang_01",
+          "category": "mixed",
+          "entity_precision": 0.6,
+          "entity_recall": 1.0,
+          "entity_f1": 0.7499999999999999,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4391.439914703369,
+          "predicted_entities": [
+            {
+              "name": "Rust",
+              "type": "Technology"
+            },
+            {
+              "name": "Python",
+              "type": "Technology"
+            },
+            {
+              "name": "Go",
+              "type": "Technology"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            },
+            {
+              "name": "Rust",
+              "type": "Language"
+            },
+            {
+              "name": "Go",
+              "type": "Language"
+            },
+            {
+              "name": "parties critiques",
+              "type": "Role"
+            },
+            {
+              "name": "tech stack",
+              "type": "Infrastructure"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Python",
+              "predicate": "located_in",
+              "target": "tech stack"
+            },
+            {
+              "source": "Python",
+              "predicate": "is",
+              "target": "tech stack"
+            },
+            {
+              "source": "Go",
+              "predicate": "is",
+              "target": "tech stack"
+            }
+          ]
+        },
+        {
+          "id": "abstract_01",
+          "category": "abstract",
+          "entity_precision": 0.0,
+          "entity_recall": 0.0,
+          "entity_f1": 0.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4491.292476654053,
+          "predicted_entities": [
+            {
+              "name": "code",
+              "type": "Technology"
+            },
+            {
+              "name": "tests",
+              "type": "Tool"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Je",
+              "predicate": "likes",
+              "target": "qualité du code"
+            },
+            {
+              "source": "Je",
+              "predicate": "prefers",
+              "target": "qualité du code"
+            }
+          ]
+        },
+        {
+          "id": "edge_empty_01",
+          "category": "edge",
+          "entity_precision": 0.0,
+          "entity_recall": 1.0,
+          "entity_f1": 0.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 3505.657434463501,
+          "predicted_entities": [
+            {
+              "name": "budget",
+              "type": "Domain"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "edge_short_01",
+          "category": "edge",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 3698.0643272399902,
+          "predicted_entities": [
+            {
+              "name": "Rust",
+              "type": "Technology"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "simple_relation_04",
+          "category": "simple_relation",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.3333333333333333,
+          "relation_precision": 0.5,
+          "relation_recall": 1.0,
+          "relation_f1": 0.6666666666666666,
+          "latency_ms": 3990.492820739746,
+          "predicted_entities": [
+            {
+              "name": "Thomas",
+              "type": "Person"
+            },
+            {
+              "name": "Léa",
+              "type": "Organization"
+            },
+            {
+              "name": "Rust",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Léa",
+              "predicate": "knows",
+              "target": "Rust"
+            },
+            {
+              "source": "Léa",
+              "predicate": "speaks",
+              "target": "Rust"
+            },
+            {
+              "source": "Léa",
+              "predicate": "learns",
+              "target": "Rust"
+            },
+            {
+              "source": "Léa",
+              "predicate": "coaches",
+              "target": "Thomas"
+            }
+          ]
+        },
+        {
+          "id": "mixed_02",
+          "category": "mixed",
+          "entity_precision": 0.6,
+          "entity_recall": 1.0,
+          "entity_f1": 0.7499999999999999,
+          "type_accuracy": 0.3333333333333333,
+          "relation_precision": 0.7777777777777778,
+          "relation_recall": 1.0,
+          "relation_f1": 0.8750000000000001,
+          "latency_ms": 3603.640079498291,
+          "predicted_entities": [
+            {
+              "name": "Marie",
+              "type": "Person"
+            },
+            {
+              "name": "side projects",
+              "type": "Project"
+            },
+            {
+              "name": "Java",
+              "type": "Language"
+            },
+            {
+              "name": "Python",
+              "type": "Language"
+            },
+            {
+              "name": "boulot",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Marie",
+              "predicate": "uses",
+              "target": "Java"
+            },
+            {
+              "source": "Marie",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "Marie",
+              "predicate": "works_with",
+              "target": "Java"
+            },
+            {
+              "source": "Marie",
+              "predicate": "codes_in",
+              "target": "Java"
+            },
+            {
+              "source": "Marie",
+              "predicate": "codes_in",
+              "target": "Python"
+            },
+            {
+              "source": "Marie",
+              "predicate": "speaks",
+              "target": "Python"
+            },
+            {
+              "source": "Marie",
+              "predicate": "learns",
+              "target": "Python"
+            },
+            {
+              "source": "Marie",
+              "predicate": "is",
+              "target": "boulot"
+            },
+            {
+              "source": "Python",
+              "predicate": "is",
+              "target": "side projects"
+            }
+          ]
+        },
+        {
+          "id": "mixed_03",
+          "category": "mixed",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.6666666666666666,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 3939.2473697662354,
+          "predicted_entities": [
+            {
+              "name": "Atlas",
+              "type": "Technology"
+            },
+            {
+              "name": "Docker",
+              "type": "Tool"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "AWS",
+              "type": "Infrastructure"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "Docker"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "deployed_via",
+              "target": "Docker"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "runs_on",
+              "target": "AWS"
+            }
+          ]
+        },
+        {
+          "id": "mixed_04",
+          "category": "mixed",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 4371.115446090698,
+          "predicted_entities": [
+            {
+              "name": "Sarah",
+              "type": "Person"
+            },
+            {
+              "name": "Terraform",
+              "type": "Technology"
+            },
+            {
+              "name": "Ansible",
+              "type": "Technology"
+            },
+            {
+              "name": "DevOps lead",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Sarah",
+              "predicate": "works_with",
+              "target": "Terraform"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "knows",
+              "target": "Terraform"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "knows",
+              "target": "Ansible"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "speaks",
+              "target": "Terraform"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "learns",
+              "target": "Terraform"
+            },
+            {
+              "source": "Sarah",
+              "predicate": "is",
+              "target": "DevOps lead"
+            }
+          ]
+        },
+        {
+          "id": "mixed_05",
+          "category": "mixed",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.75,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 4427.464008331299,
+          "predicted_entities": [
+            {
+              "name": "Bruno",
+              "type": "Person"
+            },
+            {
+              "name": "graph-mem",
+              "type": "Technology"
+            },
+            {
+              "name": "VSCode",
+              "type": "Technology"
+            },
+            {
+              "name": "IntelliJ",
+              "type": "Tool"
+            },
+            {
+              "name": "VSCode",
+              "type": "Tool"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Bruno",
+              "predicate": "likes",
+              "target": "VSCode"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "uses",
+              "target": "VSCode"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "works_on",
+              "target": "graph-mem"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "speaks",
+              "target": "VSCode"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "prefers",
+              "target": "VSCode"
+            },
+            {
+              "source": "Bruno",
+              "predicate": "values",
+              "target": "VSCode"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_04",
+          "category": "user_preference",
+          "entity_precision": 0.5,
+          "entity_recall": 0.3333333333333333,
+          "entity_f1": 0.4,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.3333333333333333,
+          "relation_recall": 1.0,
+          "relation_f1": 0.5,
+          "latency_ms": 4134.845495223999,
+          "predicted_entities": [
+            {
+              "name": "APIs Node",
+              "type": "Technology"
+            },
+            {
+              "name": "Fastify",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Je",
+              "predicate": "likes",
+              "target": "Fastify"
+            },
+            {
+              "source": "Je",
+              "predicate": "prefers",
+              "target": "Fastify"
+            },
+            {
+              "source": "Fastify",
+              "predicate": "is_plugin_for",
+              "target": "APIs Node"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_05",
+          "category": "user_preference",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.3333333333333333,
+          "relation_recall": 0.5,
+          "relation_f1": 0.4,
+          "latency_ms": 3485.835313796997,
+          "predicted_entities": [
+            {
+              "name": "code reviews",
+              "type": "Service"
+            },
+            {
+              "name": "pair programming",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "I",
+              "predicate": "likes",
+              "target": "code reviews"
+            },
+            {
+              "source": "I",
+              "predicate": "prefers",
+              "target": "code reviews"
+            },
+            {
+              "source": "I",
+              "predicate": "values",
+              "target": "code reviews"
+            }
+          ]
+        },
+        {
+          "id": "user_pref_06",
+          "category": "user_preference",
+          "entity_precision": 0.0,
+          "entity_recall": 0.0,
+          "entity_f1": 0.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 3700.176477432251,
+          "predicted_entities": [
+            {
+              "name": "architecte",
+              "type": "Role"
+            },
+            {
+              "name": "simplicité",
+              "type": "Value"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "architecte",
+              "predicate": "likes",
+              "target": "simplicité"
+            },
+            {
+              "source": "architecte",
+              "predicate": "prefers",
+              "target": "simplicité"
+            },
+            {
+              "source": "architecte",
+              "predicate": "values",
+              "target": "simplicité"
+            }
+          ]
+        },
+        {
+          "id": "project_fact_04",
+          "category": "project_fact",
+          "entity_precision": 0.75,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8571428571428571,
+          "type_accuracy": 0.6666666666666666,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 3689.647674560547,
+          "predicted_entities": [
+            {
+              "name": "Redis",
+              "type": "Technology"
+            },
+            {
+              "name": "Kubernetes",
+              "type": "Technology"
+            },
+            {
+              "name": "Helios",
+              "type": "Project"
+            },
+            {
+              "name": "Kubernetes",
+              "type": "Infrastructure"
+            },
+            {
+              "name": "caching",
+              "type": "Service"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Helios",
+              "predicate": "uses",
+              "target": "Redis"
+            },
+            {
+              "source": "Helios",
+              "predicate": "runs_on",
+              "target": "Kubernetes"
+            }
+          ]
+        },
+        {
+          "id": "project_fact_05",
+          "category": "project_fact",
+          "entity_precision": 1.0,
+          "entity_recall": 0.6666666666666666,
+          "entity_f1": 0.8,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 3874.5999336242676,
+          "predicted_entities": [
+            {
+              "name": "React",
+              "type": "Technology"
+            },
+            {
+              "name": "TypeScript",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "project_fact_06",
+          "category": "project_fact",
+          "entity_precision": 0.5,
+          "entity_recall": 0.5,
+          "entity_f1": 0.5,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4172.658205032349,
+          "predicted_entities": [
+            {
+              "name": "Neo4j",
+              "type": "Technology"
+            },
+            {
+              "name": "graph-mem plugin",
+              "type": "Tool"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "graph-mem plugin",
+              "predicate": "codes_in",
+              "target": "Neo4j"
+            },
+            {
+              "source": "graph-mem plugin",
+              "predicate": "located_in",
+              "target": "Neo4j"
+            },
+            {
+              "source": "graph-mem plugin",
+              "predicate": "is",
+              "target": "plugin"
+            }
+          ]
+        },
+        {
+          "id": "dedup_04",
+          "category": "dedup",
+          "entity_precision": 0.3333333333333333,
+          "entity_recall": 1.0,
+          "entity_f1": 0.5,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4433.572053909302,
+          "predicted_entities": [
+            {
+              "name": "K8s",
+              "type": "Technology"
+            },
+            {
+              "name": "Kubernetes",
+              "type": "Technology"
+            },
+            {
+              "name": "orchestrator",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "K8s",
+              "predicate": "is",
+              "target": "orchestrator"
+            }
+          ]
+        },
+        {
+          "id": "dedup_05",
+          "category": "dedup",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 1.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4296.555757522583,
+          "predicted_entities": [
+            {
+              "name": "JS",
+              "type": "Technology"
+            },
+            {
+              "name": "JavaScript",
+              "type": "Technology"
+            },
+            {
+              "name": "JavaScript",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "JavaScript",
+              "predicate": "located_in",
+              "target": "web"
+            },
+            {
+              "source": "JavaScript",
+              "predicate": "deployed_via",
+              "target": "web"
+            },
+            {
+              "source": "JavaScript",
+              "predicate": "runs_on",
+              "target": "web"
+            },
+            {
+              "source": "JavaScript",
+              "predicate": "is_plugin_for",
+              "target": "web"
+            }
+          ]
+        },
+        {
+          "id": "temporal_03",
+          "category": "temporal",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 3705.3849697113037,
+          "predicted_entities": [
+            {
+              "name": "Renault",
+              "type": "Organization"
+            },
+            {
+              "name": "Michelin",
+              "type": "Organization"
+            },
+            {
+              "name": "développeur",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": []
+        },
+        {
+          "id": "temporal_04",
+          "category": "temporal",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.5,
+          "relation_recall": 1.0,
+          "relation_f1": 0.6666666666666666,
+          "latency_ms": 4357.039451599121,
+          "predicted_entities": [
+            {
+              "name": "AWS",
+              "type": "Organization"
+            },
+            {
+              "name": "Heroku",
+              "type": "Organization"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "We",
+              "predicate": "deployed_via",
+              "target": "AWS"
+            },
+            {
+              "source": "We",
+              "predicate": "runs_on",
+              "target": "AWS"
+            },
+            {
+              "source": "We",
+              "predicate": "past_uses",
+              "target": "Heroku"
+            },
+            {
+              "source": "We",
+              "predicate": "past_runs_on",
+              "target": "Heroku"
+            }
+          ]
+        },
+        {
+          "id": "negation_02",
+          "category": "negation",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 3784.494638442993,
+          "predicted_entities": [
+            {
+              "name": "Linear",
+              "type": "Technology"
+            },
+            {
+              "name": "Jira",
+              "type": "Tool"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Jira",
+              "predicate": "runs_on",
+              "target": "Linear"
+            },
+            {
+              "source": "Jira",
+              "predicate": "past_uses",
+              "target": "Linear"
+            },
+            {
+              "source": "Jira",
+              "predicate": "past_runs_on",
+              "target": "Linear"
+            }
+          ]
+        },
+        {
+          "id": "negation_03",
+          "category": "negation",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 7238.441467285156,
+          "predicted_entities": [
+            {
+              "name": "Claire",
+              "type": "Person"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "team",
+              "type": "Organization"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Claire",
+              "predicate": "works_on",
+              "target": "Atlas"
+            }
+          ]
+        },
+        {
+          "id": "negation_04",
+          "category": "negation",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.0,
+          "relation_recall": 0.0,
+          "relation_f1": 0.0,
+          "latency_ms": 4401.1077880859375,
+          "predicted_entities": [
+            {
+              "name": "Docker Swarm",
+              "type": "Technology"
+            },
+            {
+              "name": "Docker Swarm",
+              "type": "Service"
+            },
+            {
+              "name": "2024",
+              "type": "Value"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Docker Swarm",
+              "predicate": "values",
+              "target": "2024"
+            }
+          ]
+        },
+        {
+          "id": "edge_empty_02",
+          "category": "edge",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 4193.227291107178,
+          "predicted_entities": [],
+          "predicted_relations": []
+        },
+        {
+          "id": "edge_short_02",
+          "category": "edge",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.2,
+          "relation_recall": 1.0,
+          "relation_f1": 0.33333333333333337,
+          "latency_ms": 4126.249074935913,
+          "predicted_entities": [
+            {
+              "name": "TypeScript",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "I",
+              "predicate": "likes",
+              "target": "TypeScript"
+            },
+            {
+              "source": "I",
+              "predicate": "knows",
+              "target": "TypeScript"
+            },
+            {
+              "source": "I",
+              "predicate": "prefers",
+              "target": "TypeScript"
+            },
+            {
+              "source": "I",
+              "predicate": "learns",
+              "target": "TypeScript"
+            },
+            {
+              "source": "I",
+              "predicate": "values",
+              "target": "TypeScript"
+            }
+          ]
+        },
+        {
+          "id": "edge_multi_01",
+          "category": "edge",
+          "entity_precision": 0.5,
+          "entity_recall": 1.0,
+          "entity_f1": 0.6666666666666666,
+          "type_accuracy": 1.0,
+          "relation_precision": 0.625,
+          "relation_recall": 1.0,
+          "relation_f1": 0.7692307692307693,
+          "latency_ms": 4011.5554332733154,
+          "predicted_entities": [
+            {
+              "name": "Alice",
+              "type": "Person"
+            },
+            {
+              "name": "Kubernetes",
+              "type": "Technology"
+            },
+            {
+              "name": "team",
+              "type": "Organization"
+            },
+            {
+              "name": "expert",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Alice",
+              "predicate": "works_on",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "Alice",
+              "predicate": "knows",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "Alice",
+              "predicate": "codes_in",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "Alice",
+              "predicate": "speaks",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "Alice",
+              "predicate": "learns",
+              "target": "Kubernetes"
+            },
+            {
+              "source": "Alice",
+              "predicate": "colleague_of",
+              "target": "team"
+            },
+            {
+              "source": "Alice",
+              "predicate": "located_in",
+              "target": "team"
+            },
+            {
+              "source": "Alice",
+              "predicate": "is",
+              "target": "expert"
+            }
+          ]
+        },
+        {
+          "id": "pronoun_02",
+          "category": "pronoun",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 1.0,
+          "relation_precision": 1.0,
+          "relation_recall": 1.0,
+          "relation_f1": 1.0,
+          "latency_ms": 3877.3510456085205,
+          "predicted_entities": [
+            {
+              "name": "Thomas",
+              "type": "Person"
+            },
+            {
+              "name": "React Native",
+              "type": "Technology"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Thomas",
+              "predicate": "works_on",
+              "target": "React Native"
+            },
+            {
+              "source": "Thomas",
+              "predicate": "codes_in",
+              "target": "React Native"
+            }
+          ]
+        },
+        {
+          "id": "pronoun_03",
+          "category": "pronoun",
+          "entity_precision": 0.6666666666666666,
+          "entity_recall": 1.0,
+          "entity_f1": 0.8,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.6666666666666666,
+          "relation_recall": 1.0,
+          "relation_f1": 0.8,
+          "latency_ms": 8574.806690216064,
+          "predicted_entities": [
+            {
+              "name": "Paul",
+              "type": "Person"
+            },
+            {
+              "name": "graph-mem",
+              "type": "Technology"
+            },
+            {
+              "name": "author",
+              "type": "Role"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Paul",
+              "predicate": "works_on",
+              "target": "graph-mem"
+            },
+            {
+              "source": "Paul",
+              "predicate": "speaks",
+              "target": "graph-mem"
+            },
+            {
+              "source": "Paul",
+              "predicate": "is",
+              "target": "main author"
+            }
+          ]
+        },
+        {
+          "id": "pronoun_04",
+          "category": "pronoun",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.0,
+          "relation_precision": 0.6666666666666666,
+          "relation_recall": 1.0,
+          "relation_f1": 0.8,
+          "latency_ms": 4262.3302936553955,
+          "predicted_entities": [
+            {
+              "name": "Python",
+              "type": "Language"
+            },
+            {
+              "name": "Rust",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "on",
+              "predicate": "uses",
+              "target": "Python"
+            },
+            {
+              "source": "on",
+              "predicate": "uses",
+              "target": "Rust"
+            },
+            {
+              "source": "Python",
+              "predicate": "values",
+              "target": "Python"
+            }
+          ]
+        },
+        {
+          "id": "nested_02",
+          "category": "nested",
+          "entity_precision": 1.0,
+          "entity_recall": 1.0,
+          "entity_f1": 1.0,
+          "type_accuracy": 0.5,
+          "relation_precision": 0.8888888888888888,
+          "relation_recall": 1.0,
+          "relation_f1": 0.9411764705882353,
+          "latency_ms": 5662.626028060913,
+          "predicted_entities": [
+            {
+              "name": "Neo4j",
+              "type": "Technology"
+            },
+            {
+              "name": "Atlas",
+              "type": "Project"
+            },
+            {
+              "name": "Bruno",
+              "type": "Organization"
+            },
+            {
+              "name": "Rust",
+              "type": "Language"
+            }
+          ],
+          "predicted_relations": [
+            {
+              "source": "Atlas",
+              "predicate": "uses",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "works_with",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "codes_in",
+              "target": "Rust"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "speaks",
+              "target": "Rust"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "colleague_of",
+              "target": "Bruno"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "located_in",
+              "target": "Bruno"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "runs_on",
+              "target": "Neo4j"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "is",
+              "target": "projet open-source"
+            },
+            {
+              "source": "Atlas",
+              "predicate": "values",
+              "target": "Rust"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "name": "gliner2-large",
+      "entity_f1": 0.7922836287799793,
+      "relation_f1": 0.548258499355734,
+      "type_accuracy": 0.59,
+      "avg_latency_ms": 4276.645736694336
+    },
+    {
+      "name": "gliner2-base",
+      "entity_f1": 0.766936170212766,
+      "relation_f1": 0.43628531073446325,
+      "type_accuracy": 0.5833333333333334,
+      "avg_latency_ms": 1496.7799854278564
+    }
+  ]
+}
