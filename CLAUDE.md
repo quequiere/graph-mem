@@ -208,8 +208,10 @@ We depend on the model calling `save_memory` explicitly. The model often doesn't
 
 ## Git Convention
 
-- Conventional commits style
-- Current branch: `feat/openrouter-graphiti-patch` (6 commits ahead of main)
+- **Commits** must follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, `ci:`, `docs:`, `refactor:`, `test:`)
+- **PR titles** must also follow Conventional Commits format (enforced by `lint-pr` CI job via `amannn/action-semantic-pull-request`)
+- **PR descriptions** must be written in English, summarizing the changes based on the commits included
+- When creating or updating a PR, always verify that the CI workflow passes and fix any failures before requesting review
 
 ## Key Files
 

@@ -7,7 +7,7 @@ import sys
 from graph_mem.client import GraphitiClient
 from graph_mem.config import get_settings
 from graph_mem.project_id import get_project_id
-from graph_mem.tools.context import get_context, get_context_sections
+from graph_mem.tools.context import get_context_sections
 
 
 INSTRUCTIONS = """[graph-mem] Persistent knowledge graph memory is active.

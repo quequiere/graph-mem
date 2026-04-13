@@ -1,7 +1,5 @@
 import subprocess
-from unittest.mock import patch
 
-import pytest
 
 from graph_mem.project_id import get_project_id, normalize_git_url
 

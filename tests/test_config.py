@@ -1,8 +1,6 @@
-import os
 
-import pytest
 
-from graph_mem.config import Settings, get_settings
+from graph_mem.config import get_settings
 
 
 def test_default_settings():
