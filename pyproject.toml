@@ -23,7 +23,6 @@ graph-mem-ingest = "graph_mem.hooks._ingest_worker:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/graph_mem"]
-artifacts = ["src/graph_mem/static/**"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

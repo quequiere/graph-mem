@@ -105,10 +105,10 @@ canvas { display: block; }
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
-// --- Config injected by server ---
-const NEO4J_URL = "__NEO4J_HTTP_URL__";
-const NEO4J_USER = "__NEO4J_USER__";
-const NEO4J_PASSWORD = "__NEO4J_PASSWORD__";
+// --- Config injected at container start by envsubst ---
+const NEO4J_URL = "${NEO4J_HTTP_URL}";
+const NEO4J_USER = "${NEO4J_USER}";
+const NEO4J_PASSWORD = "${NEO4J_PASSWORD}";
 
 // Category colors matching the SVG legend
 const CATEGORY_COLORS = {

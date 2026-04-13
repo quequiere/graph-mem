@@ -11,10 +11,6 @@ class Settings:
     graphiti_url: str = "http://127.0.0.1:8000"
     graphiti_api_key: str | None = None
     graphiti_timeout: float = 60.0
-    viewer_port: int = 8050
-    neo4j_http_url: str = "http://127.0.0.1:7475"
-    neo4j_user: str = "neo4j"
-    neo4j_password: str = "graphiti"
 
 
 def get_settings() -> Settings:
@@ -22,8 +18,4 @@ def get_settings() -> Settings:
         graphiti_url=os.environ.get("GRAPHITI_URL", "http://127.0.0.1:8000"),
         graphiti_api_key=os.environ.get("GRAPHITI_API_KEY"),
         graphiti_timeout=float(os.environ.get("GRAPHITI_TIMEOUT", "60.0")),
-        viewer_port=int(os.environ.get("GRAPH_MEM_VIEWER_PORT", "8050")),
-        neo4j_http_url=os.environ.get("NEO4J_HTTP_URL", "http://127.0.0.1:7475"),
-        neo4j_user=os.environ.get("NEO4J_USER", "neo4j"),
-        neo4j_password=os.environ.get("NEO4J_PASSWORD", "graphiti"),
     )
