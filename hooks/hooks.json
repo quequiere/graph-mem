@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run --directory \"${CLAUDE_PLUGIN_ROOT}/..\" graph-mem-session-start",
+            "command": "uv run --directory \"${CLAUDE_PLUGIN_ROOT}\" graph-mem-session-start",
             "timeout": 10
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run --directory \"${CLAUDE_PLUGIN_ROOT}/..\" graph-mem-session-end",
+            "command": "uv run --directory \"${CLAUDE_PLUGIN_ROOT}\" graph-mem-session-end",
             "timeout": 30
           }
         ]
