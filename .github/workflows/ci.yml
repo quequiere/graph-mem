@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, ci/integration-tests]  # TEMP: remove ci/integration-tests before merge
   pull_request:
     branches: [main]
   workflow_dispatch:
