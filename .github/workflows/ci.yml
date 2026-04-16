@@ -2,9 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, ci/integration-tests]  # TEMP: remove ci/integration-tests before merge
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_integration_tests:
+        description: "Run integration tests (Neo4j + Graphiti + Ollama)"
+        type: boolean
+        default: true
 
 permissions:
   pull-requests: read
@@ -82,3 +88,48 @@ jobs:
           push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # ---------------------------------------------------------------------------
+  # Integration tests — full stack with Neo4j + Graphiti + Ollama.
+  # Manual-only: trigger from the Actions tab (workflow_dispatch).
+  # ---------------------------------------------------------------------------
+  integration-tests:
+    if: |
+      (github.event_name == 'workflow_dispatch' && inputs.run_integration_tests) ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/ci/integration-tests')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
+        with:
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --extra dev --extra integration
+
+      - name: Start full stack (Neo4j + Graphiti + Ollama)
+        run: |
+          docker compose -f tests/integration/docker-compose.yml \
+            -p graphmem-integration --profile ollama \
+            up --build -d --wait --wait-timeout 1800
+        env:
+          OLLAMA_URL: http://ollama:11434
+
+      - name: Run integration tests
+        run: uv run pytest tests/integration/ -v -m integration
+
+      - name: Dump logs on failure
+        if: failure()
+        run: |
+          docker compose -f tests/integration/docker-compose.yml \
+            -p graphmem-integration logs
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose -f tests/integration/docker-compose.yml \
+            -p graphmem-integration --profile ollama down -v
